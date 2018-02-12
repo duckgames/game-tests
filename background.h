@@ -10,40 +10,48 @@
 class Background {
 
 private:
+    sf::Texture backgroundTexture;
     sf::RectangleShape first;
     sf::RectangleShape second;
     sf::Vector2u textureSize;
     sf::Vector2f scrollSpeed;
 
 public:
-    Background(sf::Vector2u textureSize, sf::Vector2f scrollSpeed) {
+    Background(std::string texturePath, sf::Vector2f startPosition, sf::Vector2f scrollSpeed) {
+        backgroundTexture.loadFromFile(texturePath);
+        this->textureSize = backgroundTexture.getSize();
+        this->scrollSpeed = scrollSpeed;
+
         first = sf::RectangleShape(sf::Vector2f(textureSize));
-        first.setFillColor(sf::Color::Green);
-        first.setPosition(0.0f, 0.0f);
+        first.setTexture(&backgroundTexture);
+        first.setPosition(startPosition.x - (textureSize.x / 2), 0.0f);
 
         second = sf::RectangleShape(sf::Vector2f(textureSize));
-        second.setFillColor(sf::Color::Red);
-        second.setPosition(0.0f, -(float)textureSize.y);
-
-        this->textureSize = textureSize;
-        this->scrollSpeed = scrollSpeed;
+        second.setTexture(&backgroundTexture);
+        second.setPosition(startPosition.x - (textureSize.x / 2), startPosition.y -(float)textureSize.y);
     }
 
     ~Background() {}
 
     void update (float delta) {
-        if (first.getPosition().y >= textureSize.y) {
-            first.setPosition(0.0f, second.getPosition().y - textureSize.y);
-        }
-        else if (second.getPosition().y >= textureSize.y) {
-            second.setPosition(0.0f, first.getPosition().y - textureSize.y);
-        }
-
         sf::Vector2f firstPos = first.getPosition() + (scrollSpeed * delta);
         sf::Vector2f secondPos = second.getPosition() + (scrollSpeed * delta);
 
-        first.setPosition(firstPos);
-        second.setPosition(secondPos);
+        if (firstPos.y >= textureSize.y) {
+            firstPos.y = secondPos.y - textureSize.y;
+        }
+        else if (secondPos.y >= textureSize.y) {
+            secondPos.y = firstPos.y - textureSize.y;
+        }
+
+        if (firstPos.y > secondPos.y) {
+            first.setPosition(firstPos);
+            second.setPosition(secondPos.x, firstPos.y - textureSize.y);
+        }
+        else {
+            second.setPosition(secondPos);
+            first.setPosition(firstPos.y, secondPos.y - textureSize.y);
+        }
     }
 
     sf::RectangleShape getFirst() {

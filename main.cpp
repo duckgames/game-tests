@@ -27,7 +27,10 @@ int main() {
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
     sf::Time duration = sf::Time::Zero;
 
-    Background background = Background(window.getSize(), sf::Vector2f(0.0f, 100.0f));
+    Background background = Background(
+            "../assets/backgrounds/background.png",
+            sf::Vector2f(window.getSize().x / 2, 0.0f),
+            sf::Vector2f(0.0f, 100.0f));
 
     while (window.isOpen())
     {
