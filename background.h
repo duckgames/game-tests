@@ -22,6 +22,7 @@ public:
         this->textureSize = backgroundTexture.getSize();
         this->scrollSpeed = scrollSpeed;
 
+
         first = sf::RectangleShape(sf::Vector2f(textureSize));
         first.setTexture(&backgroundTexture);
         first.setPosition(startPosition.x - (textureSize.x / 2), 0.0f);
@@ -37,20 +38,39 @@ public:
         sf::Vector2f firstPos = first.getPosition() + (scrollSpeed * delta);
         sf::Vector2f secondPos = second.getPosition() + (scrollSpeed * delta);
 
-        if (firstPos.y >= textureSize.y) {
-            firstPos.y = secondPos.y - textureSize.y;
-        }
-        else if (secondPos.y >= textureSize.y) {
-            secondPos.y = firstPos.y - textureSize.y;
-        }
+        if (scrollSpeed.y > 0) {
+            if (firstPos.y >= textureSize.y) {
+                firstPos.y = secondPos.y - textureSize.y;
+            }
+            else if (secondPos.y >= textureSize.y) {
+                secondPos.y = firstPos.y - textureSize.y;
+            }
 
-        if (firstPos.y > secondPos.y) {
-            first.setPosition(firstPos);
-            second.setPosition(secondPos.x, firstPos.y - textureSize.y);
+            if (firstPos.y > secondPos.y) {
+                first.setPosition(firstPos);
+                second.setPosition(secondPos.x, firstPos.y - textureSize.y);
+            }
+            else {
+                second.setPosition(secondPos);
+                first.setPosition(firstPos.x, secondPos.y - textureSize.y);
+            }
         }
         else {
-            second.setPosition(secondPos);
-            first.setPosition(firstPos.y, secondPos.y - textureSize.y);
+            if (firstPos.y <= 0.0f - textureSize.y) {
+                firstPos.y = secondPos.y + textureSize.y;
+            }
+            else if (secondPos.y <= 0.0f - textureSize.y) {
+                secondPos.y = firstPos.y + textureSize.y;
+            }
+
+            if (firstPos.y < secondPos.y) {
+                first.setPosition(firstPos);
+                second.setPosition(secondPos.x, firstPos.y + textureSize.y);
+            }
+            else {
+                second.setPosition(secondPos);
+                first.setPosition(firstPos.x, secondPos.y + textureSize.y);
+            }
         }
     }
 
