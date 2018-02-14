@@ -30,7 +30,14 @@ int main() {
     Background background = Background(
             "../assets/backgrounds/background.png",
             sf::Vector2f(window.getSize().x / 2, 0.0f),
-            sf::Vector2f(0.0f, 100.0f));
+            1000.0f,
+			Y_AXIS);
+
+	Background backgroundHoriz = Background(
+			"../assets/backgrounds/background-horiz.png",
+			sf::Vector2f(0.0f, window.getSize().y / 2),
+			-1000.0f,
+			X_AXIS);
 
     while (window.isOpen())
     {
@@ -95,12 +102,15 @@ int main() {
                 }
             }
             background.update(timePerFrame.asSeconds());
+			backgroundHoriz.update(timePerFrame.asSeconds());
             spritealBrew.setPosition(position);
         }
 
         window.clear();
         window.draw(background.getFirst());
         window.draw(background.getSecond());
+		window.draw(backgroundHoriz.getFirst());
+		window.draw(backgroundHoriz.getSecond());
         window.draw(spritealBrew);
         window.display();
     }
