@@ -22,7 +22,6 @@ public:
         this->textureSize = backgroundTexture.getSize();
         this->scrollSpeed = scrollSpeed;
 
-
         first = sf::RectangleShape(sf::Vector2f(textureSize));
         first.setTexture(&backgroundTexture);
         first.setPosition(startPosition.x - (textureSize.x / 2), 0.0f);
@@ -55,7 +54,7 @@ public:
                 first.setPosition(firstPos.x, secondPos.y - textureSize.y);
             }
         }
-        else {
+        else if (scrollSpeed.y < 0) {
             if (firstPos.y <= 0.0f - textureSize.y) {
                 firstPos.y = secondPos.y + textureSize.y;
             }
