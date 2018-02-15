@@ -28,12 +28,14 @@ int main() {
     sf::Time duration = sf::Time::Zero;
 
     Background background = Background(
+			&window,
             "../assets/backgrounds/background.png",
             sf::Vector2f(window.getSize().x / 2, 0.0f),
             1000.0f,
 			Y_AXIS);
 
 	Background backgroundHoriz = Background(
+			&window,
 			"../assets/backgrounds/background-horiz.png",
 			sf::Vector2f(0.0f, window.getSize().y / 2),
 			-1000.0f,
@@ -107,10 +109,8 @@ int main() {
         }
 
         window.clear();
-        window.draw(background.getFirst());
-        window.draw(background.getSecond());
-		window.draw(backgroundHoriz.getFirst());
-		window.draw(backgroundHoriz.getSecond());
+        background.draw();
+		backgroundHoriz.draw();
         window.draw(spritealBrew);
         window.display();
     }

@@ -11,6 +11,7 @@ enum ScrollAxis { X_AXIS, Y_AXIS };
 class Background {
 
 private:
+	sf::RenderWindow *window;
     sf::Texture backgroundTexture;
     sf::RectangleShape first;
     sf::RectangleShape second;
@@ -19,7 +20,8 @@ private:
 	ScrollAxis scrollAxis;
 
 public:
-    Background(std::string texturePath, sf::Vector2f startPosition, float scrollSpeed, ScrollAxis scrollAxis) {
+    Background(sf::RenderWindow *window, std::string texturePath, sf::Vector2f startPosition, float scrollSpeed, ScrollAxis scrollAxis) {
+		this->window = window;
         backgroundTexture.loadFromFile(texturePath);
         this->textureSize = backgroundTexture.getSize();
         this->scrollSpeed = scrollSpeed;
@@ -129,13 +131,10 @@ public:
 		}
     }
 
-    sf::RectangleShape getFirst() {
-        return first;
-    }
-
-    sf::RectangleShape getSecond() {
-        return second;
-    }
+	void draw() {
+		window->draw(first);
+		window->draw(second);
+	}
 };
 
 #endif //UNTITLED_BACKGROUND_H
