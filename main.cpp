@@ -27,16 +27,21 @@ int main() {
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
     sf::Time duration = sf::Time::Zero;
 
+	sf::Texture vertTexture;
+	sf::Texture horizTexture;
+	vertTexture.loadFromFile("../assets/backgrounds/background.png");
+	horizTexture.loadFromFile("../assets/backgrounds/background-horiz.png");
+
     Background background = Background(
 			&window,
-            "../assets/backgrounds/background.png",
+			&vertTexture,
             sf::Vector2f(window.getSize().x / 2, 0.0f),
             1000.0f,
 			Y_AXIS);
 
 	Background backgroundHoriz = Background(
 			&window,
-			"../assets/backgrounds/background-horiz.png",
+			&horizTexture,
 			sf::Vector2f(0.0f, window.getSize().y / 2),
 			-1000.0f,
 			X_AXIS);

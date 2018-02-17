@@ -12,7 +12,6 @@ class Background {
 
 private:
 	sf::RenderWindow *window;
-    sf::Texture backgroundTexture;
     sf::RectangleShape first;
     sf::RectangleShape second;
     sf::Vector2u textureSize;
@@ -20,18 +19,17 @@ private:
 	ScrollAxis scrollAxis;
 
 public:
-    Background(sf::RenderWindow *window, std::string texturePath, sf::Vector2f startPosition, float scrollSpeed, ScrollAxis scrollAxis) {
+    Background(sf::RenderWindow *window, sf::Texture *backgroundTexture, sf::Vector2f startPosition, float scrollSpeed, ScrollAxis scrollAxis) {
 		this->window = window;
-        backgroundTexture.loadFromFile(texturePath);
-        this->textureSize = backgroundTexture.getSize();
+        this->textureSize = backgroundTexture->getSize();
         this->scrollSpeed = scrollSpeed;
 		this->scrollAxis = scrollAxis;
 
         first = sf::RectangleShape(sf::Vector2f(textureSize));
-        first.setTexture(&backgroundTexture);
+        first.setTexture(backgroundTexture);
 
         second = sf::RectangleShape(sf::Vector2f(textureSize));
-        second.setTexture(&backgroundTexture);
+        second.setTexture(backgroundTexture);
 
 		if (scrollAxis == X_AXIS) {
 			first.setPosition(0.0f, startPosition.y - (textureSize.y / 2));
