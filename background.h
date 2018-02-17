@@ -6,6 +6,8 @@
 #define UNTITLED_BACKGROUND_H
 
 #include <SFML/Graphics.hpp>
+#include <cmath>
+
 enum ScrollAxis { X_AXIS, Y_AXIS };
 
 class Background {
@@ -17,6 +19,13 @@ private:
     sf::Vector2u textureSize;
     float scrollSpeed;
 	ScrollAxis scrollAxis;
+
+	float *toChangeFirst;
+	float *toChangeSecond;
+	float scrollAxisSize;
+	sf::Vector2f newFirst;
+	sf::Vector2f newSecond;
+	float scrollDirectionAdjustment = 1.0f;
 
 public:
     Background(sf::RenderWindow *window, sf::Texture *backgroundTexture, sf::Vector2f startPosition, float scrollSpeed, ScrollAxis scrollAxis) {
@@ -34,14 +43,97 @@ public:
 		if (scrollAxis == X_AXIS) {
 			first.setPosition(0.0f, startPosition.y - (textureSize.y / 2));
 			second.setPosition(0.0f - (float)textureSize.x, startPosition.y - (textureSize.y / 2));
+			newFirst.x = first.getPosition().x;
+			newFirst.y = first.getPosition().y;
+			newSecond.x = second.getPosition().x;
+			newSecond.y = second.getPosition().y;
+			toChangeFirst = &newFirst.x;
+			toChangeSecond = &newSecond.x;
+			scrollAxisSize = backgroundTexture->getSize().x;
 		}
 		else {
 			first.setPosition(startPosition.x - (textureSize.x / 2), 0.0f);
 			second.setPosition(startPosition.x - (textureSize.x / 2), startPosition.y -(float)textureSize.y);
+			newFirst.x = first.getPosition().x;
+			newFirst.y = first.getPosition().y;
+			newSecond.x = second.getPosition().x;
+			newSecond.y = second.getPosition().y;
+			toChangeFirst = &newFirst.y;
+			toChangeSecond = &newSecond.y;
+			scrollAxisSize = backgroundTexture->getSize().y;
+		}
+
+		if (scrollSpeed < 0) {
+			scrollDirectionAdjustment = -1.0f;
 		}
     }
 
     ~Background() {}
+
+	void testUpdate2(float delta) {
+		float distanceToAdd = scrollSpeed * delta;
+		*toChangeFirst += distanceToAdd;
+		*toChangeSecond += distanceToAdd;
+
+		if (*toChangeFirst >= scrollAxisSize || *toChangeFirst <= 0.0f - scrollAxisSize) {
+			*toChangeFirst = *toChangeSecond - (scrollAxisSize * scrollDirectionAdjustment);
+		}
+		else if (*toChangeSecond >= scrollAxisSize || *toChangeSecond <= 0.0f - scrollAxisSize) {
+			*toChangeSecond = *toChangeFirst - (scrollAxisSize * scrollDirectionAdjustment);
+		}
+
+		if (scrollSpeed > 0 && *toChangeFirst > *toChangeSecond ||
+				scrollSpeed < 0  && *toChangeFirst < *toChangeSecond) {
+			*toChangeSecond = *toChangeFirst - (scrollAxisSize * scrollDirectionAdjustment);
+		}
+		else {
+			*toChangeFirst = *toChangeSecond - (scrollAxisSize * scrollDirectionAdjustment);
+		}
+
+		first.setPosition(newFirst);
+		second.setPosition(newSecond);
+	}
+
+	void testUpdate(float delta) {
+		float distanceToAdd = scrollSpeed * delta;
+
+		*toChangeFirst += distanceToAdd;
+		*toChangeSecond += distanceToAdd;
+
+		if (scrollSpeed > 0) {
+			if (*toChangeFirst >= scrollAxisSize) {
+				*toChangeFirst = *toChangeSecond - scrollAxisSize;
+			}
+			else if (*toChangeSecond >= scrollAxisSize) {
+				*toChangeSecond = *toChangeFirst - scrollAxisSize;
+			}
+
+			if (*toChangeFirst > *toChangeSecond) {
+				*toChangeSecond = *toChangeFirst - scrollAxisSize;
+			}
+			else {
+				*toChangeFirst = *toChangeSecond - scrollAxisSize;
+			}
+		}
+		else if (scrollSpeed < 0) {
+			if (*toChangeFirst <= 0.0f - scrollAxisSize) {
+				*toChangeFirst = *toChangeSecond + scrollAxisSize;
+			}
+			else if (*toChangeSecond <= 0.0f - scrollAxisSize) {
+				*toChangeSecond = *toChangeFirst + scrollAxisSize;
+			}
+
+			if (*toChangeFirst < *toChangeSecond) {
+				*toChangeSecond = *toChangeFirst + scrollAxisSize;
+			}
+			else {
+				*toChangeFirst = *toChangeSecond + scrollAxisSize;
+			}
+		}
+
+		first.setPosition(newFirst);
+		second.setPosition(newSecond);
+	}
 
     void update (float delta) {
         float firstPos;

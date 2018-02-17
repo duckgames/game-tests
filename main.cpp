@@ -36,7 +36,7 @@ int main() {
 			&window,
 			&vertTexture,
             sf::Vector2f(window.getSize().x / 2, 0.0f),
-            1000.0f,
+            -1000.0f,
 			Y_AXIS);
 
 	Background backgroundHoriz = Background(
@@ -108,8 +108,8 @@ int main() {
                     position.y += speed * timePerFrame.asSeconds();
                 }
             }
-            background.update(timePerFrame.asSeconds());
-			backgroundHoriz.update(timePerFrame.asSeconds());
+            background.testUpdate2(timePerFrame.asSeconds());
+			backgroundHoriz.testUpdate2(timePerFrame.asSeconds());
             spritealBrew.setPosition(position);
         }
 
