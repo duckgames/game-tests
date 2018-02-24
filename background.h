@@ -90,8 +90,8 @@ public:
 			*toChangeFirst = *toChangeSecond - (scrollAxisSize * scrollDirectionAdjustment);
 		}
 
-		first.setPosition(newFirst);
-		second.setPosition(newSecond);
+		first.setPosition(newFirst.x, newFirst.y);
+		second.setPosition(newSecond.x, newSecond.y);
 	}
 
 	void testUpdate(float delta) {
