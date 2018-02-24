@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <x86intrin.h>
 
 #include "background.h"
 
@@ -46,7 +47,10 @@ int main() {
 			-1000.0f,
 			X_AXIS);
 
-    while (window.isOpen())
+	ulong total = 0;
+	ulong loops = 0;
+	ulong result = 0;
+    while (window.isOpen() && loops < 7000)
     {
         sf::Event event;
 
@@ -108,8 +112,17 @@ int main() {
                     position.y += speed * timePerFrame.asSeconds();
                 }
             }
+
+			ulong t1 = __rdtsc();
+			ulong t2 = __rdtsc();
             background.testUpdate2(timePerFrame.asSeconds());
-			backgroundHoriz.testUpdate2(timePerFrame.asSeconds());
+			ulong t3 = __rdtsc();
+			result = (t3 - t2) - (t2 - t1);
+
+			total += result;
+			loops++;
+
+			backgroundHoriz.update(timePerFrame.asSeconds());
             spritealBrew.setPosition(position);
         }
 
@@ -118,7 +131,9 @@ int main() {
 		backgroundHoriz.draw();
         window.draw(spritealBrew);
         window.display();
-    }
+
+		std::cout << total / loops << std::endl;
+	}
 
     return 0;
 }
