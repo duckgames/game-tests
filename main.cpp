@@ -3,17 +3,32 @@
 #include <x86intrin.h>
 
 #include "background.h"
+#include "following-background.h"
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
+
+void updateBackground(float delta, Background *background, sf::RenderWindow *window) {
+    background.testUpdate2(delta);
+    window.clear();
+    background.draw();
+    window.display();
+}
+
+void updateFollowingBackground(FollowingBackground *background, sf::RenderWindow *window) {
+    window->clear();
+    background->draw();
+    window->display();
+}
 
 int main() {
     float stickAverageX = 0.0f;
     float stickAverageY = 0.0f;
     float rotation = 0.0f;
     float speed = 1000.0f;
+    unsigned int screenHeight = 1080;
 
     sf::Texture specialBrew;
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1920, screenHeight), "SFML works!");
     window.setVerticalSyncEnabled(true);
 
     specialBrew.loadFromFile("specialbrew.png");
@@ -21,7 +36,8 @@ int main() {
     sf::RectangleShape spritealBrew(sf::Vector2f(32, 32));
     spritealBrew.setTexture(&specialBrew, true);
 
-    sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
+  //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
+    spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -32,7 +48,7 @@ int main() {
 	sf::Texture horizTexture;
 	vertTexture.loadFromFile("../assets/backgrounds/background.png");
 	horizTexture.loadFromFile("../assets/backgrounds/background-horiz.png");
-
+/*
     Background background = Background(
 			&window,
 			&vertTexture,
@@ -46,6 +62,13 @@ int main() {
 			sf::Vector2f(0.0f, window.getSize().y / 2),
 			-500.0f,
 			X_AXIS);
+*/
+
+    FollowingBackground followingBackground = FollowingBackground(
+            &window,
+            &horizTexture,
+            -500.0f,
+            screenHeight);
 
 	ulong total = 0;
 	ulong loops = 0;
@@ -97,42 +120,51 @@ int main() {
 
             if (stickAverageX > CONTROLLER_AXIS_DEADZONE || stickAverageX < -CONTROLLER_AXIS_DEADZONE) {
                 if (stickAverageX < 0) {
-                    position.x += -speed * timePerFrame.asSeconds();
+                //    position.x += -speed * timePerFrame.asSeconds();
+                    followingBackground.moveX(timePerFrame.asSeconds(), false);
                 }
                 else {
-                    position.x += speed * timePerFrame.asSeconds();
+                //    position.x += speed * timePerFrame.asSeconds();
+                    followingBackground.moveX(timePerFrame.asSeconds(), true);
                 }
             }
 
             if (stickAverageY > CONTROLLER_AXIS_DEADZONE || stickAverageY < -CONTROLLER_AXIS_DEADZONE) {
                 if (stickAverageY < 0) {
-                    position.y += -speed * timePerFrame.asSeconds();
+                //    position.y += -speed * timePerFrame.asSeconds();
+                    followingBackground.moveY(timePerFrame.asSeconds(), false);
                 }
                 else {
-                    position.y += speed * timePerFrame.asSeconds();
+                //    position.y += speed * timePerFrame.asSeconds();
+                    followingBackground.moveY(timePerFrame.asSeconds(), true);
                 }
             }
 
-			ulong t1 = __rdtsc();
-			ulong t2 = __rdtsc();
-            background.testUpdate2(timePerFrame.asSeconds());
-			ulong t3 = __rdtsc();
-			result = (t3 - t2) - (t2 - t1);
+            updateFollowingBackground(&followingBackground, &window);
 
-			total += result;
-			loops++;
+            /*
+            ulong t1 = __rdtsc();
+            ulong t2 = __rdtsc();
+            //       background.testUpdate2(timePerFrame.asSeconds());
+            ulong t3 = __rdtsc();
+            result = (t3 - t2) - (t2 - t1);
 
-			backgroundHoriz.update(timePerFrame.asSeconds());
-            spritealBrew.setPosition(position);
+            total += result;
+            loops++;
+
+            //		backgroundHoriz.update(timePerFrame.asSeconds());
+            //       spritealBrew.setPosition(position);
 
             window.clear();
-            background.draw();
-            backgroundHoriz.draw();
+            //       background.draw();
+            //       backgroundHoriz.draw();
+            followingBackground.draw();
             window.draw(spritealBrew);
             window.display();
+             */
         }
 
-		std::cout << total / loops << std::endl;
+	//	std::cout << total / loops << std::endl;
 	}
 
     return 0;
