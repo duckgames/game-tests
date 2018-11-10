@@ -18,8 +18,10 @@ Background::Background(sf::RenderWindow *window, sf::Texture *backgroundTexture,
 	second.setTexture(backgroundTexture);
 
 	if (scrollAxis == X_AXIS) {
-		first.setPosition(0.0f, startPosition.y - (textureSize.y / 2));
-		second.setPosition(0.0f - (float) textureSize.x, startPosition.y - (textureSize.y / 2));
+		first.setOrigin(0.0f, textureSize.y / 2);
+		first.setPosition(0.0f, startPosition.y);
+		second.setOrigin(0.0f, textureSize.y / 2);
+		second.setPosition(0.0f - (float) textureSize.x, startPosition.y);
 		newFirst.x = first.getPosition().x;
 		newFirst.y = first.getPosition().y;
 		newSecond.x = second.getPosition().x;
@@ -29,8 +31,10 @@ Background::Background(sf::RenderWindow *window, sf::Texture *backgroundTexture,
 		scrollAxisSize = backgroundTexture->getSize().x;
 	}
 	else {
-		first.setPosition(startPosition.x - (textureSize.x / 2), 0.0f);
-		second.setPosition(startPosition.x - (textureSize.x / 2), startPosition.y - (float) textureSize.y);
+		first.setOrigin(textureSize.x / 2, 0.0f);
+		first.setPosition(startPosition.x, 0.0f);
+		second.setOrigin(textureSize.x / 2, 0.0f);
+		second.setPosition(startPosition.x, startPosition.y - (float) textureSize.y);
 		newFirst.x = first.getPosition().x;
 		newFirst.y = first.getPosition().y;
 		newSecond.x = second.getPosition().x;

@@ -37,14 +37,14 @@ int main() {
 			&window,
 			&vertTexture,
             sf::Vector2f(window.getSize().x / 2, 0.0f),
-            -1000.0f,
+            -500.0f,
 			Y_AXIS);
 
 	Background backgroundHoriz = Background(
 			&window,
 			&horizTexture,
 			sf::Vector2f(0.0f, window.getSize().y / 2),
-			-1000.0f,
+			-500.0f,
 			X_AXIS);
 
 	ulong total = 0;
@@ -91,7 +91,7 @@ int main() {
         }
 
         timeSinceLastUpdate += tickClock.restart();
-        while (timeSinceLastUpdate > timePerFrame)
+        while (timeSinceLastUpdate >= timePerFrame)
         {
             timeSinceLastUpdate -= timePerFrame;
 
@@ -124,13 +124,13 @@ int main() {
 
 			backgroundHoriz.update(timePerFrame.asSeconds());
             spritealBrew.setPosition(position);
-        }
 
-        window.clear();
-        background.draw();
-		backgroundHoriz.draw();
-        window.draw(spritealBrew);
-        window.display();
+            window.clear();
+            background.draw();
+            backgroundHoriz.draw();
+            window.draw(spritealBrew);
+            window.display();
+        }
 
 		std::cout << total / loops << std::endl;
 	}
