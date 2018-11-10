@@ -3,5 +3,5 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(untitled main.cpp background.h background.cpp)
+add_executable(untitled main.cpp background.h background.cpp following-background.cpp following-background.h)
 target_link_libraries(untitled sfml-graphics sfml-window sfml-system)
