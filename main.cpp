@@ -4,20 +4,18 @@
 
 #include "background.h"
 #include "following-background.h"
+#include "world.h"
+#include "system.h"
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 
 void updateBackground(float delta, Background *background, sf::RenderWindow *window) {
-    background.testUpdate2(delta);
-    window.clear();
-    background.draw();
-    window.display();
+    background->testUpdate2(delta);
+    background->draw();
 }
 
 void updateFollowingBackground(FollowingBackground *background, sf::RenderWindow *window) {
-    window->clear();
     background->draw();
-    window->display();
 }
 
 int main() {
@@ -26,6 +24,10 @@ int main() {
     float rotation = 0.0f;
     float speed = 1000.0f;
     unsigned int screenHeight = 1080;
+
+    World world;
+    System system(&world);
+    unsigned int jumper = world.createJumper(10.0f, 20.0f, 20.0f);
 
     sf::Texture specialBrew;
     sf::RenderWindow window(sf::VideoMode(1920, screenHeight), "SFML works!");
@@ -88,6 +90,11 @@ int main() {
                     if (event.key.code == sf::Keyboard::Escape) {
                         window.close();
                     }
+                    else if (event.key.code == sf::Keyboard::Space) {
+                        if (!world.jump[jumper].isJumping && !world.jump[jumper].isFalling) {
+                            world.jump[jumper].isJumping = true;
+                        }
+                    }
                     break;
 
                 case sf::Event::JoystickConnected:
@@ -140,7 +147,10 @@ int main() {
                 }
             }
 
+            window.clear();
             updateFollowingBackground(&followingBackground, &window);
+            system.jump(timePerFrame.asSeconds());
+            window.display();
 
             /*
             ulong t1 = __rdtsc();
