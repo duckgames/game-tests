@@ -2,3 +2,4 @@
 /cmake-build-debug/**
 /assets/**
 *.o
+libs

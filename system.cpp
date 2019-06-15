@@ -3,16 +3,20 @@
 //
 
 #include <cstdio>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include "components.h"
 #include "system.h"
 
-void System::jump(float delta) {
+void System::jumpers(float delta, sf::RenderWindow *window) {
     unsigned int entity;
     Jump *jump;
+    Draw *draw;
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
-        if((world->mask[entity] & JUMP_MASK) == JUMP_MASK) {
+        if((world->mask[entity] & JUMP_MASK | DRAW_MASK) == JUMP_MASK | DRAW_MASK) {
             jump = &(world->jump[entity]);
+            draw = &(world->draw[entity]);
 
             if (jump->isJumping) {
                 float toAdd = jump->jumpSpeed * delta;
@@ -26,7 +30,6 @@ void System::jump(float delta) {
                     jump->isFalling = true;
                     continue;
                 }
-                printf("Entity #%d is jumping...\n", entity);
             }
             if (jump->isFalling) {
                 float toSubtract = jump->fallSpeed * delta;
@@ -38,8 +41,11 @@ void System::jump(float delta) {
                     jump->currentJumpHeight = 0.0f;
                     jump->isFalling = false;
                 }
-                printf("Entity #%d is falling...\n", entity);
             }
+
+            draw->rectangleShape.setPosition(draw->rectangleShape.getPosition().x, jump->currentJumpHeight);
+            draw = &(world->draw[entity]);
+            window->draw(draw->rectangleShape);
         }
     }
 }

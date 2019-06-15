@@ -3,6 +3,7 @@
 //
 
 #include <cstdio>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include "world.h"
 
 World::World() {
@@ -30,15 +31,17 @@ void World::destroyEntity(unsigned int entity) {
     mask[entity] = COMPONENT_NONE;
 }
 
-unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed) {
+unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-    mask[entity] = COMPONENT_JUMP;
+    mask[entity] = COMPONENT_JUMP | COMPONENT_DRAW;
 
     jump[entity].maxHeight = maxHeight;
     jump[entity].jumpSpeed = jumpSpeed;
     jump[entity].fallSpeed = fallSpeed;
     jump[entity].isJumping = false;
     jump[entity].isFalling = false;
+
+    draw[entity].rectangleShape = rectangleShape;
 
     return entity;
 }

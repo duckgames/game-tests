@@ -13,11 +13,12 @@ class World {
 public:
     int mask[MAX_ENTITIES];
     Jump jump[MAX_ENTITIES];
+    Draw draw[MAX_ENTITIES];
 
     World();
     ~World() = default;
     unsigned int createEntity();
     void destroyEntity(unsigned int entity);
-    unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed);
+    unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape);
 };
 #endif //UNTITLED_WORLD_H

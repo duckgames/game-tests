@@ -27,7 +27,6 @@ int main() {
 
     World world;
     System system(&world);
-    unsigned int jumper = world.createJumper(10.0f, 20.0f, 20.0f);
 
     sf::Texture specialBrew;
     sf::RenderWindow window(sf::VideoMode(1920, screenHeight), "SFML works!");
@@ -40,6 +39,8 @@ int main() {
 
   //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
     spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
+
+    unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -149,7 +150,7 @@ int main() {
 
             window.clear();
             updateFollowingBackground(&followingBackground, &window);
-            system.jump(timePerFrame.asSeconds());
+            system.jumpers(timePerFrame.asSeconds(), &window);
             window.display();
 
             /*
