@@ -6,8 +6,11 @@
 #include "following-background.h"
 #include "world.h"
 #include "system.h"
+#include "controller.h"
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
+
+#define CONTROLLER_360_A 0
 
 void updateBackground(float delta, Background *background, sf::RenderWindow *window) {
     background->testUpdate2(delta);
@@ -16,6 +19,11 @@ void updateBackground(float delta, Background *background, sf::RenderWindow *win
 
 void updateFollowingBackground(FollowingBackground *background, sf::RenderWindow *window) {
     background->draw();
+}
+
+static void SFMLProcessGameControllerButton(GameButtonState *oldState, GameButtonState *newState, bool value) {
+    newState->endedDown = value;
+    newState->halfTransitionCount += ((newState->endedDown == oldState->endedDown) ? 0 : 1);
 }
 
 int main() {
@@ -73,12 +81,42 @@ int main() {
             -500.0f,
             screenHeight);
 
+    GameInput input[2] = {};
+    GameInput *newInput = &input[0];
+    GameInput *oldInput = &input[1];
+
+    UNTITLED_CONTROLLER_H::calibrate(&window);
+
+    printf("Action Up: %d\n", BUTTON_ACTION_UP);
+    printf("Action Down: %d\n", BUTTON_ACTION_DOWN);
+    printf("Action Left: %d\n", BUTTON_ACTION_LEFT);
+    printf("Action Right: %d\n", BUTTON_ACTION_RIGHT);
+
+    printf("Move Up: %d\n", BUTTON_MOVE_UP);
+    printf("Move Down: %d\n", BUTTON_MOVE_DOWN);
+    printf("Move Left: %d\n", BUTTON_MOVE_LEFT);
+    printf("Move Right: %d\n", BUTTON_MOVE_RIGHT);
+
+    printf("Left Shoulder: %d\n", BUTTON_LEFT_SHOULDER);
+    printf("Right Shoulder: %d\n", BUTTON_RIGHT_SHOULDER);
+
+    printf("Back: %d\n", BUTTON_BACK);
+    printf("Start: %d\n", BUTTON_START);
+
 	ulong total = 0;
 	ulong loops = 0;
 	ulong result = 0;
     while (window.isOpen() && loops < 7000)
     {
         sf::Event event;
+
+        GameControllerInput *oldController = &oldInput->controller;
+        GameControllerInput *newController = &newInput->controller;
+
+        SFMLProcessGameControllerButton(&(oldController->actionUp), &(newController->actionUp), sf::Joystick::isButtonPressed(0, CONTROLLER_360_A));
+        SFMLProcessGameControllerButton(&(oldController->actionDown), &(newController->actionDown), sf::Joystick::isButtonPressed(0, 1));
+        SFMLProcessGameControllerButton(&(oldController->actionLeft), &(newController->actionLeft), sf::Joystick::isButtonPressed(0, 2));
+        SFMLProcessGameControllerButton(&(oldController->actionRight), &(newController->actionRight), sf::Joystick::isButtonPressed(0, 3));
 
         while (window.pollEvent(event))
         {
@@ -152,6 +190,10 @@ int main() {
             updateFollowingBackground(&followingBackground, &window);
             system.jumpers(timePerFrame.asSeconds(), &window);
             window.display();
+
+            GameInput *temp = newInput;
+            newInput = oldInput;
+            oldInput = temp;
 
             /*
             ulong t1 = __rdtsc();
