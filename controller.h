@@ -8,18 +8,7 @@
 #include <string>
 
 const int NUM_BUTTONS = 10;
-/*
-const char *buttonNames[NUM_BUTTONS] = {
-        "Action Up",
-        "Action Down",
-        "Action Left",
-        "Action Right",
-        "Left Shoulder",
-        "Right Shoulder",
-        "Back",
-        "Start"
-};
-*/
+
 struct GameButtonState
 {
     int halfTransitionCount;
@@ -90,7 +79,7 @@ static void requestButtonPress(sf::RenderWindow *window, GameInput *input, GameI
     }
 }
 
-static void calibrate(sf::RenderWindow *window, GameInput *input, GameInput *oldInput) {
+static void setButtons(sf::RenderWindow *window, GameInput *input, GameInput *oldInput) {
     requestButtonPress(window, input, oldInput, &input->controller.actionUp, &oldInput->controller.actionUp, "Action Up");
     requestButtonPress(window, input, oldInput, &input->controller.actionDown, &oldInput->controller.actionDown, "Action Down");
     requestButtonPress(window, input, oldInput, &input->controller.actionLeft, &oldInput->controller.actionLeft, "Action Left");

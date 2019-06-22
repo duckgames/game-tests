@@ -10,12 +10,12 @@
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 
-void updateBackground(float delta, Background *background, sf::RenderWindow *window) {
+void updateBackground(float delta, Background *background) {
     background->testUpdate2(delta);
     background->draw();
 }
 
-void updateFollowingBackground(FollowingBackground *background, sf::RenderWindow *window) {
+void updateFollowingBackground(FollowingBackground *background) {
     background->draw();
 }
 
@@ -82,8 +82,8 @@ int main() {
     GameInput input[2] = {};
     GameInput *newInput = &input[0];
     GameInput *oldInput = &input[1];
-    
-    UNTITLED_CONTROLLER_H::calibrate(&window, newInput, oldInput);
+
+    UNTITLED_CONTROLLER_H::setButtons(&window, newInput, oldInput);
 
 	ulong total = 0;
 	ulong loops = 0;
@@ -173,7 +173,7 @@ int main() {
             }
 
             window.clear();
-            updateFollowingBackground(&followingBackground, &window);
+            updateFollowingBackground(&followingBackground);
             system.jumpers(timePerFrame.asSeconds(), &window);
             window.display();
 
