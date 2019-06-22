@@ -105,7 +105,12 @@ int main() {
                 }
             }
 
-            /*
+            SFMLProcessGameControllerButton(&oldInput->controller.moveUp, &newInput->controller.moveUp, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) < 0));
+            SFMLProcessGameControllerButton(&oldInput->controller.moveDown, &newInput->controller.moveDown, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) > 0));
+            SFMLProcessGameControllerButton(&oldInput->controller.moveLeft, &newInput->controller.moveLeft, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < 0));
+            SFMLProcessGameControllerButton(&oldInput->controller.moveRight, &newInput->controller.moveRight, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > 0));
+
+/*
             GameControllerInput *newController = &newInput->controller;
             if (newController->actionUp.endedDown)
                 printf("action up\n");
@@ -131,7 +136,19 @@ int main() {
             if (newController->start.endedDown)
                 printf("start\n");
 
-             */
+
+            if (newController->moveUp.endedDown)
+                printf("up\n");
+
+            if (newController->moveDown.endedDown)
+                printf("down\n");
+
+            if (newController->moveLeft.endedDown)
+                printf("left\n");
+
+            if (newController->moveRight.endedDown)
+                printf("right\n");
+*/
 
             if (stickAverageX > CONTROLLER_AXIS_DEADZONE || stickAverageX < -CONTROLLER_AXIS_DEADZONE) {
                 if (stickAverageX < 0) {
