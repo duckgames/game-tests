@@ -91,9 +91,6 @@ int main() {
     while (window.isOpen() && loops < 7000)
     {
         sf::Event event;
-/*
-
-*/
 
         timeSinceLastUpdate += tickClock.restart();
         while (timeSinceLastUpdate >= timePerFrame)
