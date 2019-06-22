@@ -7,22 +7,19 @@
 
 #include <string>
 
-static int BUTTON_ACTION_UP = 0;
-static int BUTTON_ACTION_DOWN = 1;
-static int BUTTON_ACTION_LEFT = 2;
-static int BUTTON_ACTION_RIGHT = 3;
-
-static int BUTTON_MOVE_UP = 4;
-static int BUTTON_MOVE_DOWN = 5;
-static int BUTTON_MOVE_LEFT = 6;
-static int BUTTON_MOVE_RIGHT = 7;
-
-static int BUTTON_LEFT_SHOULDER = 8;
-static int BUTTON_RIGHT_SHOULDER = 9;
-
-static int BUTTON_BACK = 10;
-static int BUTTON_START = 11;
-
+const int NUM_BUTTONS = 10;
+/*
+const char *buttonNames[NUM_BUTTONS] = {
+        "Action Up",
+        "Action Down",
+        "Action Left",
+        "Action Right",
+        "Left Shoulder",
+        "Right Shoulder",
+        "Back",
+        "Start"
+};
+*/
 struct GameButtonState
 {
     int halfTransitionCount;
@@ -38,7 +35,7 @@ struct GameControllerInput
 
     union
     {
-        GameButtonState buttons[12];
+        GameButtonState buttons[NUM_BUTTONS];
         struct
         {
             GameButtonState actionUp;
@@ -57,7 +54,7 @@ struct GameControllerInput
             GameButtonState back;
             GameButtonState start;
 
-            // NOTE(casey): All buttons must be added above this line
+            // NOTE: All buttons must be added above this line
 
             GameButtonState terminator;
         };
@@ -66,15 +63,16 @@ struct GameControllerInput
 
 typedef struct GameInput
 {
+    GameButtonState *buttons[NUM_BUTTONS];
+    GameControllerInput controller;
+
     GameButtonState mouseButtons[3];
     int mouseX, mouseY, mouseZ;
-
-    GameControllerInput controller;
 
     float dtForFrame;
 };
 
-static int requestButtonPress(sf::RenderWindow *window, char *buttonName) {
+static void requestButtonPress(sf::RenderWindow *window, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
     sf::Event event;
 
     bool waiting = true;
@@ -83,28 +81,24 @@ static int requestButtonPress(sf::RenderWindow *window, char *buttonName) {
         while (window->pollEvent(event)) {
             switch (event.type) {
                 case sf::Event::JoystickButtonPressed:
-                    return event.joystickButton.button;
+                    input->buttons[event.joystickButton.button] = oldGameButtonState;
+                    oldInput->buttons[event.joystickButton.button] = gameButtonState;
+                    waiting = false;
+                    break;
             }
         }
     }
 }
 
-static void calibrate(sf::RenderWindow *window) {
-    BUTTON_ACTION_UP = requestButtonPress(window, "Action Up");
-    BUTTON_ACTION_DOWN = requestButtonPress(window, "Action Down");
-    BUTTON_ACTION_LEFT = requestButtonPress(window, "Action Left");
-    BUTTON_ACTION_RIGHT = requestButtonPress(window, "Action Right");
-    
-    BUTTON_MOVE_UP = requestButtonPress(window, "Move Up");
-    BUTTON_MOVE_DOWN = requestButtonPress(window, "Move Down");
-    BUTTON_MOVE_LEFT = requestButtonPress(window, "Move Left");
-    BUTTON_MOVE_RIGHT = requestButtonPress(window, "Move Right");
-
-    BUTTON_LEFT_SHOULDER = requestButtonPress(window, "Left Shoulder");
-    BUTTON_RIGHT_SHOULDER = requestButtonPress(window, "Right Shoulder");
-
-    BUTTON_BACK = requestButtonPress(window, "Back");
-    BUTTON_START = requestButtonPress(window, "Start");
+static void calibrate(sf::RenderWindow *window, GameInput *input, GameInput *oldInput) {
+    requestButtonPress(window, input, oldInput, &input->controller.actionUp, &oldInput->controller.actionUp, "Action Up");
+    requestButtonPress(window, input, oldInput, &input->controller.actionDown, &oldInput->controller.actionDown, "Action Down");
+    requestButtonPress(window, input, oldInput, &input->controller.actionLeft, &oldInput->controller.actionLeft, "Action Left");
+    requestButtonPress(window, input, oldInput, &input->controller.actionRight, &oldInput->controller.actionRight, "Action Right");
+    requestButtonPress(window, input, oldInput, &input->controller.leftShoulder, &oldInput->controller.leftShoulder, "Left Shoulder");
+    requestButtonPress(window, input, oldInput, &input->controller.rightShoulder, &oldInput->controller.rightShoulder, "Right Shoulder");
+    requestButtonPress(window, input, oldInput, &input->controller.back, &oldInput->controller.back, "Back");
+    requestButtonPress(window, input, oldInput, &input->controller.start, &oldInput->controller.start, "Start");
 }
 
 #endif //UNTITLED_CONTROLLER_H

@@ -10,8 +10,6 @@
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 
-#define CONTROLLER_360_A 0
-
 void updateBackground(float delta, Background *background, sf::RenderWindow *window) {
     background->testUpdate2(delta);
     background->draw();
@@ -84,24 +82,8 @@ int main() {
     GameInput input[2] = {};
     GameInput *newInput = &input[0];
     GameInput *oldInput = &input[1];
-
-    UNTITLED_CONTROLLER_H::calibrate(&window);
-
-    printf("Action Up: %d\n", BUTTON_ACTION_UP);
-    printf("Action Down: %d\n", BUTTON_ACTION_DOWN);
-    printf("Action Left: %d\n", BUTTON_ACTION_LEFT);
-    printf("Action Right: %d\n", BUTTON_ACTION_RIGHT);
-
-    printf("Move Up: %d\n", BUTTON_MOVE_UP);
-    printf("Move Down: %d\n", BUTTON_MOVE_DOWN);
-    printf("Move Left: %d\n", BUTTON_MOVE_LEFT);
-    printf("Move Right: %d\n", BUTTON_MOVE_RIGHT);
-
-    printf("Left Shoulder: %d\n", BUTTON_LEFT_SHOULDER);
-    printf("Right Shoulder: %d\n", BUTTON_RIGHT_SHOULDER);
-
-    printf("Back: %d\n", BUTTON_BACK);
-    printf("Start: %d\n", BUTTON_START);
+    
+    UNTITLED_CONTROLLER_H::calibrate(&window, newInput, oldInput);
 
 	ulong total = 0;
 	ulong loops = 0;
@@ -109,60 +91,50 @@ int main() {
     while (window.isOpen() && loops < 7000)
     {
         sf::Event event;
+/*
 
-        GameControllerInput *oldController = &oldInput->controller;
-        GameControllerInput *newController = &newInput->controller;
-
-        SFMLProcessGameControllerButton(&(oldController->actionUp), &(newController->actionUp), sf::Joystick::isButtonPressed(0, CONTROLLER_360_A));
-        SFMLProcessGameControllerButton(&(oldController->actionDown), &(newController->actionDown), sf::Joystick::isButtonPressed(0, 1));
-        SFMLProcessGameControllerButton(&(oldController->actionLeft), &(newController->actionLeft), sf::Joystick::isButtonPressed(0, 2));
-        SFMLProcessGameControllerButton(&(oldController->actionRight), &(newController->actionRight), sf::Joystick::isButtonPressed(0, 3));
-
-        while (window.pollEvent(event))
-        {
-            switch (event.type) {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
-
-                case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::Escape) {
-                        window.close();
-                    }
-                    else if (event.key.code == sf::Keyboard::Space) {
-                        if (!world.jump[jumper].isJumping && !world.jump[jumper].isFalling) {
-                            world.jump[jumper].isJumping = true;
-                        }
-                    }
-                    break;
-
-                case sf::Event::JoystickConnected:
-                    break;
-
-                case sf::Event::JoystickDisconnected:
-                    break;
-
-                case sf::Event::JoystickMoved:
-                    if (event.joystickMove.axis == sf::Joystick::Axis::X) {
-                        stickAverageX = event.joystickMove.position;
-                    }
-                    else if (event.joystickMove.axis == sf::Joystick::Axis::Y) {
-                        stickAverageY = event.joystickMove.position;
-                    }
-                    else if (event.joystickMove.axis == sf::Joystick::Axis::Z) {
-                        rotation -= (100 + event.joystickMove.position) / 200;
-                    }
-                    else if (event.joystickMove.axis == sf::Joystick::Axis::R) {
-                        rotation += (100 + event.joystickMove.position) / 200;
-                    }
-                    break;
-            }
-        }
+*/
 
         timeSinceLastUpdate += tickClock.restart();
         while (timeSinceLastUpdate >= timePerFrame)
         {
             timeSinceLastUpdate -= timePerFrame;
+
+            window.pollEvent(event);
+
+            for (int i = 0; i < 10; i++) {
+                if (oldInput->buttons[i] != nullptr && newInput->buttons[i] != nullptr) {
+                    SFMLProcessGameControllerButton(oldInput->buttons[i], newInput->buttons[i], sf::Joystick::isButtonPressed(0, i));
+                }
+            }
+
+            /*
+            GameControllerInput *newController = &newInput->controller;
+            if (newController->actionUp.endedDown)
+                printf("action up\n");
+
+            if (newController->actionDown.endedDown)
+                printf("action down\n");
+
+            if (newController->actionLeft.endedDown)
+                printf("action left\n");
+
+            if (newController->actionRight.endedDown)
+                printf("action right\n");
+
+            if (newController->leftShoulder.endedDown)
+                printf("left shoulder\n");
+
+            if (newController->rightShoulder.endedDown)
+                printf("right shoulder\n");
+
+            if (newController->back.endedDown)
+                printf("back\n");
+
+            if (newController->start.endedDown)
+                printf("start\n");
+
+             */
 
             if (stickAverageX > CONTROLLER_AXIS_DEADZONE || stickAverageX < -CONTROLLER_AXIS_DEADZONE) {
                 if (stickAverageX < 0) {
