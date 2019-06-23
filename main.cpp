@@ -106,16 +106,29 @@ int main() {
 
             window.pollEvent(event);
 
+            // Controller button input
             for (int i = 0; i < 10; i++) {
                 if (oldInput->buttons[i] != nullptr && newInput->buttons[i] != nullptr) {
                     SFMLProcessGameControllerButton(oldInput->buttons[i], newInput->buttons[i], sf::Joystick::isButtonPressed(0, i));
                 }
             }
 
+            // Dpad input
             SFMLProcessGameControllerButton(&oldInput->controller.moveUp, &newInput->controller.moveUp, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) < 0));
             SFMLProcessGameControllerButton(&oldInput->controller.moveDown, &newInput->controller.moveDown, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) > 0));
             SFMLProcessGameControllerButton(&oldInput->controller.moveLeft, &newInput->controller.moveLeft, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < 0));
             SFMLProcessGameControllerButton(&oldInput->controller.moveRight, &newInput->controller.moveRight, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > 0));
+
+            // Analog stick input
+            newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::X));
+            newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
+
+            newInput->controller.stickAverageU = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::U));
+            newInput->controller.stickAverageV = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::V));
+
+            // Analog trigger input
+            newInput->controller.stickAverageR = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::R));
+            newInput->controller.stickAverageZ = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Z));
 
 /*
             GameControllerInput *newController = &newInput->controller;
@@ -155,19 +168,16 @@ int main() {
 
             if (newController->moveRight.endedDown)
                 printf("right\n");
-*/
 
-            newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::X));
-            newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
+            printf("axis x: %f\n", newInput->controller.stickAverageX);
+            printf("axis y: %f\n", newInput->controller.stickAverageY);
 
-            newInput->controller.stickAverageU = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::U));
-            newInput->controller.stickAverageV = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::V));
-
-            newInput->controller.stickAverageR = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::R));
-            newInput->controller.stickAverageZ = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Z));
+            printf("axis u: %f\n", newInput->controller.stickAverageU);
+            printf("axis v: %f\n", newInput->controller.stickAverageV);
 
             printf("axis r: %f\n", newInput->controller.stickAverageR);
             printf("axis z: %f\n", newInput->controller.stickAverageZ);
+*/
 
             window.clear();
             updateFollowingBackground(&followingBackground);
