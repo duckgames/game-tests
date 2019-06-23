@@ -107,6 +107,25 @@ int main() {
         while (timeSinceLastUpdate >= timePerFrame) {
             timeSinceLastUpdate -= timePerFrame;
 
+            newInput->mouseX = sf::Mouse::getPosition(window).x;
+            newInput->mouseY = sf::Mouse::getPosition(window).y;
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[0], &newInput->mouseButtons[0], sf::Mouse::isButtonPressed(sf::Mouse::Left));
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[1], &newInput->mouseButtons[1], sf::Mouse::isButtonPressed(sf::Mouse::Middle));
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[2], &newInput->mouseButtons[2], sf::Mouse::isButtonPressed(sf::Mouse::Right));
+
+/*
+            printf("Mouse x: %d\n", newInput->mouseX);
+            printf("Mouse y: %d\n", newInput->mouseY);
+
+            if (newInput->mouseButtons[0].endedDown)
+                printf("Mouse 1 down\n");
+
+            if (newInput->mouseButtons[1].endedDown)
+                printf("Mouse 2 down\n");
+
+            if (newInput->mouseButtons[2].endedDown)
+                printf("Mouse 3 down\n");
+*/
             sf::Joystick::update();
 
             for (int i = 0; i < MAX_CONTROLLERS; i++) {
@@ -147,6 +166,7 @@ int main() {
                     newInput->controllers[i].stickAverageZ = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::Z));
 
+                    /*
                     GameControllerInput *newController = &newInput->controllers[i];
                     if (newController->actionUp.endedDown)
                         printf("CONTROLLER %d action up\n", i);
@@ -184,7 +204,7 @@ int main() {
 
                     if (newController->moveRight.endedDown)
                         printf("CONTROLLER %d right\n", i);
-/*
+
                     printf("axis x: %f\n", newInput->controllers.stickAverageX);
                     printf("axis y: %f\n", newInput->controllers.stickAverageY);
 
