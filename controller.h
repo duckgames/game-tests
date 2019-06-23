@@ -81,9 +81,11 @@ static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, G
         while (window->pollEvent(event)) {
             switch (event.type) {
                 case sf::Event::JoystickButtonPressed:
-                    input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
-                    oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
-                    waiting = false;
+                    if (event.joystickButton.joystickId == controllerNumber) {
+                        input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
+                        oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
+                        waiting = false;
+                    }
                     break;
             }
         }
