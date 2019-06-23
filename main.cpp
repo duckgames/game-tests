@@ -104,7 +104,7 @@ int main() {
         {
             timeSinceLastUpdate -= timePerFrame;
 
-            window.pollEvent(event);
+            sf::Joystick::update();
 
             // Controller button input
             for (int i = 0; i < 10; i++) {
@@ -120,6 +120,7 @@ int main() {
             SFMLProcessGameControllerButton(&oldInput->controller.moveRight, &newInput->controller.moveRight, (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > 0));
 
             // Analog stick input
+
             newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::X));
             newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
 
