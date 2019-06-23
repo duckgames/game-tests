@@ -24,6 +24,13 @@ static void SFMLProcessGameControllerButton(GameButtonState *oldState, GameButto
     newState->halfTransitionCount += ((newState->endedDown == oldState->endedDown) ? 0 : 1);
 }
 
+static float SFMLProcessGameControllerAxis(float value) {
+    if (value < - CONTROLLER_AXIS_DEADZONE || value > CONTROLLER_AXIS_DEADZONE) {
+        return value;
+    }
+    return 0.0f;
+}
+
 int main() {
     float stickAverageX = 0.0f;
     float stickAverageY = 0.0f;
@@ -150,27 +157,11 @@ int main() {
                 printf("right\n");
 */
 
-            if (stickAverageX > CONTROLLER_AXIS_DEADZONE || stickAverageX < -CONTROLLER_AXIS_DEADZONE) {
-                if (stickAverageX < 0) {
-                //    position.x += -speed * timePerFrame.asSeconds();
-                    followingBackground.moveX(timePerFrame.asSeconds(), false);
-                }
-                else {
-                //    position.x += speed * timePerFrame.asSeconds();
-                    followingBackground.moveX(timePerFrame.asSeconds(), true);
-                }
-            }
+            newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::X));
+            newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
 
-            if (stickAverageY > CONTROLLER_AXIS_DEADZONE || stickAverageY < -CONTROLLER_AXIS_DEADZONE) {
-                if (stickAverageY < 0) {
-                //    position.y += -speed * timePerFrame.asSeconds();
-                    followingBackground.moveY(timePerFrame.asSeconds(), false);
-                }
-                else {
-                //    position.y += speed * timePerFrame.asSeconds();
-                    followingBackground.moveY(timePerFrame.asSeconds(), true);
-                }
-            }
+            printf("axis x: %f\n", newInput->controller.stickAverageX);
+            printf("axis y: %f\n", newInput->controller.stickAverageY);
 
             window.clear();
             updateFollowingBackground(&followingBackground);
