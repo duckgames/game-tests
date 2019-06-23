@@ -59,8 +59,8 @@ struct GameControllerInput
 
 typedef struct GameInput
 {
-    GameButtonState *buttons[NUM_BUTTONS];
-    GameControllerInput controller;
+    GameButtonState *buttons[4][NUM_BUTTONS];
+    GameControllerInput controllers[4];
 
     GameButtonState mouseButtons[3];
     int mouseX, mouseY, mouseZ;
@@ -68,17 +68,21 @@ typedef struct GameInput
     float dtForFrame;
 };
 
-static void requestButtonPress(sf::RenderWindow *window, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
+inline GameControllerInput *getController(GameInput *input, uint controllerIndex) {
+    return &input->controllers[controllerIndex];
+}
+
+static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
     sf::Event event;
 
     bool waiting = true;
-    printf("Press %s\n ", buttonName);
+    printf("Press Controller %d %s\n ", controllerNumber, buttonName);
     while (waiting) {
         while (window->pollEvent(event)) {
             switch (event.type) {
                 case sf::Event::JoystickButtonPressed:
-                    input->buttons[event.joystickButton.button] = oldGameButtonState;
-                    oldInput->buttons[event.joystickButton.button] = gameButtonState;
+                    input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
+                    oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
                     waiting = false;
                     break;
             }
@@ -86,15 +90,15 @@ static void requestButtonPress(sf::RenderWindow *window, GameInput *input, GameI
     }
 }
 
-static void setButtons(sf::RenderWindow *window, GameInput *input, GameInput *oldInput) {
-    requestButtonPress(window, input, oldInput, &input->controller.actionUp, &oldInput->controller.actionUp, "Action Up");
-    requestButtonPress(window, input, oldInput, &input->controller.actionDown, &oldInput->controller.actionDown, "Action Down");
-    requestButtonPress(window, input, oldInput, &input->controller.actionLeft, &oldInput->controller.actionLeft, "Action Left");
-    requestButtonPress(window, input, oldInput, &input->controller.actionRight, &oldInput->controller.actionRight, "Action Right");
-    requestButtonPress(window, input, oldInput, &input->controller.leftShoulder, &oldInput->controller.leftShoulder, "Left Shoulder");
-    requestButtonPress(window, input, oldInput, &input->controller.rightShoulder, &oldInput->controller.rightShoulder, "Right Shoulder");
-    requestButtonPress(window, input, oldInput, &input->controller.back, &oldInput->controller.back, "Back");
-    requestButtonPress(window, input, oldInput, &input->controller.start, &oldInput->controller.start, "Start");
+static void setButtons(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput) {
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionUp, &oldInput->controllers[controllerNumber].actionUp, "Action Up");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionDown, &oldInput->controllers[controllerNumber].actionDown, "Action Down");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionLeft, &oldInput->controllers[controllerNumber].actionLeft, "Action Left");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionRight, &oldInput->controllers[controllerNumber].actionRight, "Action Right");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].leftShoulder, &oldInput->controllers[controllerNumber].leftShoulder, "Left Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].rightShoulder, &oldInput->controllers[controllerNumber].rightShoulder, "Right Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].back, &oldInput->controllers[controllerNumber].back, "Back");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
 }
 
 #endif //UNTITLED_CONTROLLER_H

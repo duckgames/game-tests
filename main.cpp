@@ -91,7 +91,11 @@ int main() {
     GameInput *newInput = &input[0];
     GameInput *oldInput = &input[1];
 
-    UNTITLED_CONTROLLER_H::setButtons(&window, newInput, oldInput);
+    for (int i = 0; i < MAX_CONTROLLERS; i++) {
+        if (sf::Joystick::isConnected(i)) {
+            UNTITLED_CONTROLLER_H::setButtons(&window, i, newInput, oldInput);
+        }
+    }
 
     ulong total = 0;
     ulong loops = 0;
@@ -109,86 +113,86 @@ int main() {
                 if (sf::Joystick::isConnected(i)) {
                     // Controller button input
                     for (int j = 0; j < 10; j++) {
-                        if (oldInput->buttons[j] != nullptr && newInput->buttons[j] != nullptr) {
-                            SFMLProcessGameControllerButton(oldInput->buttons[j], newInput->buttons[j],
+                        if (oldInput->buttons[i][j] != nullptr && newInput->buttons[i][j] != nullptr) {
+                            SFMLProcessGameControllerButton(oldInput->buttons[i][j], newInput->buttons[i][j],
                                                             sf::Joystick::isButtonPressed(i, j));
                         }
                     }
 
                     // Dpad input
-                    SFMLProcessGameControllerButton(&oldInput->controller.moveUp, &newInput->controller.moveUp,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveUp, &newInput->controllers[i].moveUp,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovY) < 0));
-                    SFMLProcessGameControllerButton(&oldInput->controller.moveDown, &newInput->controller.moveDown,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveDown, &newInput->controllers[i].moveDown,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovY) > 0));
-                    SFMLProcessGameControllerButton(&oldInput->controller.moveLeft, &newInput->controller.moveLeft,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveLeft, &newInput->controllers[i].moveLeft,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovX) < 0));
-                    SFMLProcessGameControllerButton(&oldInput->controller.moveRight, &newInput->controller.moveRight,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveRight, &newInput->controllers[i].moveRight,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovX) > 0));
 
                     // Analog stick input
 
-                    newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageX = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::X));
-                    newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageY = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::Y));
 
-                    newInput->controller.stickAverageU = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageU = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::U));
-                    newInput->controller.stickAverageV = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageV = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::V));
 
                     // Analog trigger input
-                    newInput->controller.stickAverageR = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageR = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::R));
-                    newInput->controller.stickAverageZ = SFMLProcessGameControllerAxis(
+                    newInput->controllers[i].stickAverageZ = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::Z));
-/*
-                    GameControllerInput *newController = &newInput->controller;
+
+                    GameControllerInput *newController = &newInput->controllers[i];
                     if (newController->actionUp.endedDown)
-                        printf("action up\n");
+                        printf("CONTROLLER %d action up\n", i);
 
                     if (newController->actionDown.endedDown)
-                        printf("action down\n");
+                        printf("CONTROLLER %d action down\n", i);
 
                     if (newController->actionLeft.endedDown)
-                        printf("action left\n");
+                        printf("CONTROLLER %d action left\n", i);
 
                     if (newController->actionRight.endedDown)
-                        printf("action right\n");
+                        printf("CONTROLLER %d action right\n", i);
 
                     if (newController->leftShoulder.endedDown)
-                        printf("left shoulder\n");
+                        printf("CONTROLLER %d left shoulder\n", i);
 
                     if (newController->rightShoulder.endedDown)
-                        printf("right shoulder\n");
+                        printf("CONTROLLER %d right shoulder\n", i);
 
                     if (newController->back.endedDown)
-                        printf("back\n");
+                        printf("CONTROLLER %d back\n", i);
 
                     if (newController->start.endedDown)
-                        printf("start\n");
+                        printf("CONTROLLER %d start\n", i);
 
 
                     if (newController->moveUp.endedDown)
-                        printf("up\n");
+                        printf("CONTROLLER %d up\n", i);
 
                     if (newController->moveDown.endedDown)
-                        printf("down\n");
+                        printf("CONTROLLER %d down\n", i);
 
                     if (newController->moveLeft.endedDown)
-                        printf("left\n");
+                        printf("CONTROLLER %d left\n", i);
 
                     if (newController->moveRight.endedDown)
-                        printf("right\n");
+                        printf("CONTROLLER %d right\n", i);
+/*
+                    printf("axis x: %f\n", newInput->controllers.stickAverageX);
+                    printf("axis y: %f\n", newInput->controllers.stickAverageY);
 
-                    printf("axis x: %f\n", newInput->controller.stickAverageX);
-                    printf("axis y: %f\n", newInput->controller.stickAverageY);
+                    printf("axis u: %f\n", newInput->controllers.stickAverageU);
+                    printf("axis v: %f\n", newInput->controllers.stickAverageV);
 
-                    printf("axis u: %f\n", newInput->controller.stickAverageU);
-                    printf("axis v: %f\n", newInput->controller.stickAverageV);
-
-                    printf("axis r: %f\n", newInput->controller.stickAverageR);
-                    printf("axis z: %f\n", newInput->controller.stickAverageZ);
+                    printf("axis r: %f\n", newInput->controllers.stickAverageR);
+                    printf("axis z: %f\n", newInput->controllers.stickAverageZ);
 */
                 }
             }
