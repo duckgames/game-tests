@@ -19,8 +19,12 @@ struct GameControllerInput
 {
     bool isConnected;
     bool isAnalog;
+
     float stickAverageX;
     float stickAverageY;
+
+    float stickAverageU;
+    float stickAverageV;
 
     union
     {

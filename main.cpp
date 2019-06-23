@@ -160,8 +160,14 @@ int main() {
             newInput->controller.stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::X));
             newInput->controller.stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
 
+            newInput->controller.stickAverageU = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::U));
+            newInput->controller.stickAverageV = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(0, sf::Joystick::V));
+
             printf("axis x: %f\n", newInput->controller.stickAverageX);
             printf("axis y: %f\n", newInput->controller.stickAverageY);
+
+            printf("axis u: %f\n", newInput->controller.stickAverageU);
+            printf("axis v: %f\n", newInput->controller.stickAverageV);
 
             window.clear();
             updateFollowingBackground(&followingBackground);
