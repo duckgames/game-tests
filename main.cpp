@@ -107,6 +107,41 @@ int main() {
         while (timeSinceLastUpdate >= timePerFrame) {
             timeSinceLastUpdate -= timePerFrame;
 
+            // Check keys which don't map to game controller buttons here
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                    window.close();
+            }
+
+            // Check keys which map to game controller buttons here
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionUp, &newInput->keyboard.actionUp, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown, sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
+
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp, sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveDown, &newInput->keyboard.moveDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveLeft, &newInput->keyboard.moveLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveRight, &newInput->keyboard.moveRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
+
+            SFMLProcessGameControllerButton(&oldInput->keyboard.leftShoulder, &newInput->keyboard.leftShoulder, sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.rightShoulder, &newInput->keyboard.rightShoulder, sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+
+            SFMLProcessGameControllerButton(&oldInput->keyboard.back, &newInput->keyboard.back, sf::Keyboard::isKeyPressed(sf::Keyboard::F2));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.start, &newInput->keyboard.start, sf::Keyboard::isKeyPressed(sf::Keyboard::F1));
+/*
+            if (newInput->keyboard.moveUp.endedDown)
+                printf("KEYBOARD up\n");
+
+            if (newInput->keyboard.moveDown.endedDown)
+                printf("KEYBOARD down\n");
+
+            if (newInput->keyboard.moveLeft.endedDown)
+                printf("KEYBOARD left\n");
+
+            if (newInput->keyboard.moveRight.endedDown)
+                printf("KEYBOARD right\n");
+*/
             newInput->mouseX = sf::Mouse::getPosition(window).x;
             newInput->mouseY = sf::Mouse::getPosition(window).y;
             SFMLProcessGameControllerButton(&oldInput->mouseButtons[0], &newInput->mouseButtons[0], sf::Mouse::isButtonPressed(sf::Mouse::Left));
@@ -126,6 +161,7 @@ int main() {
             if (newInput->mouseButtons[2].endedDown)
                 printf("Mouse 3 down\n");
 */
+
             sf::Joystick::update();
 
             for (int i = 0; i < MAX_CONTROLLERS; i++) {

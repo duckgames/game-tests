@@ -62,6 +62,8 @@ typedef struct GameInput
     GameButtonState *buttons[4][NUM_BUTTONS];
     GameControllerInput controllers[4];
 
+    GameControllerInput keyboard;
+
     GameButtonState mouseButtons[3];
     int mouseX, mouseY, mouseZ;
 
