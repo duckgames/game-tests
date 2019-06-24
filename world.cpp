@@ -50,6 +50,8 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     unsigned int entity = createEntity();
     mask[entity] = COMPONENT_DRAW | COMPONENT_POSITION | COMPONENT_CONTROLLABLE;
 
+    rectangleShape.setPosition(startX, startY);
+
     draw[entity].rectangleShape = rectangleShape;
 
     position[entity].x = startX;
