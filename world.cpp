@@ -45,3 +45,18 @@ unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpe
 
     return entity;
 }
+
+unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
+    unsigned int entity = createEntity();
+    mask[entity] = COMPONENT_DRAW | COMPONENT_POSITION | COMPONENT_CONTROLLABLE;
+
+    draw[entity].rectangleShape = rectangleShape;
+
+    position[entity].x = startX;
+    position[entity].y = startY;
+
+    controllable[entity].xSpeed = xSpeed;
+    controllable[entity].ySpeed = ySpeed;
+
+    return entity;
+}
