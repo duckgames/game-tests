@@ -42,8 +42,8 @@ static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, G
             switch (event.type) {
                 case sf::Event::JoystickButtonPressed:
                     if (event.joystickButton.joystickId == controllerNumber) {
-                        input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
-                        oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
+                        input->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
+                        oldInput->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
                         waiting = false;
                     }
                     break;
