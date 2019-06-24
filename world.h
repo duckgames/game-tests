@@ -14,11 +14,14 @@ public:
     int mask[MAX_ENTITIES];
     Jump jump[MAX_ENTITIES];
     Draw draw[MAX_ENTITIES];
+    Position position[MAX_ENTITIES];
+    Controllable controllable[MAX_ENTITIES];
 
     World();
     ~World() = default;
     unsigned int createEntity();
     void destroyEntity(unsigned int entity);
     unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape);
+    unsigned int createControllable()
 };
 #endif //UNTITLED_WORLD_H

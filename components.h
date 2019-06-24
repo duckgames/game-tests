@@ -11,7 +11,9 @@ typedef enum
 {
     COMPONENT_NONE = 0,
     COMPONENT_JUMP = 1 << 0,
-    COMPONENT_DRAW = 2 << 0
+    COMPONENT_DRAW = 2 << 0,
+    COMPONENT_POSITION = 3 << 0,
+    COMPONENT_CONTROLLABLE = 4 << 0
 };
 
 typedef struct {
@@ -26,5 +28,15 @@ typedef struct {
 typedef struct {
     sf::RectangleShape rectangleShape;
 } Draw;
+
+typedef struct {
+    float x;
+    float y;
+} Position;
+
+typedef struct {
+    float xSpeed;
+    float ySpeed;
+} Controllable;
 
 #endif //UNTITLED_COMPONENTS_H

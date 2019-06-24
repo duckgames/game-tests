@@ -7,6 +7,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "components.h"
 #include "system.h"
+#include "controller.h"
 
 void System::jumpers(float delta, sf::RenderWindow *window) {
     unsigned int entity;
@@ -44,6 +45,28 @@ void System::jumpers(float delta, sf::RenderWindow *window) {
             }
 
             draw->rectangleShape.setPosition(draw->rectangleShape.getPosition().x, jump->currentJumpHeight);
+            draw = &(world->draw[entity]);
+            window->draw(draw->rectangleShape);
+        }
+    }
+}
+
+void System::updateControllables(float delta, GameControllerInput *input, sf::RenderWindow *window) {
+    unsigned int entity;
+    Draw *draw;
+    Position *position;
+    Controllable *controllable;
+
+    for (entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if ((world->mask[entity] & DRAW_MASK | POSITION_MASK | CONTROLLABLE_MASK) == DRAW_MASK | POSITION_MASK | CONTROLLABLE_MASK) {
+            draw = &(world->draw[entity]);
+            position = &(world->position[entity]);
+            controllable = &(world->controllable[entity]);
+
+            position->x += (input->stickAverageX * controllable->xSpeed) * delta;
+            position->y += (input->stickAverageY * controllable->ySpeed) * delta;
+
+            draw->rectangleShape.setPosition(position->x, position->y);
             draw = &(world->draw[entity]);
             window->draw(draw->rectangleShape);
         }
