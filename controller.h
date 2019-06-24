@@ -74,24 +74,4 @@ inline GameControllerInput *getController(GameInput *input, uint controllerIndex
     return &input->controllers[controllerIndex];
 }
 
-static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
-    sf::Event event;
-
-    bool waiting = true;
-    printf("Press Controller %d %s\n ", controllerNumber, buttonName);
-    while (waiting) {
-        while (window->pollEvent(event)) {
-            switch (event.type) {
-                case sf::Event::JoystickButtonPressed:
-                    if (event.joystickButton.joystickId == controllerNumber) {
-                        input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
-                        oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
-                        waiting = false;
-                    }
-                    break;
-            }
-        }
-    }
-}
-
 #endif //UNTITLED_CONTROLLER_H

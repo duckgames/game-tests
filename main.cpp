@@ -32,6 +32,26 @@ static float SFMLProcessGameControllerAxis(float value) {
     return 0.0f;
 }
 
+static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
+    sf::Event event;
+
+    bool waiting = true;
+    printf("Press Controller %d %s\n ", controllerNumber, buttonName);
+    while (waiting) {
+        while (window->pollEvent(event)) {
+            switch (event.type) {
+                case sf::Event::JoystickButtonPressed:
+                    if (event.joystickButton.joystickId == controllerNumber) {
+                        input->buttons[controllerNumber][event.joystickButton.button] = oldGameButtonState;
+                        oldInput->buttons[controllerNumber][event.joystickButton.button] = gameButtonState;
+                        waiting = false;
+                    }
+                    break;
+            }
+        }
+    }
+}
+
 static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput) {
     requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionUp, &oldInput->controllers[controllerNumber].actionUp, "Action Up");
     requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionDown, &oldInput->controllers[controllerNumber].actionDown, "Action Down");
