@@ -83,9 +83,11 @@ int main() {
     spritealBrew.setTexture(&specialBrew, true);
 
     //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
-    spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
+   // spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
 
-    unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
+   // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
+
+    world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -272,21 +274,22 @@ int main() {
                     if (newController->moveRight.endedDown)
                         printf("CONTROLLER %d right\n", i);
 
-                    printf("axis x: %f\n", newInput->controllers.stickAverageX);
-                    printf("axis y: %f\n", newInput->controllers.stickAverageY);
+                    printf("controller %d, axis x: %f\n", i, newInput->controllers[i].stickAverageX);
+                    printf("controller %d, axis y: %f\n", i, newInput->controllers[i].stickAverageY);
 
-                    printf("axis u: %f\n", newInput->controllers.stickAverageU);
-                    printf("axis v: %f\n", newInput->controllers.stickAverageV);
+                    printf("controller %d, axis u: %f\n", i, newInput->controllers[i].stickAverageU);
+                    printf("controller %d, axis v: %f\n", i, newInput->controllers[i].stickAverageV);
 
-                    printf("axis r: %f\n", newInput->controllers.stickAverageR);
-                    printf("axis z: %f\n", newInput->controllers.stickAverageZ);
+                    printf("controller %d, axis r: %f\n", i, newInput->controllers[i].stickAverageR);
+                    printf("controller %d, axis z: %f\n", i, newInput->controllers[i].stickAverageZ);
 */
                 }
             }
 
             window.clear();
             updateFollowingBackground(&followingBackground);
-            system.jumpers(timePerFrame.asSeconds(), &window);
+        //    system.jumpers(timePerFrame.asSeconds(), &window);
+            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &window);
             window.display();
 
             GameInput *temp = newInput;
