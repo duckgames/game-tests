@@ -32,6 +32,17 @@ static float SFMLProcessGameControllerAxis(float value) {
     return 0.0f;
 }
 
+static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput) {
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionUp, &oldInput->controllers[controllerNumber].actionUp, "Action Up");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionDown, &oldInput->controllers[controllerNumber].actionDown, "Action Down");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionLeft, &oldInput->controllers[controllerNumber].actionLeft, "Action Left");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionRight, &oldInput->controllers[controllerNumber].actionRight, "Action Right");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].leftShoulder, &oldInput->controllers[controllerNumber].leftShoulder, "Left Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].rightShoulder, &oldInput->controllers[controllerNumber].rightShoulder, "Right Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].back, &oldInput->controllers[controllerNumber].back, "Back");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
+}
+
 int main() {
     float stickAverageX = 0.0f;
     float stickAverageY = 0.0f;
@@ -93,7 +104,7 @@ int main() {
 
     for (int i = 0; i < MAX_CONTROLLERS; i++) {
         if (sf::Joystick::isConnected(i)) {
-            UNTITLED_CONTROLLER_H::setButtons(&window, i, newInput, oldInput);
+            SFMLSetButtons(&window, i, newInput, oldInput);
         }
     }
 
@@ -202,7 +213,7 @@ int main() {
                     newInput->controllers[i].stickAverageZ = SFMLProcessGameControllerAxis(
                             sf::Joystick::getAxisPosition(i, sf::Joystick::Z));
 
-                    /*
+/*
                     GameControllerInput *newController = &newInput->controllers[i];
                     if (newController->actionUp.endedDown)
                         printf("CONTROLLER %d action up\n", i);
