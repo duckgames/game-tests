@@ -52,6 +52,8 @@ void System::jumpers(float delta, sf::RenderWindow *window) {
     }
 }
 
+// Note there is a nullptr check on the keyboard input - this is so keyboard input can be disabled by passing a nullptr
+// for the keyboardInput parameter.
 void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput, sf::RenderWindow *window) {
     unsigned int entity;
     Draw *draw;
