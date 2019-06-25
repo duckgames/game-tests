@@ -207,7 +207,7 @@ int main() {
                         }
                     }
 
-                    // Dpad input
+                    // Dpad input as button
                     SFMLProcessGameControllerButton(&oldInput->controllers[i].moveUp, &newInput->controllers[i].moveUp,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovY) < 0));
                     SFMLProcessGameControllerButton(&oldInput->controllers[i].moveDown, &newInput->controllers[i].moveDown,
@@ -217,17 +217,17 @@ int main() {
                     SFMLProcessGameControllerButton(&oldInput->controllers[i].moveRight, &newInput->controllers[i].moveRight,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovX) > 0));
 
+                    // Dpad input as POV axis
+                    newInput->controllers[i].povX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::PovX));
+                    newInput->controllers[i].povY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::PovY));
+
                     // Analog stick input
 
-                    newInput->controllers[i].stickAverageX = SFMLProcessGameControllerAxis(
-                            sf::Joystick::getAxisPosition(i, sf::Joystick::X));
-                    newInput->controllers[i].stickAverageY = SFMLProcessGameControllerAxis(
-                            sf::Joystick::getAxisPosition(i, sf::Joystick::Y));
+                    newInput->controllers[i].stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::X));
+                    newInput->controllers[i].stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::Y));
 
-                    newInput->controllers[i].stickAverageU = SFMLProcessGameControllerAxis(
-                            sf::Joystick::getAxisPosition(i, sf::Joystick::U));
-                    newInput->controllers[i].stickAverageV = SFMLProcessGameControllerAxis(
-                            sf::Joystick::getAxisPosition(i, sf::Joystick::V));
+                    newInput->controllers[i].stickAverageU = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::U));
+                    newInput->controllers[i].stickAverageV = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::V));
 
                     // Analog trigger input
                     newInput->controllers[i].stickAverageR = SFMLProcessGameControllerAxis(

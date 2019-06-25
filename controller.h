@@ -29,6 +29,9 @@ struct GameControllerInput
     float stickAverageR;
     float stickAverageZ;
 
+    float povX;
+    float povY;
+
     union
     {
         GameButtonState buttons[NUM_BUTTONS];
