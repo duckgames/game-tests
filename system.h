@@ -18,7 +18,7 @@ public:
     System(World *world): world(world) {}
     ~System() = default;
     void jumpers(float delta, sf::RenderWindow *window);
-    void updateControllables(float delta, GameControllerInput *input, sf::RenderWindow *window);
+    void updateControllables(float delta, GameControllerInput *input, GameControllerInput *keyboardInput, sf::RenderWindow *window);
 
 private:
     World *world;

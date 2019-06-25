@@ -152,7 +152,7 @@ int main() {
             SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
             SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
 
-            SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp, sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp,sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
             SFMLProcessGameControllerButton(&oldInput->keyboard.moveDown, &newInput->keyboard.moveDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
             SFMLProcessGameControllerButton(&oldInput->keyboard.moveLeft, &newInput->keyboard.moveLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
             SFMLProcessGameControllerButton(&oldInput->keyboard.moveRight, &newInput->keyboard.moveRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
@@ -162,6 +162,30 @@ int main() {
 
             SFMLProcessGameControllerButton(&oldInput->keyboard.back, &newInput->keyboard.back, sf::Keyboard::isKeyPressed(sf::Keyboard::F2));
             SFMLProcessGameControllerButton(&oldInput->keyboard.start, &newInput->keyboard.start, sf::Keyboard::isKeyPressed(sf::Keyboard::F1));
+
+            // Process the arrow keys as if they were a controller axis, so movement related code can treat keyboard input identically.
+            // The initial value is zero. If Up or Left are pressed, the respective axis will be set to -100.0f. If Down or Right
+            // are pressed, 100.0f will be added to the existing amount (either 0.0f, or -100.0f, depending on whether Up/Left were
+            // pressed). As such if Up/Down or Left/Right are both pressed, the value of that axis will be 0.0f.
+            float xAxisValue = 0.0f;
+            float yAxisValue = 0.0f;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                yAxisValue = -100.0f;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                yAxisValue += 100.0f;
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                xAxisValue = -100.0f;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                xAxisValue += 100.0f;
+            }
+
+            newInput->keyboard.stickAverageX = xAxisValue;
+            newInput->keyboard.stickAverageY = yAxisValue;
 /*
             if (newInput->keyboard.moveUp.endedDown)
                 printf("KEYBOARD up\n");
@@ -289,7 +313,7 @@ int main() {
             window.clear();
             updateFollowingBackground(&followingBackground);
         //    system.jumpers(timePerFrame.asSeconds(), &window);
-            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &window);
+            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard, &window);
             window.display();
 
             GameInput *temp = newInput;

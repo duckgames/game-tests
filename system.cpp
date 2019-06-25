@@ -52,7 +52,7 @@ void System::jumpers(float delta, sf::RenderWindow *window) {
     }
 }
 
-void System::updateControllables(float delta, GameControllerInput *input, sf::RenderWindow *window) {
+void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput, sf::RenderWindow *window) {
     unsigned int entity;
     Draw *draw;
     Position *position;
@@ -64,13 +64,17 @@ void System::updateControllables(float delta, GameControllerInput *input, sf::Re
             position = &(world->position[entity]);
             controllable = &(world->controllable[entity]);
 
-            if (input->stickAverageX != 0 || input->stickAverageY != 0) {
-                position->x += (input->stickAverageX * controllable->xSpeed) * delta;
-                position->y += (input->stickAverageY * controllable->ySpeed) * delta;
+            if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
+                position->x += (padInput->stickAverageX * controllable->xSpeed) * delta;
+                position->y += (padInput->stickAverageY * controllable->ySpeed) * delta;
             }
-            else {
-                position->x += (input->povX * controllable->xSpeed) * delta;
-                position->y += (input->povY * controllable->ySpeed) * delta;
+            else if (padInput->povX != 0 || padInput->povY != 0) {
+                position->x += (padInput->povX * controllable->xSpeed) * delta;
+                position->y += (padInput->povY * controllable->ySpeed) * delta;
+            }
+            else if (keyboardInput != nullptr) {
+                position->x += (keyboardInput->stickAverageX * controllable->xSpeed) * delta;
+                position->y += (keyboardInput->stickAverageY * controllable->ySpeed) * delta;
             }
 
             draw->rectangleShape.setPosition(position->x, position->y);
