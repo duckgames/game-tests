@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include "math.h"
 #include "components.h"
 #include "system.h"
 #include "controller.h"
@@ -63,8 +64,14 @@ void System::updateControllables(float delta, GameControllerInput *input, sf::Re
             position = &(world->position[entity]);
             controllable = &(world->controllable[entity]);
 
-            position->x += (input->stickAverageX * controllable->xSpeed) * delta;
-            position->y += (input->stickAverageY * controllable->ySpeed) * delta;
+            if (input->stickAverageX != 0 || input->stickAverageY != 0) {
+                position->x += (input->stickAverageX * controllable->xSpeed) * delta;
+                position->y += (input->stickAverageY * controllable->ySpeed) * delta;
+            }
+            else {
+                position->x += (input->povX * controllable->xSpeed) * delta;
+                position->y += (input->povY * controllable->ySpeed) * delta;
+            }
 
             draw->rectangleShape.setPosition(position->x, position->y);
             draw = &(world->draw[entity]);
