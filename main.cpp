@@ -170,17 +170,17 @@ int main() {
             float xAxisValue = 0.0f;
             float yAxisValue = 0.0f;
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
                 yAxisValue = -100.0f;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
                 yAxisValue += 100.0f;
             }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 xAxisValue = -100.0f;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
                 xAxisValue += 100.0f;
             }
 
