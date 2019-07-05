@@ -88,7 +88,7 @@ int main() {
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 39.0f, 30.0f, spritealBrew);
+    world.createMover(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 0.0f, -30.0f, spritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -147,7 +147,7 @@ int main() {
                     window.close();
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert)
-                    world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 39.0f, 30.0f, spritealBrew);
+                    world.createMover(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 0.0f, -30.0f, spritealBrew);
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete)
                     world.destroyEntity(1);
@@ -320,6 +320,7 @@ int main() {
             window.clear();
             updateFollowingBackground(&followingBackground);
         //    system.jumpers(timePerFrame.asSeconds());
+            system.updateMovers(timePerFrame.asSeconds());
             system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard);
             system.renderDrawables(&window);
             window.display();

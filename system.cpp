@@ -81,6 +81,21 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
     }
 }
 
+void System::updateMovers(float delta) {
+    Draw *draw;
+    Position *position;
+
+    for (auto mover: world->move) {
+        draw = &world->draw[mover.first];
+        position = &world->position[mover.first];
+
+        position->x += mover.second.xSpeed * delta;
+        position->y += mover.second.ySpeed * delta;
+
+        draw->rectangleShape.setPosition(position->x, position->y);
+    }
+}
+
 void System::renderDrawables(sf::RenderWindow *window) {
     for(auto drawable : world->draw) {
         window->draw(drawable.second.rectangleShape);

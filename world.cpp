@@ -65,3 +65,19 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
 
     return entity;
 }
+
+unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
+    unsigned int entity = createEntity();
+
+    rectangleShape.setPosition(startX, startY);
+
+    draw[entity].rectangleShape = rectangleShape;
+
+    position[entity].x = startX;
+    position[entity].y = startY;
+
+    move[entity].xSpeed = xSpeed;
+    move[entity].ySpeed = ySpeed;
+
+    return entity;
+}

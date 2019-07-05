@@ -15,6 +15,7 @@ public:
     void renderDrawables(sf::RenderWindow *window);
     void jumpers(float delta);
     void updateControllables(float delta, GameControllerInput *input, GameControllerInput *keyboardInput);
+    void updateMovers(float delta);
 
 private:
     World *world;

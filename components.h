@@ -36,4 +36,9 @@ typedef struct {
     float ySpeed;
 } Controllable;
 
+typedef struct {
+    float xSpeed;
+    float ySpeed;
+} Move;
+
 #endif //UNTITLED_COMPONENTS_H

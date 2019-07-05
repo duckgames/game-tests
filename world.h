@@ -17,6 +17,7 @@ public:
     std::map<int, Draw> draw;
     std::map<int, Position> position;
     std::map<int, Controllable> controllable;
+    std::map<int, Move> move;
 
     World();
     ~World() = default;
@@ -24,5 +25,6 @@ public:
     void destroyEntity(unsigned int entity);
     unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape);
     unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape);
+    unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape);
 };
 #endif //UNTITLED_WORLD_H
