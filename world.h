@@ -6,16 +6,17 @@
 #define UNTITLED_WORLD_H
 
 #include "components.h"
+#include <map>
 
 static const int MAX_ENTITIES = 100;
 
 class World {
 public:
-    int mask[MAX_ENTITIES];
-    Jump jump[MAX_ENTITIES];
-    Draw draw[MAX_ENTITIES];
-    Position position[MAX_ENTITIES];
-    Controllable controllable[MAX_ENTITIES];
+    int entities[MAX_ENTITIES];
+    std::map<int, Jump> jump;
+    std::map<int, Draw> draw;
+    std::map<int, Position> position;
+    std::map<int, Controllable> controllable;
 
     World();
     ~World() = default;

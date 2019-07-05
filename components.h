@@ -10,10 +10,7 @@
 typedef enum
 {
     COMPONENT_NONE = 0,
-    COMPONENT_JUMP = 1 << 0,
-    COMPONENT_DRAW = 2 << 0,
-    COMPONENT_POSITION = 3 << 0,
-    COMPONENT_CONTROLLABLE = 4 << 0
+    COMPONENT_USED = 1 << 0,
 };
 
 typedef struct {

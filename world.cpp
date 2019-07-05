@@ -10,7 +10,7 @@ World::World() {
     unsigned int entity;
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
-        mask[entity] = COMPONENT_NONE;
+        entities[entity] = COMPONENT_NONE;
     }
 }
 
@@ -18,7 +18,8 @@ unsigned int World::createEntity() {
     unsigned int entity;
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
-        if (mask[entity] == COMPONENT_NONE) {
+        if (entities[entity] == COMPONENT_NONE) {
+            entities[entity] = COMPONENT_USED;
             return entity;
         }
     }
@@ -28,12 +29,11 @@ unsigned int World::createEntity() {
 }
 
 void World::destroyEntity(unsigned int entity) {
-    mask[entity] = COMPONENT_NONE;
+    entities[entity] = COMPONENT_NONE;
 }
 
 unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-    mask[entity] = COMPONENT_JUMP | COMPONENT_DRAW;
 
     jump[entity].maxHeight = maxHeight;
     jump[entity].jumpSpeed = jumpSpeed;
@@ -48,7 +48,6 @@ unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpe
 
 unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-    mask[entity] = COMPONENT_DRAW | COMPONENT_POSITION | COMPONENT_CONTROLLABLE;
 
     rectangleShape.setPosition(startX, startY);
 
