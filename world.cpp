@@ -29,6 +29,10 @@ unsigned int World::createEntity() {
 }
 
 void World::destroyEntity(unsigned int entity) {
+    jump.erase(entity);
+    draw.erase(entity);
+    position.erase(entity);
+    controllable.erase(entity);
     entities[entity] = COMPONENT_NONE;
 }
 

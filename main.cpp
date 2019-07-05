@@ -145,6 +145,12 @@ int main() {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
+
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert)
+                    world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 39.0f, 30.0f, spritealBrew);
+
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete)
+                    world.destroyEntity(1);
             }
 
             // Check keys which map to game controller buttons here
