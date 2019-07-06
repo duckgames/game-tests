@@ -6,7 +6,7 @@
 #include "EntityPool.h"
 
 void EntityPool::usePooledObject() {
-    if (available.size() > 0) {
+    if (!available.empty()) {
         inUse.push_back(available.back());
         available.pop_back();
     }
@@ -16,7 +16,7 @@ void EntityPool::usePooledObject() {
 }
 
 void EntityPool::releaseObject(int index) {
-    if (inUse.size() > 0) {
+    if (!inUse.empty()) {
         available.push_back(inUse.at(index));
         inUse.erase(inUse.begin() + index);
     }
