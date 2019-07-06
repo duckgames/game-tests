@@ -64,10 +64,6 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
 }
 
 int main() {
-    float stickAverageX = 0.0f;
-    float stickAverageY = 0.0f;
-    float rotation = 0.0f;
-    float speed = 1000.0f;
     unsigned int screenHeight = 1080;
 
     World world;
