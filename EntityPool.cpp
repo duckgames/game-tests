@@ -5,22 +5,22 @@
 #include <cstdio>
 #include "EntityPool.h"
 
-void EntityPool::usePooledObject() {
+void EntityPool::usePooledEntity() {
     if (!available.empty()) {
         inUse.push_back(available.back());
         available.pop_back();
     }
     else {
-        printf("EntityPool: No free objects!\n");
+        printf("EntityPool: No free entities!\n");
     }
 }
 
-void EntityPool::releaseObject(int index) {
+void EntityPool::releaseEntity(int index) {
     if (!inUse.empty()) {
         available.push_back(inUse.at(index));
         inUse.erase(inUse.begin() + index);
     }
     else {
-        printf("EntityPool: Attempted to release object when none are in use!\n");
+        printf("EntityPool: Attempted to release entity when none are in use!\n");
     }
 }

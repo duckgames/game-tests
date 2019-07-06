@@ -150,13 +150,13 @@ int main() {
                     window.close();
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert) {
-                    world.bulletPool.usePooledObject();
+                    world.bulletPool.usePooledEntity();
                     printf("used bullets: %d\n", world.bulletPool.inUse.size());
                     printf("free bullets: %d\n", world.bulletPool.available.size());
                 }
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete) {
-                    world.bulletPool.releaseObject(world.bulletPool.inUse.back());
+                    world.bulletPool.releaseEntity(world.bulletPool.inUse.back());
                     printf("used bullets: %d\n", world.bulletPool.inUse.size());
                     printf("free bullets: %d\n", world.bulletPool.available.size());
                 }

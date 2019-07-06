@@ -18,8 +18,8 @@ public:
         available = entities;
     };
     ~EntityPool() = default;
-    void usePooledObject();
-    void releaseObject(int index);
+    void usePooledEntity();
+    void releaseEntity(int index);
 };
 
 
