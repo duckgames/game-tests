@@ -86,9 +86,9 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 Follower *follower = &world->followers[waiting];
-                Position *position = &world->position[follower->owningEntity];
+                Position *ownerPosition = &world->position[follower->owningEntity];
 
-                world->createMover(position->x  + follower->xOffset, position->y + follower->yOffset, 0.0f, -50.0f, bullet);
+                world->createMover(ownerPosition->x  + follower->xOffset, ownerPosition->y + follower->yOffset, 0.0f, -50.0f, bullet);
             }
 
             world->playerWaitingToFire.clear();
