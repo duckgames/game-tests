@@ -82,14 +82,20 @@ int main() {
     sf::RectangleShape spritealBrew(sf::Vector2f(32, 32));
     spritealBrew.setTexture(&specialBrew, true);
 
+    sf::RectangleShape miniSpritealBrew(sf::Vector2f(8, 8));
+    miniSpritealBrew.setTexture(&specialBrew, true);
+
+    sf::RectangleShape tinySpritealBrew(sf::Vector2f(4, 4));
+    tinySpritealBrew.setTexture(&specialBrew, true);
+
     //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
    // spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
 
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     int player = world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createBulletSpawnPoint(player, 10.0f, 0.0f, 1.0f, spritealBrew);
-    world.createBulletSpawnPoint(player, -10.0f, 0.0f, 1.0f, spritealBrew);
+    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 1.0f, miniSpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 1.0f, miniSpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -146,16 +152,6 @@ int main() {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
-
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert) {
-                    for (int waiting: world.waitingToFire) {
-                        Follower *follower = &world.followers[waiting];
-                        Position *position = &world.position[follower->owningEntity];
-
-                        world.createMover(position->x  + follower->xOffset, position->y + follower->yOffset, 0.0f, -50.0f, spritealBrew);
-                        world.waitingToFire.erase(waiting);
-                    }
-                }
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete)
                     world.destroyEntity(1);
@@ -329,7 +325,7 @@ int main() {
             updateFollowingBackground(&followingBackground);
         //    system.jumpers(timePerFrame.asSeconds());
             system.updateMovers(timePerFrame.asSeconds());
-            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard);
+            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard, tinySpritealBrew);
             system.updateFollowers();
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
             system.renderDrawables(&window);

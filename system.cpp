@@ -62,7 +62,7 @@ void System::jumpers(float delta) {
 
 // Note there is a nullptr check on the keyboard input - this is so keyboard input can be disabled by passing a nullptr
 // for the keyboardInput parameter.
-void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput) {
+void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput, sf::RectangleShape bullet) {
     Draw *draw;
     Position *position;
 
@@ -81,6 +81,17 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         else if (keyboardInput != nullptr) {
             position->x += (keyboardInput->stickAverageX * controllable.second.xSpeed) * delta;
             position->y += (keyboardInput->stickAverageY * controllable.second.ySpeed) * delta;
+        }
+
+        if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
+            for (int waiting: world->playerWaitingToFire) {
+                Follower *follower = &world->followers[waiting];
+                Position *position = &world->position[follower->owningEntity];
+
+                world->createMover(position->x  + follower->xOffset, position->y + follower->yOffset, 0.0f, -50.0f, bullet);
+            }
+
+            world->playerWaitingToFire.clear();
         }
 
         draw->rectangleShape.setPosition(position->x, position->y);
@@ -126,6 +137,15 @@ void System::updateBulletSpawnPoints(float delta) {
         if (spawnPoint.second.timeElapsed >= spawnPoint.second.rateOfFire) {
             world->waitingToFire.insert(spawnPoint.first);
             world->bulletSpawnPoints[spawnPoint.first].timeElapsed = 0.0f;
+        }
+    }
+
+    for (auto spawnPoint: world->playerBulletSpawnPoints) {
+        world->playerBulletSpawnPoints[spawnPoint.first].timeElapsed += delta;
+
+        if (spawnPoint.second.timeElapsed >= spawnPoint.second.rateOfFire) {
+            world->playerWaitingToFire.insert(spawnPoint.first);
+            world->playerBulletSpawnPoints[spawnPoint.first].timeElapsed = 0.0f;
         }
     }
 }

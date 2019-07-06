@@ -21,8 +21,10 @@ public:
     std::map<int, Move> move;
     std::map<int, Follower> followers;
     std::map<int, BulletSpawnPoint> bulletSpawnPoints;
+    std::map<int, BulletSpawnPoint> playerBulletSpawnPoints;
 
     std::unordered_set<int> waitingToFire;
+    std::unordered_set<int> playerWaitingToFire;
 
     World();
     ~World() = default;
@@ -33,5 +35,6 @@ public:
     unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape);
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape);
+    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape);
 };
 #endif //UNTITLED_WORLD_H

@@ -103,3 +103,12 @@ unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, floa
 
     return entity;
 }
+
+unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape) {
+    unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
+
+    draw[entity].rectangleShape = rectangleShape;
+    playerBulletSpawnPoints[entity].rateOfFire = rateOfFire;
+
+    return entity;
+}
