@@ -82,10 +82,10 @@ int main() {
     sf::RectangleShape spritealBrew(sf::Vector2f(32, 32));
     spritealBrew.setTexture(&specialBrew, true);
 
-    sf::RectangleShape miniSpritealBrew(sf::Vector2f(8, 8));
+    sf::RectangleShape miniSpritealBrew(sf::Vector2f(16, 16));
     miniSpritealBrew.setTexture(&specialBrew, true);
 
-    sf::RectangleShape tinySpritealBrew(sf::Vector2f(4, 4));
+    sf::RectangleShape tinySpritealBrew(sf::Vector2f(8, 8));
     tinySpritealBrew.setTexture(&specialBrew, true);
 
     //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
@@ -94,8 +94,8 @@ int main() {
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     int player = world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 1.0f, miniSpritealBrew);
-    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 1.0f, miniSpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.2f, miniSpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.2f, miniSpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
