@@ -6,6 +6,7 @@
 #define UNTITLED_WORLD_H
 
 #include "components.h"
+#include "EntityPool.h"
 #include <map>
 #include <unordered_set>
 
@@ -26,7 +27,9 @@ public:
     std::unordered_set<int> waitingToFire;
     std::unordered_set<int> playerWaitingToFire;
 
-    World();
+    EntityPool bulletPool;
+
+    World(int maxBullets);
     ~World() = default;
     unsigned int createEntity();
     void destroyEntity(unsigned int entity);

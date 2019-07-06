@@ -6,7 +6,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include "world.h"
 
-World::World() {
+World::World(int maxBullets): bulletPool(maxBullets) {
     unsigned int entity;
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {

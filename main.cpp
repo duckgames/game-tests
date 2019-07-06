@@ -66,7 +66,7 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
 int main() {
     unsigned int screenHeight = 1080;
 
-    World world;
+    World world(500);
     System system(&world);
 
     sf::Texture specialBrew;
@@ -149,8 +149,17 @@ int main() {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
 
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete)
-                    world.destroyEntity(1);
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert) {
+                    world.bulletPool.usePooledObject();
+                    printf("used bullets: %d\n", world.bulletPool.inUse.size());
+                    printf("free bullets: %d\n", world.bulletPool.available.size());
+                }
+
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete) {
+                    world.bulletPool.releaseObject(world.bulletPool.inUse.back());
+                    printf("used bullets: %d\n", world.bulletPool.inUse.size());
+                    printf("free bullets: %d\n", world.bulletPool.available.size());
+                }
             }
 
             // Check keys which map to game controller buttons here
