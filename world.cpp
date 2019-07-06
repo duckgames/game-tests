@@ -71,13 +71,35 @@ unsigned int World::createMover(float startX, float startY, float xSpeed, float 
 
     rectangleShape.setPosition(startX, startY);
 
+    move[entity].xSpeed = xSpeed;
+    move[entity].ySpeed = ySpeed;
+
     draw[entity].rectangleShape = rectangleShape;
 
     position[entity].x = startX;
     position[entity].y = startY;
 
-    move[entity].xSpeed = xSpeed;
-    move[entity].ySpeed = ySpeed;
+    return entity;
+}
+
+unsigned int World::createFollower(int owningEntity, float xOffset, float yOffset) {
+    unsigned int entity = createEntity();
+
+    followers[entity].owningEntity = owningEntity;
+    followers[entity].xOffset = xOffset;
+    followers[entity].yOffset = yOffset;
+
+    position[entity].x = position[owningEntity].x + xOffset;
+    position[entity].y = position[owningEntity].y + yOffset;
+
+    return entity;
+}
+
+unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape) {
+    unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
+
+    draw[entity].rectangleShape = rectangleShape;
+    bulletSpawnPoints[entity].rateOfFire = rateOfFire;
 
     return entity;
 }

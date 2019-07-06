@@ -41,4 +41,16 @@ typedef struct {
     float ySpeed;
 } Move;
 
+typedef struct {
+    int owningEntity;
+    float xOffset;
+    float yOffset;
+} Follower;
+
+typedef struct {
+    float rateOfFire;
+    float timeElapsed;
+    sf::RectangleShape rectangleShape;
+} BulletSpawnPoint;
+
 #endif //UNTITLED_COMPONENTS_H

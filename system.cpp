@@ -10,6 +10,12 @@
 #include "system.h"
 #include "controller.h"
 
+void System::renderDrawables(sf::RenderWindow *window) {
+    for(auto drawable : world->draw) {
+        window->draw(drawable.second.rectangleShape);
+    }
+}
+
 void System::jumpers(float delta) {
     /*
     unsigned int entity;
@@ -96,8 +102,30 @@ void System::updateMovers(float delta) {
     }
 }
 
-void System::renderDrawables(sf::RenderWindow *window) {
-    for(auto drawable : world->draw) {
-        window->draw(drawable.second.rectangleShape);
+void System::updateFollowers() {
+    Draw *draw;
+    Position *position;
+    Position *ownerPosition;
+
+    for (auto follower: world->followers) {
+        draw = &world->draw[follower.first];
+        position = &world->position[follower.first];
+        ownerPosition = &world->position[follower.second.owningEntity];
+
+        position->x = ownerPosition->x + follower.second.xOffset;
+        position->y = ownerPosition->y + follower.second.yOffset;
+
+        draw->rectangleShape.setPosition(position->x, position->y);
+    }
+}
+
+void System::updateBulletSpawnPoints(float delta) {
+    for (auto spawnPoint: world->bulletSpawnPoints) {
+        world->bulletSpawnPoints[spawnPoint.first].timeElapsed += delta;
+
+        if (spawnPoint.second.timeElapsed >= spawnPoint.second.rateOfFire) {
+            world->waitingToFire.insert(spawnPoint.first);
+            world->bulletSpawnPoints[spawnPoint.first].timeElapsed = 0.0f;
+        }
     }
 }

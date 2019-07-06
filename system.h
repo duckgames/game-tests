@@ -16,6 +16,8 @@ public:
     void jumpers(float delta);
     void updateControllables(float delta, GameControllerInput *input, GameControllerInput *keyboardInput);
     void updateMovers(float delta);
+    void updateFollowers();
+    void updateBulletSpawnPoints(float delta);
 
 private:
     World *world;
