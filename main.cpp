@@ -11,6 +11,9 @@
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 #define MAX_CONTROLLERS 4
 
+static const int SCREEN_WIDTH = 1920;
+static const int SCREEN_HEIGHT = 1080;
+
 void updateBackground(float delta, Background *background) {
     background->testUpdate2(delta);
     background->draw();
@@ -64,13 +67,11 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
 }
 
 int main() {
-    unsigned int screenHeight = 1080;
-
-    World world;
+    World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
 
     sf::Texture specialBrew;
-    sf::RenderWindow window(sf::VideoMode(1920, screenHeight), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
 
     specialBrew.loadFromFile("specialbrew.png");
@@ -89,9 +90,9 @@ int main() {
 
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
-    int player = world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.2f, miniSpritealBrew, tinySpritealBrew);
-    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.2f, miniSpritealBrew, tinySpritealBrew);
+    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
+    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -122,7 +123,7 @@ int main() {
             &window,
             &horizTexture,
             -500.0f,
-            screenHeight);
+            SCREEN_HEIGHT);
 
     GameInput input[2] = {};
     GameInput *newInput = &input[0];
@@ -316,12 +317,14 @@ int main() {
 
             window.clear();
             updateFollowingBackground(&followingBackground);
-        //    system.jumpers(timePerFrame.asSeconds());
+
+            system.clearDeadEntities();
             system.updateMovers(timePerFrame.asSeconds());
             system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard, tinySpritealBrew);
             system.updateFollowers();
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
             system.renderDrawables(&window);
+
             window.display();
 
             GameInput *temp = newInput;

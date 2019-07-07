@@ -11,7 +11,7 @@
 #include "controller.h"
 
 void System::renderDrawables(sf::RenderWindow *window) {
-    for(auto drawable : world->draw) {
+    for(auto drawable : world->drawablesMap) {
         window->draw(drawable.second.rectangleShape);
     }
 }
@@ -66,9 +66,9 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
     Draw *draw;
     Position *position;
 
-    for (auto controllable: world->controllable) {
-        draw = &world->draw[controllable.first];
-        position = &world->position[controllable.first];
+    for (auto controllable: world->controllablesMap) {
+        draw = &world->drawablesMap[controllable.first];
+        position = &world->positionsMap[controllable.first];
 
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
             position->x += (padInput->stickAverageX * controllable.second.xSpeed) * delta;
@@ -99,14 +99,18 @@ void System::updateMovers(float delta) {
     Draw *draw;
     Position *position;
 
-    for (auto mover: world->move) {
-        draw = &world->draw[mover.first];
-        position = &world->position[mover.first];
+    for (auto mover: world->moversMap) {
+        draw = &world->drawablesMap[mover.first];
+        position = &world->positionsMap[mover.first];
 
         position->x += mover.second.xSpeed * delta;
         position->y += mover.second.ySpeed * delta;
 
         draw->rectangleShape.setPosition(position->x, position->y);
+
+        if (position->y < 0.0f || position->y > 1080.0f) {
+            world->waitingForDeath.insert(mover.first);
+        }
     }
 }
 
@@ -115,10 +119,10 @@ void System::updateFollowers() {
     Position *position;
     Position *ownerPosition;
 
-    for (auto follower: world->followers) {
-        draw = &world->draw[follower.first];
-        position = &world->position[follower.first];
-        ownerPosition = &world->position[follower.second.owningEntity];
+    for (auto follower: world->followersMap) {
+        draw = &world->drawablesMap[follower.first];
+        position = &world->positionsMap[follower.first];
+        ownerPosition = &world->positionsMap[follower.second.owningEntity];
 
         position->x = ownerPosition->x + follower.second.xOffset;
         position->y = ownerPosition->y + follower.second.yOffset;
@@ -128,21 +132,29 @@ void System::updateFollowers() {
 }
 
 void System::updateBulletSpawnPoints(float delta) {
-    for (auto spawnPoint: world->bulletSpawnPoints) {
-        world->bulletSpawnPoints[spawnPoint.first].timeElapsed += delta;
+    for (auto spawnPoint: world->bulletSpawnPointsMap) {
+        world->bulletSpawnPointsMap[spawnPoint.first].timeElapsed += delta;
 
         if (spawnPoint.second.timeElapsed >= spawnPoint.second.rateOfFire) {
             world->waitingToFire.insert(spawnPoint.first);
-            world->bulletSpawnPoints[spawnPoint.first].timeElapsed = 0.0f;
+            world->bulletSpawnPointsMap[spawnPoint.first].timeElapsed = 0.0f;
         }
     }
 
-    for (auto spawnPoint: world->playerBulletSpawnPoints) {
-        world->playerBulletSpawnPoints[spawnPoint.first].timeElapsed += delta;
+    for (auto spawnPoint: world->playerBulletSpawnPointsMap) {
+        world->playerBulletSpawnPointsMap[spawnPoint.first].timeElapsed += delta;
 
         if (spawnPoint.second.timeElapsed >= spawnPoint.second.rateOfFire) {
             world->playerWaitingToFire.insert(spawnPoint.first);
-            world->playerBulletSpawnPoints[spawnPoint.first].timeElapsed = 0.0f;
+            world->playerBulletSpawnPointsMap[spawnPoint.first].timeElapsed = 0.0f;
         }
     }
+}
+
+void System::clearDeadEntities() {
+    for (auto entity: world->waitingForDeath) {
+        world->destroyEntity(entity);
+    }
+
+    world->waitingForDeath.clear();
 }

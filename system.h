@@ -18,6 +18,7 @@ public:
     void updateMovers(float delta);
     void updateFollowers();
     void updateBulletSpawnPoints(float delta);
+    void clearDeadEntities();
 
 private:
     World *world;
