@@ -10,7 +10,7 @@
 #include <map>
 #include <unordered_set>
 
-static const int MAX_ENTITIES = 100;
+static const int MAX_ENTITIES = 1000;
 
 class World {
 public:
@@ -27,9 +27,7 @@ public:
     std::unordered_set<int> waitingToFire;
     std::unordered_set<int> playerWaitingToFire;
 
-    EntityPool bulletPool;
-
-    World(int maxBullets);
+    World();
     ~World() = default;
     unsigned int createEntity();
     void destroyEntity(unsigned int entity);
@@ -38,6 +36,7 @@ public:
     unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape);
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape);
-    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape);
+    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
+    unsigned int createPlayerBullet(int spawnPoint);
 };
 #endif //UNTITLED_WORLD_H

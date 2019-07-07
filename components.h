@@ -50,7 +50,9 @@ typedef struct {
 typedef struct {
     float rateOfFire;
     float timeElapsed;
-    sf::RectangleShape rectangleShape;
+    float bulletXSpeed;
+    float bulletYSpeed;
+    sf::RectangleShape bullet;
 } BulletSpawnPoint;
 
 #endif //UNTITLED_COMPONENTS_H

@@ -66,7 +66,7 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
 int main() {
     unsigned int screenHeight = 1080;
 
-    World world(500);
+    World world;
     System system(&world);
 
     sf::Texture specialBrew;
@@ -90,8 +90,8 @@ int main() {
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     int player = world.createControllable(window.getSize().x / 2, screenHeight - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.2f, miniSpritealBrew);
-    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.2f, miniSpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.2f, miniSpritealBrew, tinySpritealBrew);
+    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.2f, miniSpritealBrew, tinySpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -148,18 +148,6 @@ int main() {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
-
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Insert) {
-                    world.bulletPool.usePooledEntity();
-                    printf("used bullets: %d\n", world.bulletPool.inUse.size());
-                    printf("free bullets: %d\n", world.bulletPool.available.size());
-                }
-
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete) {
-                    world.bulletPool.releaseEntity(world.bulletPool.inUse.back());
-                    printf("used bullets: %d\n", world.bulletPool.inUse.size());
-                    printf("free bullets: %d\n", world.bulletPool.available.size());
-                }
             }
 
             // Check keys which map to game controller buttons here

@@ -6,7 +6,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include "world.h"
 
-World::World(int maxBullets): bulletPool(maxBullets) {
+World::World() {
     unsigned int entity;
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
@@ -104,11 +104,29 @@ unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, floa
     return entity;
 }
 
-unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape rectangleShape) {
+unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
 
-    draw[entity].rectangleShape = rectangleShape;
+    draw[entity].rectangleShape = spawnPoint;
+
     playerBulletSpawnPoints[entity].rateOfFire = rateOfFire;
+    playerBulletSpawnPoints[entity].timeElapsed = 0.0f;
+    playerBulletSpawnPoints[entity].bulletXSpeed = 0.0f;
+    playerBulletSpawnPoints[entity].bulletYSpeed = -500.0f;
+    playerBulletSpawnPoints[entity].bullet = bullet;
+
+    return entity;
+}
+
+unsigned int World::createPlayerBullet(int spawnPoint) {
+    Position *spawnPointPosition = &position[spawnPoint];
+    BulletSpawnPoint *bulletSpawnPoint = &playerBulletSpawnPoints[spawnPoint];
+
+    unsigned int entity = createMover(spawnPointPosition->x,
+            spawnPointPosition->y,
+            bulletSpawnPoint->bulletXSpeed,
+            bulletSpawnPoint->bulletYSpeed,
+            bulletSpawnPoint->bullet);
 
     return entity;
 }
