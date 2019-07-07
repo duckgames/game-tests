@@ -151,6 +151,14 @@ void System::updateBulletSpawnPoints(float delta) {
     }
 }
 
+void System::processWaitingToFire() {
+    for (int waiting: world->waitingToFire) {
+        world->createEnemyBullet(waiting);
+    }
+
+    world->waitingToFire.clear();
+}
+
 void System::clearDeadEntities() {
     for (auto entity: world->waitingForDeath) {
         world->destroyEntity(entity);

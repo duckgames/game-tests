@@ -178,3 +178,24 @@ unsigned int World::createPlayerBullet(int spawnPoint) {
 
     return entity;
 }
+
+unsigned int World::createEnemyBullet(int spawnPoint) {
+    Position *spawnPointPosition = &positionsMap[spawnPoint];
+    BulletSpawnPoint *bulletSpawnPoint = &bulletSpawnPointsMap[spawnPoint];
+
+    unsigned int entity = createMover(spawnPointPosition->x,
+                                      spawnPointPosition->y,
+                                      bulletSpawnPoint->bulletXSpeed,
+                                      bulletSpawnPoint->bulletYSpeed,
+                                      bulletSpawnPoint->bullet);
+
+    return entity;
+}
+
+unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
+    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, enemy);
+
+    createBulletSpawnPoint(entity, enemy.getSize().x / 2, 0.0f, rateOfFire, spawnPoint, bullet);
+
+    return entity;
+}

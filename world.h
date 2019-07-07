@@ -52,5 +52,7 @@ public:
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
     unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
     unsigned int createPlayerBullet(int spawnPoint);
+    unsigned int createEnemyBullet(int spawnPoint);
+    unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
 };
 #endif //UNTITLED_WORLD_H

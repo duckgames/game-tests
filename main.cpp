@@ -94,6 +94,9 @@ int main() {
     world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
     world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
 
+    world.createEnemy(250.0f, 0.0f, 0.0f, 50.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 50.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
@@ -319,6 +322,7 @@ int main() {
             updateFollowingBackground(&followingBackground);
 
             system.clearDeadEntities();
+            system.processWaitingToFire();
             system.updateMovers(timePerFrame.asSeconds());
             system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard, tinySpritealBrew);
             system.updateFollowers();
