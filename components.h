@@ -3,6 +3,7 @@
 //
 
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 #ifndef UNTITLED_COMPONENTS_H
 #define UNTITLED_COMPONENTS_H
@@ -40,6 +41,10 @@ typedef struct {
     float xSpeed;
     float ySpeed;
 } Move;
+
+typedef struct {
+    std::vector<int> followers;
+} Leader;
 
 typedef struct {
     int owningEntity;

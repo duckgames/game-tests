@@ -21,6 +21,7 @@ public:
     std::map<int, Controllable> controllablesMap;
     std::map<int, Move> moversMap;
     std::map<int, Follower> followersMap;
+    std::map<int, Leader> leadersMap;
     std::map<int, BulletSpawnPoint> bulletSpawnPointsMap;
     std::map<int, BulletSpawnPoint> playerBulletSpawnPointsMap;
 
@@ -43,6 +44,7 @@ public:
     void addControllableComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addMoveComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
+    void addLeaderComponent(unsigned int entity, std::vector<int> followers);
     void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float bulletXSpeed, float bulletYSpeed, sf::RectangleShape bullet, bool forPlayer);
 
     unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape);

@@ -40,6 +40,23 @@ void World::destroyEntity(unsigned int entity) {
     followersMap.erase(entity);
     bulletSpawnPointsMap.erase(entity);
     playerBulletSpawnPointsMap.erase(entity);
+
+    auto leader = leadersMap.find(entity);
+    if (leader != leadersMap.end()) {
+        for (auto follower: leader->second.followers) {
+            jumpersMap.erase(follower);
+            drawablesMap.erase(follower);
+            positionsMap.erase(follower);
+            controllablesMap.erase(follower);
+            moversMap.erase(follower);
+            followersMap.erase(follower);
+            bulletSpawnPointsMap.erase(follower);
+            playerBulletSpawnPointsMap.erase(follower);
+            entities[follower] = COMPONENT_NONE;
+        }
+        leadersMap.erase(entity);
+    }
+
     entities[entity] = COMPONENT_NONE;
 }
 
@@ -86,6 +103,14 @@ void World::addFollowerComponent(unsigned int entity, unsigned int owningEntity,
     follower.xOffset = xOffset;
     follower.yOffset = yOffset;
     followersMap.insert(std::pair<int, Follower>(entity, follower));
+}
+
+void World::addLeaderComponent(unsigned int entity, std::vector<int> followers) {
+    Leader leader;
+    for (auto follower: followers) {
+        leader.followers.push_back(follower);
+    }
+    leadersMap.insert(std::pair<int, Leader>(entity, leader));
 }
 
 void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float bulletXSpeed, float bulletYSpeed, sf::RectangleShape bullet, bool forPlayer) {
@@ -195,7 +220,10 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, enemy);
 
-    createBulletSpawnPoint(entity, enemy.getSize().x / 2, 0.0f, rateOfFire, spawnPoint, bullet);
+    int bulletSpawnPoint = createBulletSpawnPoint(entity, enemy.getSize().x / 2, 0.0f, rateOfFire, spawnPoint, bullet);
+    std::vector<int> followers;
+    followers.push_back(bulletSpawnPoint);
+    addLeaderComponent(entity, followers);
 
     return entity;
 }

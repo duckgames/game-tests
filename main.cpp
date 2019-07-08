@@ -91,11 +91,16 @@ int main() {
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
     int player = world.createControllable(window.getSize().x / 2, window.getSize().y - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
-    world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
-    world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 50.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 50.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    int follower1 = world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
+    int follower2 = world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
+    std::vector<int> playerFollowers;
+    playerFollowers.push_back(follower1);
+    playerFollowers.push_back(follower2);
+    world.addLeaderComponent(player, playerFollowers);
+
+    world.createEnemy(250.0f, 0.0f, 0.0f, 500.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 500.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -152,6 +157,9 @@ int main() {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
+
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Delete)
+                    world.destroyEntity(player);
             }
 
             // Check keys which map to game controller buttons here
