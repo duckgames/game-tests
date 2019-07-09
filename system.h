@@ -20,6 +20,11 @@ public:
     void updateBulletSpawnPoints(float delta);
     void processWaitingToFire();
     void clearDeadEntities();
+    void enforceScreenBoundaries();
+
+private:
+    void enforceScreenXBoundaries();
+    void enforceScreenYBoundaries();
 
 private:
     World *world;

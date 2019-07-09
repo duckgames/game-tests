@@ -28,6 +28,8 @@ public:
     std::unordered_set<int> waitingToFire;
     std::unordered_set<int> playerWaitingToFire;
     std::unordered_set<int> waitingForDeath;
+    std::unordered_set<int> enforceScreenXBoundaries;
+    std::unordered_set<int> enforceScreenYBoundaries;
 
     int screenWidth;
     int screenHeight;
@@ -46,6 +48,8 @@ public:
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
     void addLeaderComponent(unsigned int entity, std::vector<int> followers);
     void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float bulletXSpeed, float bulletYSpeed, sf::RectangleShape bullet, bool forPlayer);
+    void addXBoundaryEnforcement(unsigned int entity);
+    void addYBoundaryEnforcement(unsigned int entity);
 
     unsigned int createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape);
     unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape);

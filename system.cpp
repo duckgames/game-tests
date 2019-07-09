@@ -68,11 +68,9 @@ void System::jumpers(float delta) {
 // for the keyboardInput parameter.
 void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput) {
     Position *position;
-    Draw *draw;
 
     for (auto controllable: world->controllablesMap) {
         position = &world->positionsMap[controllable.first];
-        draw = &world->drawablesMap[controllable.first];
 
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
             position->x += (padInput->stickAverageX * controllable.second.xSpeed) * delta;
@@ -85,20 +83,6 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         else if (keyboardInput != nullptr) {
             position->x += (keyboardInput->stickAverageX * controllable.second.xSpeed) * delta;
             position->y += (keyboardInput->stickAverageY * controllable.second.ySpeed) * delta;
-        }
-
-        if (position->y < 0) {
-            position->y = 0;
-        }
-        else if (position->y > world->screenHeight - draw->rectangleShape.getSize().y) {
-            position->y = world->screenHeight - draw->rectangleShape.getSize().y;
-        }
-
-        if (position->x < 0) {
-            position->x = 0;
-        }
-        else if (position->x > world->screenWidth - draw->rectangleShape.getSize().x) {
-            position->x = world->screenWidth - draw->rectangleShape.getSize().x;
         }
 
         if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
@@ -173,4 +157,43 @@ void System::clearDeadEntities() {
     }
 
     world->waitingForDeath.clear();
+}
+
+void System::enforceScreenBoundaries() {
+    enforceScreenYBoundaries();
+    enforceScreenXBoundaries();
+}
+
+void System::enforceScreenXBoundaries() {
+    for (auto entity: world->enforceScreenXBoundaries) {
+        Position *position;
+        Draw *draw;
+
+        position = &world->positionsMap[entity];
+        draw = &world->drawablesMap[entity];
+
+        if (position->x < 0) {
+            position->x = 0;
+        }
+        else if (position->x > world->screenWidth - draw->rectangleShape.getSize().x) {
+            position->x = world->screenWidth - draw->rectangleShape.getSize().x;
+        }
+    }
+}
+
+void System::enforceScreenYBoundaries() {
+    for (auto entity: world->enforceScreenYBoundaries) {
+        Position *position;
+        Draw *draw;
+
+        position = &world->positionsMap[entity];
+        draw = &world->drawablesMap[entity];
+
+        if (position->y < 0) {
+            position->y = 0;
+        }
+        else if (position->y > world->screenHeight - draw->rectangleShape.getSize().y) {
+            position->y = world->screenHeight - draw->rectangleShape.getSize().y;
+        }
+    }
 }

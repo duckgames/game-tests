@@ -131,6 +131,14 @@ void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, 
     }
 }
 
+void World::addXBoundaryEnforcement(unsigned int entity) {
+    enforceScreenXBoundaries.insert(entity);
+}
+
+void World::addYBoundaryEnforcement(unsigned int entity) {
+    enforceScreenYBoundaries.insert(entity);
+}
+
 unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
 
@@ -148,6 +156,8 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     addDrawComponent(entity, rectangleShape);
     addPositionComponent(entity, startX, startY);
     addControllableComponent(entity, xSpeed, ySpeed);
+    addXBoundaryEnforcement(entity);
+    addYBoundaryEnforcement(entity);
 
     return entity;
 }

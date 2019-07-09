@@ -333,6 +333,7 @@ int main() {
             system.processWaitingToFire();
             system.updateMovers(timePerFrame.asSeconds());
             system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard);
+            system.enforceScreenBoundaries();
             system.updateFollowers();
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
             system.renderDrawables(&window);
