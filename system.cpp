@@ -12,6 +12,10 @@
 
 void System::renderDrawables(sf::RenderWindow *window) {
     for(auto drawable : world->drawablesMap) {
+        Position *position;
+        position = &world->positionsMap[drawable.first];
+        drawable.second.rectangleShape.setPosition(position->x, position->y);
+
         window->draw(drawable.second.rectangleShape);
     }
 }
@@ -62,12 +66,10 @@ void System::jumpers(float delta) {
 
 // Note there is a nullptr check on the keyboard input - this is so keyboard input can be disabled by passing a nullptr
 // for the keyboardInput parameter.
-void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput, sf::RectangleShape bullet) {
-    Draw *draw;
+void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput) {
     Position *position;
 
     for (auto controllable: world->controllablesMap) {
-        draw = &world->drawablesMap[controllable.first];
         position = &world->positionsMap[controllable.first];
 
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
@@ -90,23 +92,17 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
 
             world->playerWaitingToFire.clear();
         }
-
-        draw->rectangleShape.setPosition(position->x, position->y);
     }
 }
 
 void System::updateMovers(float delta) {
-    Draw *draw;
     Position *position;
 
     for (auto mover: world->moversMap) {
-        draw = &world->drawablesMap[mover.first];
         position = &world->positionsMap[mover.first];
 
         position->x += mover.second.xSpeed * delta;
         position->y += mover.second.ySpeed * delta;
-
-        draw->rectangleShape.setPosition(position->x, position->y);
 
         if (position->y < 0.0f || position->y > 1080.0f) {
             world->waitingForDeath.insert(mover.first);
@@ -115,19 +111,15 @@ void System::updateMovers(float delta) {
 }
 
 void System::updateFollowers() {
-    Draw *draw;
     Position *position;
     Position *ownerPosition;
 
     for (auto follower: world->followersMap) {
-        draw = &world->drawablesMap[follower.first];
         position = &world->positionsMap[follower.first];
         ownerPosition = &world->positionsMap[follower.second.owningEntity];
 
         position->x = ownerPosition->x + follower.second.xOffset;
         position->y = ownerPosition->y + follower.second.yOffset;
-
-        draw->rectangleShape.setPosition(position->x, position->y);
     }
 }
 
