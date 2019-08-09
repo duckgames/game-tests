@@ -9,9 +9,9 @@
 World::World(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
-
+    
     unsigned int entity;
-
+    
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
         entities[entity] = COMPONENT_NONE;
     }
@@ -19,14 +19,14 @@ World::World(int screenWidth, int screenHeight) {
 
 unsigned int World::createEntity() {
     unsigned int entity;
-
+    
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (entities[entity] == COMPONENT_NONE) {
             entities[entity] = COMPONENT_USED;
             return entity;
         }
     }
-
+    
     printf("Entity limit exceeded.\n");
     return MAX_ENTITIES;
 }
@@ -40,7 +40,10 @@ void World::destroyEntity(unsigned int entity) {
     followersMap.erase(entity);
     bulletSpawnPointsMap.erase(entity);
     playerBulletSpawnPointsMap.erase(entity);
-
+    collidersMap.erase(entity);
+    collideWithPlayer.erase(entity);
+    collideWithEnemy.erase(entity);
+    
     auto leader = leadersMap.find(entity);
     if (leader != leadersMap.end()) {
         for (auto follower: leader->second.followers) {
@@ -56,7 +59,7 @@ void World::destroyEntity(unsigned int entity) {
         }
         leadersMap.erase(entity);
     }
-
+    
     entities[entity] = COMPONENT_NONE;
 }
 
@@ -120,15 +123,25 @@ void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, 
     bulletSpawnPoint.bulletXSpeed = bulletXSpeed;
     bulletSpawnPoint.bulletYSpeed = bulletYSpeed;
     bulletSpawnPoint.bullet = bullet;
-
+    
     std::pair<int, BulletSpawnPoint> pair = std::pair<int, BulletSpawnPoint>(entity, bulletSpawnPoint);
-
+    
     if (forPlayer) {
         playerBulletSpawnPointsMap.insert(pair);
     }
     else {
         bulletSpawnPointsMap.insert(pair);
     }
+}
+
+void World::addColliderComponent(unsigned int entity, float x, float y, float width, float height) {
+    Collider collider;
+    collider.x = x;
+    collider.y = y;
+    collider.width = width;
+    collider.height = height;
+
+    collidersMap.insert(std::pair<int, Collider>(entity, collider));
 }
 
 void World::addXBoundaryEnforcement(unsigned int entity) {
@@ -139,77 +152,90 @@ void World::addYBoundaryEnforcement(unsigned int entity) {
     enforceScreenYBoundaries.insert(entity);
 }
 
+void World::canCollideWithPlayer(unsigned int entity) {
+    collideWithPlayer.insert(entity);
+}
+
+void World::canCollideWithEnemy(unsigned int entity) {
+    collideWithEnemy.insert(entity);
+}
+
 unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-
+    
     addJumpComponent(entity, maxHeight, jumpSpeed, fallSpeed);
     addDrawComponent(entity, rectangleShape);
-
+    
     return entity;
 }
 
 unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-
+    
     rectangleShape.setPosition(startX, startY);
-
+    
     addDrawComponent(entity, rectangleShape);
     addPositionComponent(entity, startX, startY);
     addControllableComponent(entity, xSpeed, ySpeed);
+    addColliderComponent(entity, startX, startY, rectangleShape.getSize().x, rectangleShape.getSize().y);
+
     addXBoundaryEnforcement(entity);
     addYBoundaryEnforcement(entity);
-
+    
     return entity;
 }
 
 unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
     unsigned int entity = createEntity();
-
+    
     rectangleShape.setPosition(startX, startY);
-
+    
     addDrawComponent(entity, rectangleShape);
     addPositionComponent(entity, startX, startY);
     addMoveComponent(entity, xSpeed, ySpeed);
-
+    
     return entity;
 }
 
 unsigned int World::createFollower(int owningEntity, float xOffset, float yOffset) {
     unsigned int entity = createEntity();
-
+    
     addPositionComponent(entity, positionsMap[owningEntity].x + xOffset, positionsMap[owningEntity].y + yOffset);
     addFollowerComponent(entity, owningEntity, xOffset, yOffset);
-
+    
     return entity;
 }
 
 unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
-
+    
     addDrawComponent(entity, spawnPoint);
     addBulletSpawnPointComponent(entity, rateOfFire, 0.0f, 100.0f, bullet, false);
-
+    
     return entity;
 }
 
 unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
-
+    
     addDrawComponent(entity, spawnPoint);
     addBulletSpawnPointComponent(entity, rateOfFire, 0.0f, -500.0f, bullet, true);
-
+    
     return entity;
 }
 
 unsigned int World::createPlayerBullet(int spawnPoint) {
     Position *spawnPointPosition = &positionsMap[spawnPoint];
     BulletSpawnPoint *bulletSpawnPoint = &playerBulletSpawnPointsMap[spawnPoint];
-
+    
     unsigned int entity = createMover(spawnPointPosition->x,
-            spawnPointPosition->y,
-            bulletSpawnPoint->bulletXSpeed,
-            bulletSpawnPoint->bulletYSpeed,
-            bulletSpawnPoint->bullet);
+                                      spawnPointPosition->y,
+                                      bulletSpawnPoint->bulletXSpeed,
+                                      bulletSpawnPoint->bulletYSpeed,
+                                      bulletSpawnPoint->bullet);
+
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y);
+    canCollideWithEnemy(entity);
 
     return entity;
 }
@@ -217,23 +243,29 @@ unsigned int World::createPlayerBullet(int spawnPoint) {
 unsigned int World::createEnemyBullet(int spawnPoint) {
     Position *spawnPointPosition = &positionsMap[spawnPoint];
     BulletSpawnPoint *bulletSpawnPoint = &bulletSpawnPointsMap[spawnPoint];
-
+    
     unsigned int entity = createMover(spawnPointPosition->x,
                                       spawnPointPosition->y,
                                       bulletSpawnPoint->bulletXSpeed,
                                       bulletSpawnPoint->bulletYSpeed,
                                       bulletSpawnPoint->bullet);
 
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y);
+    canCollideWithPlayer(entity);
+
     return entity;
 }
 
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, enemy);
-
+    
     int bulletSpawnPoint = createBulletSpawnPoint(entity, enemy.getSize().x / 2, 0.0f, rateOfFire, spawnPoint, bullet);
     std::vector<int> followers;
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);
+
+    addColliderComponent(entity, startX, startY, enemy.getSize().x, enemy.getSize().y);
+    canCollideWithPlayer(entity);
 
     return entity;
 }

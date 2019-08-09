@@ -60,4 +60,11 @@ typedef struct {
     sf::RectangleShape bullet;
 } BulletSpawnPoint;
 
+typedef struct {
+    float x;
+    float y;
+    float width;
+    float height;
+} Collider;
+
 #endif //UNTITLED_COMPONENTS_H

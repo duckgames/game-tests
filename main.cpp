@@ -336,7 +336,10 @@ int main() {
             system.enforceScreenBoundaries();
             system.updateFollowers();
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
+            system.updatePlayerCollisions();
+            system.updateEnemyCollisions();
             system.renderDrawables(&window);
+            system.renderHitboxes(&window);
 
             window.display();
 

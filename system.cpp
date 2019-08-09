@@ -20,6 +20,30 @@ void System::renderDrawables(sf::RenderWindow *window) {
     }
 }
 
+void System::renderHitboxes(sf::RenderWindow *window) {
+    for (auto entity : world->collideWithPlayer) {
+        Collider *collider = &world->collidersMap[entity];
+
+        sf::RectangleShape rectangleShape;
+        rectangleShape.setPosition(collider->x, collider->y);
+        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+        rectangleShape.setFillColor(sf::Color::Green);
+
+        window->draw(rectangleShape);
+    }
+
+    for (auto entity : world->collideWithEnemy) {
+        Collider *collider = &world->collidersMap[entity];
+
+        sf::RectangleShape rectangleShape;
+        rectangleShape.setPosition(collider->x, collider->y);
+        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+        rectangleShape.setFillColor(sf::Color::Red);
+
+        window->draw(rectangleShape);
+    }
+}
+
 void System::jumpers(float delta) {
     /*
     unsigned int entity;
@@ -68,9 +92,11 @@ void System::jumpers(float delta) {
 // for the keyboardInput parameter.
 void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput) {
     Position *position;
+    Collider *collider;
 
     for (auto controllable: world->controllablesMap) {
         position = &world->positionsMap[controllable.first];
+        collider = &world->collidersMap[controllable.first];
 
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
             position->x += (padInput->stickAverageX * controllable.second.xSpeed) * delta;
@@ -92,6 +118,9 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
 
             world->playerWaitingToFire.clear();
         }
+
+        collider->x = position->x;
+        collider->y = position->y;
     }
 }
 
@@ -162,6 +191,26 @@ void System::clearDeadEntities() {
 void System::enforceScreenBoundaries() {
     enforceScreenYBoundaries();
     enforceScreenXBoundaries();
+}
+
+void System::updatePlayerCollisions() {
+    for (auto entity: world->collideWithPlayer) {
+        Position *position = &world->positionsMap[entity];
+        Collider *collider = &world->collidersMap[entity];
+
+        collider->x = position->x;
+        collider->y = position->y;
+    }
+}
+
+void System::updateEnemyCollisions() {
+    for (auto entity: world->collideWithEnemy) {
+        Position *position = &world->positionsMap[entity];
+        Collider *collider = &world->collidersMap[entity];
+
+        collider->x = position->x;
+        collider->y = position->y;
+    }
 }
 
 void System::enforceScreenXBoundaries() {
