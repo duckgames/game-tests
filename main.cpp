@@ -338,6 +338,7 @@ int main() {
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
             system.updatePlayerCollisions(player);
             system.updateEnemyCollisions();
+            system.processPendingCollisions();
             system.renderDrawables(&window);
             system.renderHitboxes(&window);
 

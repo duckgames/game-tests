@@ -25,8 +25,9 @@ class World {
     std::map<int, BulletSpawnPoint> bulletSpawnPointsMap;
     std::map<int, BulletSpawnPoint> playerBulletSpawnPointsMap;
     std::map<int, Collider> collidersMap;
+    std::map<int, Health> healthMap;
 
-    std::vector<std::pair<int, int>> unprocessedCollisions;
+    std::vector<std::pair<int, int>> pendingCollisions;
     std::unordered_set<int> collideWithPlayer;
     std::unordered_set<int> collideWithEnemy;
     std::unordered_set<int> waitingToFire;
@@ -52,7 +53,8 @@ class World {
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
     void addLeaderComponent(unsigned int entity, std::vector<int> followers);
     void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float bulletXSpeed, float bulletYSpeed, sf::RectangleShape bullet, bool forPlayer);
-    void addColliderComponent(unsigned int entity, float x, float y, float width, float height);
+    void addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage);
+    void addHealthComponent(unsigned int entity, int initialHealth);
 
     void addXBoundaryEnforcement(unsigned int entity);
     void addYBoundaryEnforcement(unsigned int entity);

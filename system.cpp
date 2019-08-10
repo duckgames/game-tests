@@ -211,7 +211,7 @@ void System::updatePlayerCollisions(int playerEntity) {
             playerCollider->x < collider->x + collider->width &&
             playerCollider->y < collider->y + collider->height &&
             playerCollider->y + playerCollider->height > collider->y) {
-            world->unprocessedCollisions.emplace_back(std::pair<int, int>(playerEntity, entity));
+            world->pendingCollisions.emplace_back(std::pair<int, int>(playerEntity, entity));
         }
     }
 }
@@ -224,6 +224,29 @@ void System::updateEnemyCollisions() {
         collider->x = position->x;
         collider->y = position->y;
     }
+}
+
+void System::processPendingCollisions() {
+    for (auto collision: world->pendingCollisions) {
+        Collider *collider1 = &world->collidersMap[collision.first];
+        Collider *collider2 = &world->collidersMap[collision.second];
+
+        Health *health1 = &world->healthMap[collision.first];
+        Health *health2 = &world->healthMap[collision.second];
+
+        health1->currentHealth -= collider2->damage;
+        health2->currentHealth -= collider1->damage;
+
+        if (health1->currentHealth <= 0) {
+            world->destroyEntity(collision.first);
+        }
+
+        if (health2->currentHealth <= 0) {
+            world->destroyEntity(collision.second);
+        }
+    }
+
+    world->pendingCollisions.clear();
 }
 
 void System::enforceScreenXBoundaries() {

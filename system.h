@@ -24,6 +24,7 @@ public:
     void enforceScreenBoundaries();
     void updatePlayerCollisions(int playerEntity);
     void updateEnemyCollisions();
+    void processPendingCollisions();
 
 private:
     void enforceScreenXBoundaries();

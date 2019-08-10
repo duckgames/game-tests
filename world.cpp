@@ -41,6 +41,7 @@ void World::destroyEntity(unsigned int entity) {
     bulletSpawnPointsMap.erase(entity);
     playerBulletSpawnPointsMap.erase(entity);
     collidersMap.erase(entity);
+    healthMap.erase(entity);
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
     
@@ -134,14 +135,23 @@ void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, 
     }
 }
 
-void World::addColliderComponent(unsigned int entity, float x, float y, float width, float height) {
+void World::addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage) {
     Collider collider;
     collider.x = x;
     collider.y = y;
     collider.width = width;
     collider.height = height;
+    collider.damage = damage;
 
     collidersMap.insert(std::pair<int, Collider>(entity, collider));
+}
+
+void World::addHealthComponent(unsigned int entity, int initialHealth) {
+    Health health;
+    health.currentHealth = initialHealth;
+    health.initialHealth = initialHealth;
+
+    healthMap.insert(std::pair<int, Health>(entity, health));
 }
 
 void World::addXBoundaryEnforcement(unsigned int entity) {
@@ -177,7 +187,8 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     addDrawComponent(entity, rectangleShape);
     addPositionComponent(entity, startX, startY);
     addControllableComponent(entity, xSpeed, ySpeed);
-    addColliderComponent(entity, startX, startY, rectangleShape.getSize().x, rectangleShape.getSize().y);
+    addColliderComponent(entity, startX, startY, rectangleShape.getSize().x, rectangleShape.getSize().y, 1);
+    addHealthComponent(entity, 10);
 
     addXBoundaryEnforcement(entity);
     addYBoundaryEnforcement(entity);
@@ -234,8 +245,10 @@ unsigned int World::createPlayerBullet(int spawnPoint) {
                                       bulletSpawnPoint->bulletYSpeed,
                                       bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y);
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y, 1);
     canCollideWithEnemy(entity);
+
+    addHealthComponent(entity, 1);
 
     return entity;
 }
@@ -250,8 +263,10 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
                                       bulletSpawnPoint->bulletYSpeed,
                                       bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y);
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y, 1);
     canCollideWithPlayer(entity);
+
+    addHealthComponent(entity, 1);
 
     return entity;
 }
@@ -264,8 +279,10 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);
 
-    addColliderComponent(entity, startX, startY, enemy.getSize().x, enemy.getSize().y);
+    addColliderComponent(entity, startX, startY, enemy.getSize().x, enemy.getSize().y, 1);
     canCollideWithPlayer(entity);
+
+    addHealthComponent(entity, 5);
 
     return entity;
 }

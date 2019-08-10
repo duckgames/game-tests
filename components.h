@@ -65,6 +65,12 @@ typedef struct {
     float y;
     float width;
     float height;
+    int damage;
 } Collider;
+
+typedef struct {
+    int initialHealth;
+    int currentHealth;
+} Health;
 
 #endif //UNTITLED_COMPONENTS_H
