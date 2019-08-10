@@ -18,6 +18,7 @@ class World {
     std::map<int, Jump> jumpersMap;
     std::map<int, Draw> drawablesMap;
     std::map<int, Position> positionsMap;
+    std::map<int, Direction> directionsMap;
     std::map<int, Controllable> controllablesMap;
     std::map<int, Move> moversMap;
     std::map<int, Follower> followersMap;
@@ -50,6 +51,7 @@ class World {
     void addJumpComponent(unsigned int entity, float maxHeight, float jumpSpeed, float fallSpeed);
     void addDrawComponent(unsigned int entity, sf::RectangleShape rectangleShape);
     void addPositionComponent(unsigned int entity, float x, float y);
+    void addDirectionComponent(unsigned int entity, float velocity, float angle);
     void addControllableComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addMoveComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
@@ -70,6 +72,7 @@ class World {
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
     unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);
+    unsigned int createProjectile(float x, float y, float velocity, float angle, sf::RectangleShape rectangleShape);
     unsigned int createPlayerBullet(int spawnPoint);
     unsigned int createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet);

@@ -147,6 +147,23 @@ void System::updateMovers(float delta) {
     }
 }
 
+void System::updateProjectiles(float delta) {
+    Position *position;
+    Direction *direction;
+
+    for (auto projectile: world->directionsMap) {
+        position = &world->positionsMap[projectile.first];
+        direction = &world->directionsMap[projectile.first];
+
+        position->x += direction->xMove * delta;
+        position->y += direction->yMove * delta;
+
+        if (position->y < 0.0f || position->y > 1080.0f) {
+            world->waitingForDeath.insert(projectile.first);
+        }
+    }
+}
+
 void System::updateFollowers() {
     Position *position;
     Position *ownerPosition;

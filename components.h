@@ -33,6 +33,11 @@ typedef struct {
 } Position;
 
 typedef struct {
+    double xMove;
+    double yMove;
+} Direction;
+
+typedef struct {
     float xSpeed;
     float ySpeed;
 } Controllable;
@@ -55,8 +60,8 @@ typedef struct {
 typedef struct {
     float rateOfFire;
     float timeElapsed;
-    float bulletXSpeed;
-    float bulletYSpeed;
+    float velocity;
+    float angle;
     sf::RectangleShape bullet;
 } BulletSpawnPoint;
 
