@@ -70,37 +70,53 @@ int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
 
-    sf::Texture specialBrew;
+    sf::Texture texShipPlayer;
+    sf::Texture texShipEnemy;
+    sf::Texture texProjectileBlue;
+    sf::Texture texProjectileRed;
+
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
 
-    specialBrew.loadFromFile("specialbrew.png");
+    texShipPlayer.loadFromFile("../assets/ship-player.png");
+    texShipEnemy.loadFromFile("../assets/ship-enemy.png");
+    texProjectileBlue.loadFromFile("../assets/projectile-blue.png");
+    texProjectileRed.loadFromFile("../assets/projectile-red.png");
 
-    sf::RectangleShape spritealBrew(sf::Vector2f(32, 32));
-    spritealBrew.setTexture(&specialBrew, true);
+    sf::RectangleShape playerShip(sf::Vector2f(32, 32));
+    playerShip.setTexture(&texShipPlayer, true);
 
-    sf::RectangleShape miniSpritealBrew(sf::Vector2f(16, 16));
-    miniSpritealBrew.setTexture(&specialBrew, true);
+    sf::RectangleShape playerBulletSpawnPoint(sf::Vector2f(16, 16));
+    playerBulletSpawnPoint.setTexture(&texProjectileBlue, true);
 
-    sf::RectangleShape tinySpritealBrew(sf::Vector2f(8, 8));
-    tinySpritealBrew.setTexture(&specialBrew, true);
+    sf::RectangleShape playerBullet(sf::Vector2f(8, 8));
+    playerBullet.setTexture(&texProjectileBlue, true);
+
+    sf::RectangleShape enemyShip(sf::Vector2f(32, 32));
+    enemyShip.setTexture(&texShipEnemy, true);
+
+    sf::RectangleShape enemyBulletSpawnPoint(sf::Vector2f(16, 16));
+    enemyBulletSpawnPoint.setTexture(&texProjectileRed, true);
+
+    sf::RectangleShape enemyBullet(sf::Vector2f(8, 8));
+    enemyBullet.setTexture(&texProjectileRed, true);
 
     //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
-   // spritealBrew.setPosition(window.getSize().x / 2, screenHeight - specialBrew.getSize().y);
+   // playerShip.setPosition(window.getSize().x / 2, screenHeight - texShipPlayer.getSize().y);
 
-   // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
+   // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, playerShip);
 
-    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - specialBrew.getSize().y, 15.0f, 15.0f, spritealBrew);
+    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - texShipPlayer.getSize().y, 15.0f, 15.0f, playerShip);
 
-    int follower1 = world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
-    int follower2 = world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
+    int follower1 = world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
+    int follower2 = world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
     std::vector<int> playerFollowers;
     playerFollowers.push_back(follower1);
     playerFollowers.push_back(follower2);
     world.addLeaderComponent(player, playerFollowers);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 200.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 200.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    world.createEnemy(250.0f, 0.0f, 0.0f, 200.0f, 0.2f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 200.0f, 0.5f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -360,13 +376,13 @@ int main() {
             loops++;
 
             //		backgroundHoriz.update(timePerFrame.asSeconds());
-            //       spritealBrew.setPosition(position);
+            //       playerShip.setPosition(position);
 
             window.clear();
             //       background.draw();
             //       backgroundHoriz.draw();
             followingBackground.draw();
-            window.draw(spritealBrew);
+            window.draw(playerShip);
             window.display();
              */
         }
