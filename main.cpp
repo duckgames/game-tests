@@ -164,9 +164,9 @@ int main() {
 
             // Check keys which map to game controller buttons here
             SFMLProcessGameControllerButton(&oldInput->keyboard.actionUp, &newInput->keyboard.actionUp, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown, sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight, sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
 
             SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp,sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
             SFMLProcessGameControllerButton(&oldInput->keyboard.moveDown, &newInput->keyboard.moveDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
