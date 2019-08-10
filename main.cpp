@@ -340,7 +340,7 @@ int main() {
             system.updateEnemyCollisions();
             system.processPendingCollisions();
             system.renderDrawables(&window);
-            system.renderHitboxes(&window);
+            system.renderHitboxes(&window, player);
 
             window.display();
 

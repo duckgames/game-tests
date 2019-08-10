@@ -20,28 +20,38 @@ void System::renderDrawables(sf::RenderWindow *window) {
     }
 }
 
-void System::renderHitboxes(sf::RenderWindow *window) {
+void System::renderHitboxes(sf::RenderWindow *window, int playerEntity) {
     for (auto entity : world->collideWithPlayer) {
         Collider *collider = &world->collidersMap[entity];
 
         sf::RectangleShape rectangleShape;
         rectangleShape.setPosition(collider->x, collider->y);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
-        rectangleShape.setFillColor(sf::Color::Green);
+        rectangleShape.setFillColor(sf::Color::Transparent);
+        rectangleShape.setOutlineColor(sf::Color::Red);
+        rectangleShape.setOutlineThickness(2.0f);
 
         window->draw(rectangleShape);
     }
+
+
+    sf::RectangleShape rectangleShape;
+    rectangleShape.setFillColor(sf::Color::Transparent);
+    rectangleShape.setOutlineColor(sf::Color::Green);
+    rectangleShape.setOutlineThickness(2.0f);
 
     for (auto entity : world->collideWithEnemy) {
         Collider *collider = &world->collidersMap[entity];
-
-        sf::RectangleShape rectangleShape;
         rectangleShape.setPosition(collider->x, collider->y);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
-        rectangleShape.setFillColor(sf::Color::Red);
 
         window->draw(rectangleShape);
     }
+
+    Collider *collider = &world->collidersMap[playerEntity];
+    rectangleShape.setPosition(collider->x, collider->y);
+    rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+    window->draw(rectangleShape);
 }
 
 void System::jumpers(float delta) {
