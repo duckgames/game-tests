@@ -26,6 +26,7 @@ class World {
     std::map<int, BulletSpawnPoint> playerBulletSpawnPointsMap;
     std::map<int, Collider> collidersMap;
 
+    std::vector<std::pair<int, int>> unprocessedCollisions;
     std::unordered_set<int> collideWithPlayer;
     std::unordered_set<int> collideWithEnemy;
     std::unordered_set<int> waitingToFire;

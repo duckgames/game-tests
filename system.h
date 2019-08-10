@@ -22,7 +22,7 @@ public:
     void processWaitingToFire();
     void clearDeadEntities();
     void enforceScreenBoundaries();
-    void updatePlayerCollisions();
+    void updatePlayerCollisions(int playerEntity);
     void updateEnemyCollisions();
 
 private:

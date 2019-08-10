@@ -193,13 +193,26 @@ void System::enforceScreenBoundaries() {
     enforceScreenXBoundaries();
 }
 
-void System::updatePlayerCollisions() {
+void System::updatePlayerCollisions(int playerEntity) {
+    Position *playerPosition = &world->positionsMap[playerEntity];
+    Collider *playerCollider = &world->collidersMap[playerEntity];
+
+    playerCollider->x = playerPosition->x;
+    playerCollider->y = playerPosition->y;
+
     for (auto entity: world->collideWithPlayer) {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
 
         collider->x = position->x;
         collider->y = position->y;
+
+        if (playerCollider->x + playerCollider->width > collider->x &&
+            playerCollider->x < collider->x + collider->width &&
+            playerCollider->y < collider->y + collider->height &&
+            playerCollider->y + playerCollider->height > collider->y) {
+            world->unprocessedCollisions.emplace_back(std::pair<int, int>(playerEntity, entity));
+        }
     }
 }
 

@@ -90,7 +90,7 @@ int main() {
 
    // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, spritealBrew);
 
-    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - specialBrew.getSize().y, 25.0f, 25.0f, spritealBrew);
+    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - specialBrew.getSize().y, 15.0f, 15.0f, spritealBrew);
 
     int follower1 = world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
     int follower2 = world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, miniSpritealBrew, tinySpritealBrew);
@@ -99,8 +99,8 @@ int main() {
     playerFollowers.push_back(follower2);
     world.addLeaderComponent(player, playerFollowers);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 500.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 500.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    world.createEnemy(250.0f, 0.0f, 0.0f, 200.0f, 0.2f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 200.0f, 0.5f, spritealBrew, miniSpritealBrew, tinySpritealBrew);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -336,7 +336,7 @@ int main() {
             system.enforceScreenBoundaries();
             system.updateFollowers();
             system.updateBulletSpawnPoints(timePerFrame.asSeconds());
-            system.updatePlayerCollisions();
+            system.updatePlayerCollisions(player);
             system.updateEnemyCollisions();
             system.renderDrawables(&window);
             system.renderHitboxes(&window);
