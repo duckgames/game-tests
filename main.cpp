@@ -106,12 +106,12 @@ int main() {
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
     sf::Time duration = sf::Time::Zero;
-
+/*
     sf::Texture vertTexture;
     sf::Texture horizTexture;
     vertTexture.loadFromFile("../assets/backgrounds/background.png");
     horizTexture.loadFromFile("../assets/backgrounds/background-horiz.png");
-/*
+
     Background background = Background(
 			&window,
 			&vertTexture,
@@ -125,14 +125,14 @@ int main() {
 			sf::Vector2f(0.0f, window.getSize().y / 2),
 			-500.0f,
 			X_AXIS);
-*/
+
 
     FollowingBackground followingBackground = FollowingBackground(
             &window,
             &horizTexture,
             -500.0f,
             SCREEN_HEIGHT);
-
+*/
     GameInput input[2] = {};
     GameInput *newInput = &input[0];
     GameInput *oldInput = &input[1];
@@ -327,7 +327,7 @@ int main() {
             }
 
             window.clear();
-            updateFollowingBackground(&followingBackground);
+    //        updateFollowingBackground(&followingBackground);
 
             system.clearDeadEntities();
             system.processWaitingToFire();
