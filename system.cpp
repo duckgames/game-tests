@@ -11,7 +11,7 @@
 #include "controller.h"
 
 void System::renderDrawables(sf::RenderWindow *window) {
-    for(auto drawable : world->drawablesMap) {
+    for (auto drawable : world->drawablesMap) {
         Position *position;
         position = &world->positionsMap[drawable.first];
         drawable.second.rectangleShape.setPosition(position->x, position->y);
@@ -101,12 +101,10 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
             position->x += (padInput->stickAverageX * controllable.second.xSpeed) * delta;
             position->y += (padInput->stickAverageY * controllable.second.ySpeed) * delta;
-        }
-        else if (padInput->povX != 0 || padInput->povY != 0) {
+        } else if (padInput->povX != 0 || padInput->povY != 0) {
             position->x += (padInput->povX * controllable.second.xSpeed) * delta;
             position->y += (padInput->povY * controllable.second.ySpeed) * delta;
-        }
-        else if (keyboardInput != nullptr) {
+        } else if (keyboardInput != nullptr) {
             position->x += (keyboardInput->stickAverageX * controllable.second.xSpeed) * delta;
             position->y += (keyboardInput->stickAverageY * controllable.second.ySpeed) * delta;
         }
@@ -223,6 +221,17 @@ void System::updateEnemyCollisions() {
 
         collider->x = position->x;
         collider->y = position->y;
+
+        for (auto enemy: world->enemies) {
+            // Enemies collide with the player, so their collider position will have been updated in updatePlayerCollisions()
+            Collider *enemyCollider = &world->collidersMap[enemy];
+            if (enemyCollider->x + enemyCollider->width > collider->x &&
+                enemyCollider->x < collider->x + collider->width &&
+                enemyCollider->y < collider->y + collider->height &&
+                enemyCollider->y + enemyCollider->height > collider->y) {
+                world->pendingCollisions.emplace_back(std::pair<int, int>(enemy, entity));
+            }
+        }
     }
 }
 
@@ -259,8 +268,7 @@ void System::enforceScreenXBoundaries() {
 
         if (position->x < 0) {
             position->x = 0;
-        }
-        else if (position->x > world->screenWidth - draw->rectangleShape.getSize().x) {
+        } else if (position->x > world->screenWidth - draw->rectangleShape.getSize().x) {
             position->x = world->screenWidth - draw->rectangleShape.getSize().x;
         }
     }
@@ -276,8 +284,7 @@ void System::enforceScreenYBoundaries() {
 
         if (position->y < 0) {
             position->y = 0;
-        }
-        else if (position->y > world->screenHeight - draw->rectangleShape.getSize().y) {
+        } else if (position->y > world->screenHeight - draw->rectangleShape.getSize().y) {
             position->y = world->screenHeight - draw->rectangleShape.getSize().y;
         }
     }

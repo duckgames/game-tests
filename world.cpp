@@ -42,6 +42,7 @@ void World::destroyEntity(unsigned int entity) {
     playerBulletSpawnPointsMap.erase(entity);
     collidersMap.erase(entity);
     healthMap.erase(entity);
+    enemies.erase(entity);
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
     
@@ -284,5 +285,6 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
 
     addHealthComponent(entity, 5);
 
+    enemies.insert(entity);
     return entity;
 }

@@ -28,6 +28,8 @@ class World {
     std::map<int, Health> healthMap;
 
     std::vector<std::pair<int, int>> pendingCollisions;
+
+    std::unordered_set<int> enemies;
     std::unordered_set<int> collideWithPlayer;
     std::unordered_set<int> collideWithEnemy;
     std::unordered_set<int> waitingToFire;
