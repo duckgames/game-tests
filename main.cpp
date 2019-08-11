@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
+#include <string>
 #include <iostream>
+#include <fstream>
 #include <x86intrin.h>
+#include <json/json.h>
 
 #include "background.h"
 #include "following-background.h"
@@ -66,17 +69,56 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
     requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
 }
 
+typedef struct {
+    int x;
+    int y;
+    int w;
+    int h;
+} TextureAtlasLocation;
+
 int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
+
+    sf::Texture textureAtlas;
+    textureAtlas.loadFromFile("../assets/texture-atlas.png");
+    std::ifstream ifs("../assets/texture-atlas.json");
+    Json::Reader reader;
+    Json::Value obj;
+    reader.parse(ifs, obj);
 
     sf::Texture texShipPlayer;
     sf::Texture texShipEnemy;
     sf::Texture texProjectileBlue;
     sf::Texture texProjectileRed;
 
+    const Json::Value &frames = obj["frames"];
+    std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
+
+    for (auto tex: frames) {
+        TextureAtlasLocation location;
+        location.x = tex["frame"]["x"].asInt();
+        location.y = tex["frame"]["y"].asInt();
+        location.w = tex["frame"]["w"].asInt();
+        location.h = tex["frame"]["h"].asInt();
+
+        textureAtlasLocationMap.insert(std::pair<std::string, TextureAtlasLocation>(tex["filename"].asString(), location));
+    }
+
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
+
+    sf::Sprite testSprite;
+    testSprite.setTexture(textureAtlas);
+
+    testSprite.setTextureRect(sf::IntRect(
+            textureAtlasLocationMap.at("ship-player").x,
+            textureAtlasLocationMap.at("ship-player").y,
+            textureAtlasLocationMap.at("ship-player").w,
+            textureAtlasLocationMap.at("ship-player").h
+    ));
+
+    testSprite.setPosition(window.getSize().x / 2, window.getSize().y / 2);
 
     texShipPlayer.loadFromFile("../assets/ship-player.png");
     texShipEnemy.loadFromFile("../assets/ship-enemy.png");
@@ -359,6 +401,7 @@ int main() {
             system.renderDrawables(&window);
             system.renderHitboxes(&window, player);
 
+            window.draw(testSprite);
             window.display();
 
             GameInput *temp = newInput;
