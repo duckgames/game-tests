@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "TextureAtlasLocation.h"
 
 #ifndef UNTITLED_COMPONENTS_H
 #define UNTITLED_COMPONENTS_H
@@ -24,7 +25,9 @@ typedef struct {
 } Jump;
 
 typedef struct {
-    sf::RectangleShape rectangleShape;
+    sf::Sprite sprite;
+    int width;
+    int height;
 } Draw;
 
 typedef struct {
@@ -62,7 +65,7 @@ typedef struct {
     float timeElapsed;
     float velocity;
     float angle;
-    sf::RectangleShape bullet;
+    TextureAtlasLocation bullet;
 } BulletSpawnPoint;
 
 typedef struct {

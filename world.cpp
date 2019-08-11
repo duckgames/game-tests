@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <math.h>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <json/json.h>
+#include <fstream>
 #include "world.h"
 
 World::World(int screenWidth, int screenHeight) {
@@ -15,6 +17,24 @@ World::World(int screenWidth, int screenHeight) {
 
     for(entity = 0; entity < MAX_ENTITIES; ++entity) {
         entities[entity] = COMPONENT_NONE;
+    }
+
+    textureAtlas.loadFromFile("../assets/texture-atlas.png");
+    std::ifstream ifs("../assets/texture-atlas.json");
+    Json::Reader reader;
+    Json::Value obj;
+    reader.parse(ifs, obj);
+
+    const Json::Value &frames = obj["frames"];
+
+    for (auto tex: frames) {
+        TextureAtlasLocation location;
+        location.x = tex["frame"]["x"].asInt();
+        location.y = tex["frame"]["y"].asInt();
+        location.w = tex["frame"]["w"].asInt();
+        location.h = tex["frame"]["h"].asInt();
+
+        textureAtlasLocationMap.insert(std::pair<std::string, TextureAtlasLocation>(tex["filename"].asString(), location));
     }
 }
 
@@ -77,9 +97,22 @@ void World::addJumpComponent(unsigned int entity, float maxHeight, float jumpSpe
     jumpersMap.insert(std::pair<int, Jump>(entity, jump));
 }
 
-void World::addDrawComponent(unsigned int entity, sf::RectangleShape rectangleShape) {
+void World::addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation) {
     Draw draw;
-    draw.rectangleShape = rectangleShape;
+    sf::Sprite sprite;
+
+    sprite.setTexture(textureAtlas);
+    sprite.setTextureRect(sf::IntRect(
+            textureAtlasLocation.x,
+            textureAtlasLocation.y,
+            textureAtlasLocation.w,
+            textureAtlasLocation.h
+    ));
+
+    draw.sprite = sprite;
+    draw.width = textureAtlasLocation.w;
+    draw.height = textureAtlasLocation.h;
+
     drawablesMap.insert(std::pair<int, Draw>(entity, draw));
 }
 
@@ -128,7 +161,7 @@ void World::addLeaderComponent(unsigned int entity, std::vector<int> followers) 
     leadersMap.insert(std::pair<int, Leader>(entity, leader));
 }
 
-void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float velocity, float angle, sf::RectangleShape bullet, bool forPlayer) {
+void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float velocity, float angle, TextureAtlasLocation bullet, bool forPlayer) {
     BulletSpawnPoint bulletSpawnPoint;
     bulletSpawnPoint.rateOfFire = rateOfFire;
     bulletSpawnPoint.timeElapsed = 0.0f;
@@ -181,24 +214,15 @@ void World::canCollideWithEnemy(unsigned int entity) {
     collideWithEnemy.insert(entity);
 }
 
-unsigned int World::createJumper(float maxHeight, float jumpSpeed, float fallSpeed, sf::RectangleShape rectangleShape) {
+unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed) {
     unsigned int entity = createEntity();
 
-    addJumpComponent(entity, maxHeight, jumpSpeed, fallSpeed);
-    addDrawComponent(entity, rectangleShape);
+    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("ship-player");
 
-    return entity;
-}
-
-unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
-    unsigned int entity = createEntity();
-
-    rectangleShape.setPosition(startX, startY);
-
-    addDrawComponent(entity, rectangleShape);
+    addDrawComponent(entity, textureAtlasLocation);
     addPositionComponent(entity, startX, startY);
     addControllableComponent(entity, xSpeed, ySpeed);
-    addColliderComponent(entity, startX, startY, rectangleShape.getSize().x, rectangleShape.getSize().y, 1);
+    addColliderComponent(entity, startX, startY, textureAtlasLocation.w, textureAtlasLocation.h, 1);
     addHealthComponent(entity, 10);
 
     addXBoundaryEnforcement(entity);
@@ -207,12 +231,10 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     return entity;
 }
 
-unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed, sf::RectangleShape rectangleShape) {
+unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed) {
     unsigned int entity = createEntity();
 
-    rectangleShape.setPosition(startX, startY);
-
-    addDrawComponent(entity, rectangleShape);
+    addDrawComponent(entity, textureAtlasLocationMap.at("ship-enemy"));
     addPositionComponent(entity, startX, startY);
     addMoveComponent(entity, xSpeed, ySpeed);
 
@@ -228,30 +250,30 @@ unsigned int World::createFollower(int owningEntity, float xOffset, float yOffse
     return entity;
 }
 
-unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
+unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
 
-    addDrawComponent(entity, spawnPoint);
-    addBulletSpawnPointComponent(entity, rateOfFire, 100.0f, 100.0f, bullet, false);
+    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-red");
+    addDrawComponent(entity, textureAtlasLocation);
+    addBulletSpawnPointComponent(entity, rateOfFire, 100.0f, 100.0f, textureAtlasLocation, false);
 
     return entity;
 }
 
-unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
+unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
 
-    addDrawComponent(entity, spawnPoint);
-    addBulletSpawnPointComponent(entity, rateOfFire, 100.0f, -500.0f, bullet, true);
+    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-blue");
+    addDrawComponent(entity, textureAtlasLocation);
+    addBulletSpawnPointComponent(entity, rateOfFire, 100.0f, -500.0f, textureAtlasLocation, true);
 
     return entity;
 }
 
-unsigned int World::createProjectile(float x, float y, float velocity, float angle, sf::RectangleShape rectangleShape) {
+unsigned int World::createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 
-    rectangleShape.setPosition(x, y);
-
-    addDrawComponent(entity, rectangleShape);
+    addDrawComponent(entity, textureAtlasLocation);
     addPositionComponent(entity, x, y);
     addDirectionComponent(entity, velocity, angle);
 
@@ -268,7 +290,7 @@ unsigned int World::createPlayerBullet(int spawnPoint) {
                                            bulletSpawnPoint->angle,
                                            bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y, 1);
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
     canCollideWithEnemy(entity);
 
     addHealthComponent(entity, 1);
@@ -286,7 +308,7 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
                                            bulletSpawnPoint->angle,
                                            bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.getSize().x, bulletSpawnPoint->bullet.getSize().y, 1);
+    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
     canCollideWithPlayer(entity);
 
     addHealthComponent(entity, 1);
@@ -294,15 +316,16 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
     return entity;
 }
 
-unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
-    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, enemy);
+unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire) {
+    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed);
 
-    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire, spawnPoint, bullet);
+    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-red");
+    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire);
     std::vector<int> followers;
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);
 
-    addColliderComponent(entity, startX, startY, enemy.getSize().x, enemy.getSize().y, 1);
+    addColliderComponent(entity, startX, startY, drawablesMap[entity].width, drawablesMap[entity].height, 1);
     canCollideWithPlayer(entity);
 
     addHealthComponent(entity, 5);

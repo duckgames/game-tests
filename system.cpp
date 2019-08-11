@@ -14,9 +14,9 @@ void System::renderDrawables(sf::RenderWindow *window) {
     for (auto drawable : world->drawablesMap) {
         Position *position;
         position = &world->positionsMap[drawable.first];
-        drawable.second.rectangleShape.setPosition(position->x, position->y);
+        drawable.second.sprite.setPosition(position->x, position->y);
 
-        window->draw(drawable.second.rectangleShape);
+        window->draw(drawable.second.sprite);
     }
 }
 
@@ -197,8 +197,8 @@ void System::updateFollowers() {
         ownerPosition = &world->positionsMap[follower.second.owningEntity];
         ownerDrawable = &world->drawablesMap[follower.second.owningEntity];
 
-        float x = ownerPosition->x + (ownerDrawable->rectangleShape.getSize().x / 2) - (drawable->rectangleShape.getSize().x / 2);
-        float y = ownerPosition->y + (ownerDrawable->rectangleShape.getSize().y / 2) - (drawable->rectangleShape.getSize().y / 2);
+        float x = ownerPosition->x + (ownerDrawable->width / 2) - (drawable->width / 2);
+        float y = ownerPosition->y + (ownerDrawable->height / 2) - (drawable->height / 2);
 
         position->x = x + follower.second.xOffset;
         position->y = y + follower.second.yOffset;
@@ -323,8 +323,8 @@ void System::enforceScreenXBoundaries() {
 
         if (position->x < 0) {
             position->x = 0;
-        } else if (position->x > world->screenWidth - draw->rectangleShape.getSize().x) {
-            position->x = world->screenWidth - draw->rectangleShape.getSize().x;
+        } else if (position->x > world->screenWidth - draw->width) {
+            position->x = world->screenWidth - draw->width;
         }
     }
 }
@@ -339,8 +339,8 @@ void System::enforceScreenYBoundaries() {
 
         if (position->y < 0) {
             position->y = 0;
-        } else if (position->y > world->screenHeight - draw->rectangleShape.getSize().y) {
-            position->y = world->screenHeight - draw->rectangleShape.getSize().y;
+        } else if (position->y > world->screenHeight - draw->height) {
+            position->y = world->screenHeight - draw->height;
         }
     }
 }

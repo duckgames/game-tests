@@ -3,13 +3,13 @@
 #include <iostream>
 #include <fstream>
 #include <x86intrin.h>
-#include <json/json.h>
 
 #include "background.h"
 #include "following-background.h"
 #include "world.h"
 #include "system.h"
 #include "controller.h"
+#include "TextureAtlasLocation.h"
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 #define MAX_CONTROLLERS 4
@@ -69,96 +69,24 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
     requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
 }
 
-typedef struct {
-    int x;
-    int y;
-    int w;
-    int h;
-} TextureAtlasLocation;
-
 int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
 
-    sf::Texture textureAtlas;
-    textureAtlas.loadFromFile("../assets/texture-atlas.png");
-    std::ifstream ifs("../assets/texture-atlas.json");
-    Json::Reader reader;
-    Json::Value obj;
-    reader.parse(ifs, obj);
-
-    sf::Texture texShipPlayer;
-    sf::Texture texShipEnemy;
-    sf::Texture texProjectileBlue;
-    sf::Texture texProjectileRed;
-
-    const Json::Value &frames = obj["frames"];
-    std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
-
-    for (auto tex: frames) {
-        TextureAtlasLocation location;
-        location.x = tex["frame"]["x"].asInt();
-        location.y = tex["frame"]["y"].asInt();
-        location.w = tex["frame"]["w"].asInt();
-        location.h = tex["frame"]["h"].asInt();
-
-        textureAtlasLocationMap.insert(std::pair<std::string, TextureAtlasLocation>(tex["filename"].asString(), location));
-    }
-
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
 
-    sf::Sprite testSprite;
-    testSprite.setTexture(textureAtlas);
+    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - 16, 15.0f, 15.0f);
 
-    testSprite.setTextureRect(sf::IntRect(
-            textureAtlasLocationMap.at("ship-player").x,
-            textureAtlasLocationMap.at("ship-player").y,
-            textureAtlasLocationMap.at("ship-player").w,
-            textureAtlasLocationMap.at("ship-player").h
-    ));
-
-    testSprite.setPosition(window.getSize().x / 2, window.getSize().y / 2);
-
-    texShipPlayer.loadFromFile("../assets/ship-player.png");
-    texShipEnemy.loadFromFile("../assets/ship-enemy.png");
-    texProjectileBlue.loadFromFile("../assets/projectile-blue.png");
-    texProjectileRed.loadFromFile("../assets/projectile-red.png");
-
-    sf::RectangleShape playerShip(sf::Vector2f(32, 32));
-    playerShip.setTexture(&texShipPlayer, true);
-
-    sf::RectangleShape playerBulletSpawnPoint(sf::Vector2f(16, 16));
-    playerBulletSpawnPoint.setTexture(&texProjectileBlue, true);
-
-    sf::RectangleShape playerBullet(sf::Vector2f(8, 8));
-    playerBullet.setTexture(&texProjectileBlue, true);
-
-    sf::RectangleShape enemyShip(sf::Vector2f(32, 32));
-    enemyShip.setTexture(&texShipEnemy, true);
-
-    sf::RectangleShape enemyBulletSpawnPoint(sf::Vector2f(8, 8));
-    enemyBulletSpawnPoint.setTexture(&texProjectileRed, true);
-
-    sf::RectangleShape enemyBullet(sf::Vector2f(8, 8));
-    enemyBullet.setTexture(&texProjectileRed, true);
-
-    //  sf::Vector2f position = sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
-   // playerShip.setPosition(window.getSize().x / 2, screenHeight - texShipPlayer.getSize().y);
-
-   // unsigned int jumper = world.createJumper(50.0f, 200.0f, 200.0f, playerShip);
-
-    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - texShipPlayer.getSize().y, 15.0f, 15.0f, playerShip);
-
-    int follower1 = world.createPlayerBulletSpawnPoint(player, 16.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
-    int follower2 = world.createPlayerBulletSpawnPoint(player, -16.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
+    int follower1 = world.createPlayerBulletSpawnPoint(player, 16.0f, 0.0f, 0.02f);
+    int follower2 = world.createPlayerBulletSpawnPoint(player, -16.0f, 0.0f, 0.02f);
     std::vector<int> playerFollowers;
     playerFollowers.push_back(follower1);
     playerFollowers.push_back(follower2);
     world.addLeaderComponent(player, playerFollowers);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
+    world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -401,7 +329,6 @@ int main() {
             system.renderDrawables(&window);
             system.renderHitboxes(&window, player);
 
-            window.draw(testSprite);
             window.display();
 
             GameInput *temp = newInput;
