@@ -119,7 +119,15 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
             position->y += (keyboardInput->stickAverageY * controllable.second.ySpeed) * delta;
         }
 
-        if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
+        if ((padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) &&
+            (padInput->actionRight.endedDown || keyboardInput->actionRight.endedDown)) {
+            for (int waiting: world->playerWaitingToFire) {
+                world->createPlayerBullet(waiting);
+            }
+
+            world->playerWaitingToFire.clear();
+        }
+        else if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 BulletSpawnPoint *bulletSpawnPoint = &world->playerBulletSpawnPointsMap[waiting];
                 bulletSpawnPoint->angle -= 10.0f;
@@ -129,8 +137,7 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
 
             world->playerWaitingToFire.clear();
         }
-
-        if (padInput->actionRight.endedDown || keyboardInput->actionRight.endedDown) {
+        else if (padInput->actionRight.endedDown || keyboardInput->actionRight.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 BulletSpawnPoint *bulletSpawnPoint = &world->playerBulletSpawnPointsMap[waiting];
                 bulletSpawnPoint->angle += 10.0f;
