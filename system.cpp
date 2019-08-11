@@ -188,13 +188,20 @@ void System::updateProjectiles(float delta) {
 void System::updateFollowers() {
     Position *position;
     Position *ownerPosition;
+    Draw *drawable;
+    Draw *ownerDrawable;
 
     for (auto follower: world->followersMap) {
         position = &world->positionsMap[follower.first];
+        drawable = &world->drawablesMap[follower.first];
         ownerPosition = &world->positionsMap[follower.second.owningEntity];
+        ownerDrawable = &world->drawablesMap[follower.second.owningEntity];
 
-        position->x = ownerPosition->x + follower.second.xOffset;
-        position->y = ownerPosition->y + follower.second.yOffset;
+        float x = ownerPosition->x + (ownerDrawable->rectangleShape.getSize().x / 2) - (drawable->rectangleShape.getSize().x / 2);
+        float y = ownerPosition->y + (ownerDrawable->rectangleShape.getSize().y / 2) - (drawable->rectangleShape.getSize().y / 2);
+
+        position->x = x + follower.second.xOffset;
+        position->y = y + follower.second.yOffset;
     }
 }
 

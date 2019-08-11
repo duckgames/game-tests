@@ -108,8 +108,8 @@ int main() {
 
     int player = world.createControllable(window.getSize().x / 2, window.getSize().y - texShipPlayer.getSize().y, 15.0f, 15.0f, playerShip);
 
-    int follower1 = world.createPlayerBulletSpawnPoint(player, 10.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
-    int follower2 = world.createPlayerBulletSpawnPoint(player, -10.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
+    int follower1 = world.createPlayerBulletSpawnPoint(player, 16.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
+    int follower2 = world.createPlayerBulletSpawnPoint(player, -16.0f, 0.0f, 0.02f, playerBulletSpawnPoint, playerBullet);
     std::vector<int> playerFollowers;
     playerFollowers.push_back(follower1);
     playerFollowers.push_back(follower2);
