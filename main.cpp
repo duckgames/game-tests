@@ -95,7 +95,7 @@ int main() {
     sf::RectangleShape enemyShip(sf::Vector2f(32, 32));
     enemyShip.setTexture(&texShipEnemy, true);
 
-    sf::RectangleShape enemyBulletSpawnPoint(sf::Vector2f(16, 16));
+    sf::RectangleShape enemyBulletSpawnPoint(sf::Vector2f(8, 8));
     enemyBulletSpawnPoint.setTexture(&texProjectileRed, true);
 
     sf::RectangleShape enemyBullet(sf::Vector2f(8, 8));
@@ -115,8 +115,8 @@ int main() {
     playerFollowers.push_back(follower2);
     world.addLeaderComponent(player, playerFollowers);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 200.0f, 0.2f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 200.0f, 0.5f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
+    world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
+    world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f, enemyShip, enemyBulletSpawnPoint, enemyBullet);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;

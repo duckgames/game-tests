@@ -297,7 +297,7 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, sf::RectangleShape enemy, sf::RectangleShape spawnPoint, sf::RectangleShape bullet) {
     unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, enemy);
 
-    int bulletSpawnPoint = createBulletSpawnPoint(entity, enemy.getSize().x / 2, 0.0f, rateOfFire, spawnPoint, bullet);
+    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire, spawnPoint, bullet);
     std::vector<int> followers;
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);
