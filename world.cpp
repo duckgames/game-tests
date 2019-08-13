@@ -4,7 +4,6 @@
 
 #include <cstdio>
 #include <math.h>
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <json/json.h>
 #include <fstream>
 #include "world.h"
