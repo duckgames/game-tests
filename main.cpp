@@ -17,6 +17,8 @@
 static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
 
+sf::Texture textureAtlas;
+
 void updateBackground(float delta, Background *background) {
     background->testUpdate2(delta);
     background->draw();
@@ -69,9 +71,65 @@ static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameI
     requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
 }
 
+
+void SFMLRenderDrawables(sf::RenderWindow *window, World *world) {
+    sf::Sprite sprite;
+    sprite.setTexture(textureAtlas);
+    for (auto drawable : world->drawablesMap) {
+        Position *position;
+        position = &world->positionsMap[drawable.first];
+
+        sprite.setTextureRect(sf::IntRect(
+                drawable.second.x,
+                drawable.second.y,
+                drawable.second.width,
+                drawable.second.height
+        ));
+        sprite.setPosition(position->x, position->y);
+
+        window->draw(sprite);
+    }
+}
+
+void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity) {
+    for (auto entity : world->collideWithPlayer) {
+        Collider *collider = &world->collidersMap[entity];
+
+        sf::RectangleShape rectangleShape;
+        rectangleShape.setPosition(collider->x, collider->y);
+        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+        rectangleShape.setFillColor(sf::Color::Transparent);
+        rectangleShape.setOutlineColor(sf::Color::Red);
+        rectangleShape.setOutlineThickness(2.0f);
+
+        window->draw(rectangleShape);
+    }
+
+
+    sf::RectangleShape rectangleShape;
+    rectangleShape.setFillColor(sf::Color::Transparent);
+    rectangleShape.setOutlineColor(sf::Color::Green);
+    rectangleShape.setOutlineThickness(2.0f);
+
+    for (auto entity : world->collideWithEnemy) {
+        Collider *collider = &world->collidersMap[entity];
+        rectangleShape.setPosition(collider->x, collider->y);
+        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+
+        window->draw(rectangleShape);
+    }
+
+    Collider *collider = &world->collidersMap[playerEntity];
+    rectangleShape.setPosition(collider->x, collider->y);
+    rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+    window->draw(rectangleShape);
+}
+
 int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
+
+    textureAtlas.loadFromFile("../assets/texture-atlas.png");
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
@@ -326,8 +384,9 @@ int main() {
             system.updatePlayerCollisions(player);
             system.updateEnemyCollisions();
             system.processPendingCollisions();
-            system.renderDrawables(&window);
-            system.renderHitboxes(&window, player);
+
+            SFMLRenderDrawables(&window, &world);
+            SFMLRenderHitboxes(&window, &world, player);
 
             window.display();
 

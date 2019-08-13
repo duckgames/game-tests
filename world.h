@@ -40,7 +40,6 @@ class World {
     std::unordered_set<int> enforceScreenXBoundaries;
     std::unordered_set<int> enforceScreenYBoundaries;
 
-    sf::Texture textureAtlas;
     std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
 
     int screenWidth;

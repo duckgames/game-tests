@@ -2,7 +2,6 @@
 // Created by kevin on 11/11/18.
 //
 
-#include <SFML/Graphics.hpp>
 #include <vector>
 #include "TextureAtlasLocation.h"
 
@@ -25,7 +24,8 @@ typedef struct {
 } Jump;
 
 typedef struct {
-    sf::Sprite sprite;
+    int x;
+    int y;
     int width;
     int height;
 } Draw;

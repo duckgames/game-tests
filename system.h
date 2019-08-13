@@ -12,8 +12,7 @@ class System {
 public:
     System(World *world): world(world) {}
     ~System() = default;
-    void renderDrawables(sf::RenderWindow *window);
-    void renderHitboxes(sf::RenderWindow *window, int playerEntity);
+
     void jumpers(float delta);
     void updateControllables(float delta, GameControllerInput *input, GameControllerInput *keyboardInput);
     void updateMovers(float delta);

@@ -2,57 +2,10 @@
 // Created by kevin on 11/11/18.
 //
 
-#include <cstdio>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include "math.h"
 #include "components.h"
 #include "system.h"
 #include "controller.h"
-
-void System::renderDrawables(sf::RenderWindow *window) {
-    for (auto drawable : world->drawablesMap) {
-        Position *position;
-        position = &world->positionsMap[drawable.first];
-        drawable.second.sprite.setPosition(position->x, position->y);
-
-        window->draw(drawable.second.sprite);
-    }
-}
-
-void System::renderHitboxes(sf::RenderWindow *window, int playerEntity) {
-    for (auto entity : world->collideWithPlayer) {
-        Collider *collider = &world->collidersMap[entity];
-
-        sf::RectangleShape rectangleShape;
-        rectangleShape.setPosition(collider->x, collider->y);
-        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
-        rectangleShape.setFillColor(sf::Color::Transparent);
-        rectangleShape.setOutlineColor(sf::Color::Red);
-        rectangleShape.setOutlineThickness(2.0f);
-
-        window->draw(rectangleShape);
-    }
-
-
-    sf::RectangleShape rectangleShape;
-    rectangleShape.setFillColor(sf::Color::Transparent);
-    rectangleShape.setOutlineColor(sf::Color::Green);
-    rectangleShape.setOutlineThickness(2.0f);
-
-    for (auto entity : world->collideWithEnemy) {
-        Collider *collider = &world->collidersMap[entity];
-        rectangleShape.setPosition(collider->x, collider->y);
-        rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
-
-        window->draw(rectangleShape);
-    }
-
-    Collider *collider = &world->collidersMap[playerEntity];
-    rectangleShape.setPosition(collider->x, collider->y);
-    rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
-    window->draw(rectangleShape);
-}
 
 void System::jumpers(float delta) {
     /*

@@ -3,9 +3,9 @@
 //
 
 #include <cstdio>
-#include <math.h>
-#include <json/json.h>
+#include <cmath>
 #include <fstream>
+#include <json/json.h>
 #include "world.h"
 
 World::World(int screenWidth, int screenHeight) {
@@ -18,7 +18,6 @@ World::World(int screenWidth, int screenHeight) {
         entities[entity] = COMPONENT_NONE;
     }
 
-    textureAtlas.loadFromFile("../assets/texture-atlas.png");
     std::ifstream ifs("../assets/texture-atlas.json");
     Json::Reader reader;
     Json::Value obj;
@@ -98,17 +97,9 @@ void World::addJumpComponent(unsigned int entity, float maxHeight, float jumpSpe
 
 void World::addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation) {
     Draw draw;
-    sf::Sprite sprite;
 
-    sprite.setTexture(textureAtlas);
-    sprite.setTextureRect(sf::IntRect(
-            textureAtlasLocation.x,
-            textureAtlasLocation.y,
-            textureAtlasLocation.w,
-            textureAtlasLocation.h
-    ));
-
-    draw.sprite = sprite;
+    draw.x = textureAtlasLocation.x;
+    draw.y = textureAtlasLocation.y;
     draw.width = textureAtlasLocation.w;
     draw.height = textureAtlasLocation.h;
 
