@@ -319,7 +319,6 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire) {
     unsigned int entity = createMover(startX, startY, xSpeed, ySpeed);
 
-    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-red");
     int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire);
     std::vector<int> followers;
     followers.push_back(bulletSpawnPoint);
