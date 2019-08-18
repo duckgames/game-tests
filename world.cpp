@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cmath>
 #include <fstream>
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 #include "world.h"
 
 World::World(int screenWidth, int screenHeight) {
