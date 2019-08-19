@@ -19,15 +19,6 @@ static const int SCREEN_HEIGHT = 1080;
 
 sf::Texture textureAtlas;
 
-void updateBackground(float delta, Background *background) {
-    background->testUpdate2(delta);
-    background->draw();
-}
-
-void updateFollowingBackground(FollowingBackground *background) {
-    background->draw();
-}
-
 static void SFMLProcessGameControllerButton(GameButtonState *oldState, GameButtonState *newState, bool value) {
     newState->endedDown = value;
     newState->halfTransitionCount += ((newState->endedDown == oldState->endedDown) ? 0 : 1);
@@ -187,10 +178,9 @@ int main() {
         }
     }
 
-    ulong total = 0;
-    ulong loops = 0;
-    ulong result = 0;
-    while (window.isOpen() && loops < 7000) {
+    sf::Clock clock;
+
+    while (window.isOpen()) {
         sf::Event event;
 
         timeSinceLastUpdate += tickClock.restart();
@@ -371,7 +361,6 @@ int main() {
             }
 
             window.clear();
-    //        updateFollowingBackground(&followingBackground);
 
             system.clearDeadEntities();
             system.processWaitingToFire();
@@ -394,29 +383,10 @@ int main() {
             newInput = oldInput;
             oldInput = temp;
 
-            /*
-            ulong t1 = __rdtsc();
-            ulong t2 = __rdtsc();
-            //       background.testUpdate2(timePerFrame.asSeconds());
-            ulong t3 = __rdtsc();
-            result = (t3 - t2) - (t2 - t1);
-
-            total += result;
-            loops++;
-
-            //		backgroundHoriz.update(timePerFrame.asSeconds());
-            //       playerShip.setPosition(position);
-
-            window.clear();
-            //       background.draw();
-            //       backgroundHoriz.draw();
-            followingBackground.draw();
-            window.draw(playerShip);
-            window.display();
-             */
+            float currentTime = clock.restart().asSeconds();
+            float fps = 1.0f / currentTime;
+            std::cout << fps << std::endl;
         }
-
-        //	std::cout << total / loops << std::endl;
     }
 
     return 0;
