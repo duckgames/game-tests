@@ -1,15 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <x86intrin.h>
 
-#include "background.h"
-#include "following-background.h"
 #include "world.h"
 #include "system.h"
 #include "controller.h"
-#include "TextureAtlasLocation.h"
 
 #define CONTROLLER_AXIS_DEADZONE 20.0f
 #define MAX_CONTROLLERS 4
