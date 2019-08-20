@@ -120,6 +120,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
 
+    TextureAtlasLocation background = world.textureAtlasLocationMap.at("background");
+    world.createMover((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y, 0.0f, 50.0f, background);
+
     int player = world.createControllable(window.getSize().x / 2, window.getSize().y - 16, 15.0f, 15.0f);
 
     int follower1 = world.createPlayerBulletSpawnPoint(player, 16.0f, 0.0f, 0.02f);
@@ -136,33 +139,7 @@ int main() {
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
     sf::Time duration = sf::Time::Zero;
-/*
-    sf::Texture vertTexture;
-    sf::Texture horizTexture;
-    vertTexture.loadFromFile("../assets/backgrounds/background.png");
-    horizTexture.loadFromFile("../assets/backgrounds/background-horiz.png");
 
-    Background background = Background(
-			&window,
-			&vertTexture,
-            sf::Vector2f(window.getSize().x / 2, 0.0f),
-            -500.0f,
-			Y_AXIS);
-
-	Background backgroundHoriz = Background(
-			&window,
-			&horizTexture,
-			sf::Vector2f(0.0f, window.getSize().y / 2),
-			-500.0f,
-			X_AXIS);
-
-
-    FollowingBackground followingBackground = FollowingBackground(
-            &window,
-            &horizTexture,
-            -500.0f,
-            SCREEN_HEIGHT);
-*/
     GameInput input[2] = {};
     GameInput *newInput = &input[0];
     GameInput *oldInput = &input[1];

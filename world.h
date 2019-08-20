@@ -70,7 +70,7 @@ class World {
     void canCollideWithEnemy(unsigned int entity);
     
     unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed);
-    unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed);
+    unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire);
     unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire);

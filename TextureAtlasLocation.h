@@ -6,10 +6,10 @@
 #define UNTITLED_TEXTUREATLASLOCATION_H
 
 typedef struct {
-    int x;
-    int y;
-    int w;
-    int h;
+    long x;
+    long y;
+    long w;
+    long h;
 } TextureAtlasLocation;
 
 #endif //UNTITLED_TEXTUREATLASLOCATION_H

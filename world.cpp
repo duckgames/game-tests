@@ -221,10 +221,10 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     return entity;
 }
 
-unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed) {
+unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 
-    addDrawComponent(entity, textureAtlasLocationMap.at("ship-enemy"));
+    addDrawComponent(entity, textureAtlasLocation);
     addPositionComponent(entity, startX, startY);
     addMoveComponent(entity, xSpeed, ySpeed);
 
@@ -307,7 +307,7 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
 }
 
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire) {
-    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed);
+    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, textureAtlasLocationMap.at("ship-enemy"));
 
     int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire);
     std::vector<int> followers;
