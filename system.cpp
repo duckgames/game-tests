@@ -108,14 +108,16 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
 
 void System::updateMovers(float delta) {
     Position *position;
+    Draw *draw;
 
     for (auto mover: world->moversMap) {
         position = &world->positionsMap[mover.first];
+        draw = &world->drawablesMap[mover.first];
 
         position->x += mover.second.xSpeed * delta;
         position->y += mover.second.ySpeed * delta;
 
-        if (position->y < 0.0f || position->y > 1080.0f) {
+        if (position->y + draw->height < 0.0f || position->y > 1080.0f) {
             world->waitingForDeath.insert(mover.first);
         }
     }
