@@ -188,6 +188,15 @@ void World::addHealthComponent(unsigned int entity, int initialHealth) {
     healthMap.insert(std::pair<int, Health>(entity, health));
 }
 
+void World::addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed) {
+    InfiniteBackground infiniteBackground;
+    infiniteBackground.startY = startY;
+    infiniteBackground.xSpeed = xSpeed;
+    infiniteBackground.ySpeed = ySpeed;
+
+    infiniteBackgroundsMap.insert(std::pair<int, InfiniteBackground>(entity, infiniteBackground));
+}
+
 void World::addXBoundaryEnforcement(unsigned int entity) {
     enforceScreenXBoundaries.insert(entity);
 }
@@ -320,5 +329,19 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     addHealthComponent(entity, 5);
 
     enemies.insert(entity);
+    return entity;
+}
+
+unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
+    unsigned int entity = createEntity();
+
+    addDrawComponent(entity, textureAtlasLocation);
+    addPositionComponent(entity, startX, startY);
+    addInfiniteBackgroundComponent(entity, startY, xSpeed, ySpeed);
+
+    int follower = createFollower(entity, 0.0f, -textureAtlasLocation.h);
+    addDrawComponent(follower, textureAtlasLocation);
+    infiniteBackgroundsMap[entity].follower = follower;
+
     return entity;
 }

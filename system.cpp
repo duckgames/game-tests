@@ -2,6 +2,7 @@
 // Created by kevin on 11/11/18.
 //
 
+#include <iostream>
 #include "math.h"
 #include "components.h"
 #include "system.h"
@@ -241,6 +242,23 @@ void System::updateEnemyCollisions() {
                 enemyCollider->y + enemyCollider->height > collider->y) {
                 world->pendingCollisions.emplace_back(std::pair<int, int>(enemy, entity));
             }
+        }
+    }
+}
+
+void System::updateInfiniteBackgrounds(float delta) {
+    Position *position;
+    InfiniteBackground *background;
+
+    for (auto entity: world->infiniteBackgroundsMap) {
+        position = &world->positionsMap[entity.first];
+        background = &world->infiniteBackgroundsMap[entity.first];
+
+        position->x += background->xSpeed * delta;
+        position->y += background->ySpeed * delta;
+
+        if (position->y > 1080.0f) {
+            position->y = background->startY;
         }
     }
 }

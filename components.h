@@ -81,4 +81,11 @@ typedef struct {
     int currentHealth;
 } Health;
 
+typedef struct {
+    int follower;
+    float startY;
+    float xSpeed;
+    float ySpeed;
+} InfiniteBackground;
+
 #endif //UNTITLED_COMPONENTS_H

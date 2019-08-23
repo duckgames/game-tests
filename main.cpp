@@ -121,7 +121,7 @@ int main() {
     window.setVerticalSyncEnabled(true);
 
     TextureAtlasLocation background = world.textureAtlasLocationMap.at("background");
-    world.createMover((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y, 0.0f, 50.0f, background);
+    world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y, 0.0f, 100.0f, background);
 
     int player = world.createControllable(window.getSize().x / 2, window.getSize().y - 16, 15.0f, 15.0f);
 
@@ -336,6 +336,7 @@ int main() {
 
             system.clearDeadEntities();
             system.processWaitingToFire();
+            system.updateInfiniteBackgrounds(timePerFrame.asSeconds());
             system.updateMovers(timePerFrame.asSeconds());
             system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard);
             system.updateProjectiles(timePerFrame.asSeconds());
