@@ -346,6 +346,7 @@ int main() {
             system.updatePlayerCollisions(player);
             system.updateEnemyCollisions();
             system.processPendingCollisions();
+            system.updateScore();
 
             SFMLRenderDrawables(&window, &world);
             SFMLRenderHitboxes(&window, &world, player);
@@ -355,6 +356,8 @@ int main() {
             GameInput *temp = newInput;
             newInput = oldInput;
             oldInput = temp;
+
+            std::cout << "SCORE: " << world.score << std::endl;
 
             float currentTime = clock.restart().asSeconds();
             float fps = 1.0f / currentTime;

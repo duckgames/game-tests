@@ -88,4 +88,8 @@ typedef struct {
     float ySpeed;
 } InfiniteBackground;
 
+typedef struct {
+    long points;
+} Score;
+
 #endif //UNTITLED_COMPONENTS_H

@@ -66,6 +66,12 @@ void World::destroyEntity(unsigned int entity) {
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
 
+    auto iterator = scoresMap.find(entity);
+    if (iterator != scoresMap.end()) {
+        score += iterator->second.points;
+        scoresMap.erase(iterator);
+    }
+
     auto leader = leadersMap.find(entity);
     if (leader != leadersMap.end()) {
         for (auto follower: leader->second.followers) {
@@ -195,6 +201,13 @@ void World::addInfiniteBackgroundComponent(unsigned int entity, float startY, fl
     infiniteBackground.ySpeed = ySpeed;
 
     infiniteBackgroundsMap.insert(std::pair<int, InfiniteBackground>(entity, infiniteBackground));
+}
+
+void World::addScoreComponent(unsigned int entity, long points) {
+    Score score;
+    score.points = points;
+
+    scoresMap.insert(std::pair<int, Score>(entity, score));
 }
 
 void World::addXBoundaryEnforcement(unsigned int entity) {
@@ -327,6 +340,7 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     canCollideWithPlayer(entity);
 
     addHealthComponent(entity, 5);
+    addScoreComponent(entity, 5);
 
     enemies.insert(entity);
     return entity;

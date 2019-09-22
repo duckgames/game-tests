@@ -29,6 +29,7 @@ class World {
     std::map<int, Collider> collidersMap;
     std::map<int, Health> healthMap;
     std::map<int, InfiniteBackground> infiniteBackgroundsMap;
+    std::map<int, Score> scoresMap;
 
     std::vector<std::pair<int, int>> pendingCollisions;
 
@@ -40,12 +41,14 @@ class World {
     std::unordered_set<int> waitingForDeath;
     std::unordered_set<int> enforceScreenXBoundaries;
     std::unordered_set<int> enforceScreenYBoundaries;
+    std::unordered_set<int> scoresToAdd;
 
     std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
 
     int screenWidth;
     int screenHeight;
-    
+    long score;
+
     World(int screenWidth, int ScreenHeight);
     ~World() = default;
     
@@ -64,6 +67,7 @@ class World {
     void addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage);
     void addHealthComponent(unsigned int entity, int initialHealth);
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
+    void addScoreComponent(unsigned int entity, long score);
 
     void addXBoundaryEnforcement(unsigned int entity);
     void addYBoundaryEnforcement(unsigned int entity);

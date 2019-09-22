@@ -286,6 +286,15 @@ void System::processPendingCollisions() {
     world->pendingCollisions.clear();
 }
 
+void System::updateScore() {
+    for (auto toAdd: world->scoresToAdd) {
+        Score *score = &world->scoresMap[toAdd];
+        world->score += score->points;
+    }
+
+    world->scoresToAdd.clear();
+}
+
 void System::enforceScreenXBoundaries() {
     for (auto entity: world->enforceScreenXBoundaries) {
         Position *position;
