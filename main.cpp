@@ -13,6 +13,7 @@ static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
 
 sf::Texture textureAtlas;
+sf::Font font;
 
 static void SFMLProcessGameControllerButton(GameButtonState *oldState, GameButtonState *newState, bool value) {
     newState->endedDown = value;
@@ -115,6 +116,7 @@ int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
 
+    font.loadFromFile("../assets/Ubuntu-M.ttf");
     textureAtlas.loadFromFile("../assets/texture-atlas.png");
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
@@ -351,13 +353,20 @@ int main() {
             SFMLRenderDrawables(&window, &world);
             SFMLRenderHitboxes(&window, &world, player);
 
+            sf::Text text;
+
+            std::string scoreString = "SCORE: ";
+            scoreString.append(std::to_string(world.score));
+            text.setString(scoreString);
+            text.setFont(font);
+            text.setCharacterSize(24);
+            window.draw(text);
+
             window.display();
 
             GameInput *temp = newInput;
             newInput = oldInput;
             oldInput = temp;
-
-            std::cout << "SCORE: " << world.score << std::endl;
 
             float currentTime = clock.restart().asSeconds();
             float fps = 1.0f / currentTime;

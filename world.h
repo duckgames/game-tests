@@ -47,7 +47,7 @@ class World {
 
     int screenWidth;
     int screenHeight;
-    long score;
+    long score = 0;
 
     World(int screenWidth, int ScreenHeight);
     ~World() = default;
