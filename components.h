@@ -92,4 +92,13 @@ typedef struct {
     long points;
 } Score;
 
+typedef struct {
+    int currentFrame;
+    int totalFrames;
+    float frameDuration;
+    float timeElapsed;
+    bool loop;
+    std::vector<Draw> drawables;
+} Animation;
+
 #endif //UNTITLED_COMPONENTS_H

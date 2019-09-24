@@ -295,6 +295,20 @@ void System::updateScore() {
     world->scoresToAdd.clear();
 }
 
+void System::updateAnimations(float delta) {
+    for (auto entity: world->animationsMap) {
+        Animation *animation = &world->animationsMap[entity.first];
+        animation->timeElapsed += delta;
+
+        if (animation->timeElapsed >= animation->frameDuration) {
+            int nextFrame = (animation->currentFrame < animation->totalFrames - 1 ? (animation->currentFrame + 1) : 0);
+            world->drawablesMap[entity.first] = animation->drawables[nextFrame];
+            animation->currentFrame = nextFrame;
+            animation->timeElapsed = 0;
+        }
+    }
+}
+
 void System::enforceScreenXBoundaries() {
     for (auto entity: world->enforceScreenXBoundaries) {
         Position *position;

@@ -210,6 +210,26 @@ void World::addScoreComponent(unsigned int entity, long points) {
     scoresMap.insert(std::pair<int, Score>(entity, score));
 }
 
+void World::addAnimationComponent(unsigned int entity, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations, int numFrames) {
+    Animation animation;
+    animation.currentFrame = 0;
+    animation.frameDuration = frameDuration;
+    animation.loop = loop;
+    animation.timeElapsed = 0.0f;
+    animation.totalFrames = numFrames;
+
+    for (int i = 0; i < numFrames; i++) {
+        Draw draw;
+        draw.x = textureAtlasLocations[i].x;
+        draw.y = textureAtlasLocations[i].y;
+        draw.width = textureAtlasLocations[i].w;
+        draw.height = textureAtlasLocations[i].h;
+        animation.drawables.push_back(draw);
+    }
+
+    animationsMap.insert(std::pair<int, Animation>(entity, animation));
+}
+
 void World::addXBoundaryEnforcement(unsigned int entity) {
     enforceScreenXBoundaries.insert(entity);
 }
@@ -356,6 +376,21 @@ unsigned int World::createInfiniteBackground(float startX, float startY, float x
     int follower = createFollower(entity, 0.0f, -textureAtlasLocation.h);
     addDrawComponent(follower, textureAtlasLocation);
     infiniteBackgroundsMap[entity].follower = follower;
+
+    return entity;
+}
+
+unsigned int World::createTestAnimation() {
+    unsigned int entity = createEntity();
+
+    addPositionComponent(entity, 100, 100);
+    TextureAtlasLocation textureAtlasLocations[2] = {
+            textureAtlasLocationMap.at("legs_middle"),
+            textureAtlasLocationMap.at("legs_run")
+    };
+
+    addAnimationComponent(entity, 0.2f, true, textureAtlasLocations, 2);
+    addDrawComponent(entity, textureAtlasLocations[0]);
 
     return entity;
 }

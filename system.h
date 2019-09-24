@@ -27,6 +27,7 @@ public:
     void updateInfiniteBackgrounds(float delta);
     void processPendingCollisions();
     void updateScore();
+    void updateAnimations(float delta);
 
 private:
     void enforceScreenXBoundaries();

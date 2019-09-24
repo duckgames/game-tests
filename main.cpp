@@ -137,6 +137,8 @@ int main() {
     world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f);
     world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
 
+    world.createTestAnimation();
+
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time timePerFrame = sf::seconds(1.0f / 60.0f);
@@ -349,6 +351,7 @@ int main() {
             system.updateEnemyCollisions();
             system.processPendingCollisions();
             system.updateScore();
+            system.updateAnimations(timePerFrame.asSeconds());
 
             SFMLRenderDrawables(&window, &world);
             SFMLRenderHitboxes(&window, &world, player);

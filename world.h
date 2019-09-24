@@ -30,6 +30,7 @@ class World {
     std::map<int, Health> healthMap;
     std::map<int, InfiniteBackground> infiniteBackgroundsMap;
     std::map<int, Score> scoresMap;
+    std::map<int, Animation> animationsMap;
 
     std::vector<std::pair<int, int>> pendingCollisions;
 
@@ -68,6 +69,7 @@ class World {
     void addHealthComponent(unsigned int entity, int initialHealth);
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
     void addScoreComponent(unsigned int entity, long score);
+    void addAnimationComponent(unsigned int entity, float frameDuration, bool loop, TextureAtlasLocation textureAtlasLocations[], int numFrames);
 
     void addXBoundaryEnforcement(unsigned int entity);
     void addYBoundaryEnforcement(unsigned int entity);
@@ -85,5 +87,6 @@ class World {
     unsigned int createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
+    unsigned int createTestAnimation();
 };
 #endif //UNTITLED_WORLD_H
