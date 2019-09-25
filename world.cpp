@@ -366,6 +366,24 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     return entity;
 }
 
+unsigned int World::createLuaEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::string textureAtlasLocation, float bspXOffset, float bspYOffset, int colliderDamage, int health, int score) {
+    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, textureAtlasLocationMap.at(textureAtlasLocation));
+
+    int bulletSpawnPoint = createBulletSpawnPoint(entity, bspXOffset, bspYOffset, rateOfFire);
+    std::vector<int> followers;
+    followers.push_back(bulletSpawnPoint);
+    addLeaderComponent(entity, followers);
+
+    addColliderComponent(entity, startX, startY, drawablesMap[entity].width, drawablesMap[entity].height, colliderDamage);
+    canCollideWithPlayer(entity);
+
+    addHealthComponent(entity, health);
+    addScoreComponent(entity, score);
+
+    enemies.insert(entity);
+    return entity;
+}
+
 unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 

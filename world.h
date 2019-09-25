@@ -86,6 +86,7 @@ class World {
     unsigned int createPlayerBullet(int spawnPoint);
     unsigned int createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire);
+    unsigned int createLuaEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::string textureAtlasLocation, float bspXOffset, float bspYOffset, int colliderDamage, int health, int score);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     unsigned int createTestAnimation();
 };

@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "lib/lua/sol.hpp"
 #include <string>
 #include <iostream>
 
@@ -27,7 +28,9 @@ static float SFMLProcessGameControllerAxis(float value) {
     return 0.0f;
 }
 
-static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput, GameButtonState *gameButtonState, GameButtonState *oldGameButtonState, const char *buttonName) {
+static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput,
+                               GameButtonState *gameButtonState, GameButtonState *oldGameButtonState,
+                               const char *buttonName) {
     sf::Event event;
 
     bool waiting = true;
@@ -48,14 +51,22 @@ static void requestButtonPress(sf::RenderWindow *window, int controllerNumber, G
 }
 
 static void SFMLSetButtons(sf::RenderWindow *window, int controllerNumber, GameInput *input, GameInput *oldInput) {
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionUp, &oldInput->controllers[controllerNumber].actionUp, "Action Up");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionDown, &oldInput->controllers[controllerNumber].actionDown, "Action Down");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionLeft, &oldInput->controllers[controllerNumber].actionLeft, "Action Left");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionRight, &oldInput->controllers[controllerNumber].actionRight, "Action Right");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].leftShoulder, &oldInput->controllers[controllerNumber].leftShoulder, "Left Shoulder");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].rightShoulder, &oldInput->controllers[controllerNumber].rightShoulder, "Right Shoulder");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].back, &oldInput->controllers[controllerNumber].back, "Back");
-    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start, &oldInput->controllers[controllerNumber].start, "Start");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionUp,
+                       &oldInput->controllers[controllerNumber].actionUp, "Action Up");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionDown,
+                       &oldInput->controllers[controllerNumber].actionDown, "Action Down");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionLeft,
+                       &oldInput->controllers[controllerNumber].actionLeft, "Action Left");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].actionRight,
+                       &oldInput->controllers[controllerNumber].actionRight, "Action Right");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].leftShoulder,
+                       &oldInput->controllers[controllerNumber].leftShoulder, "Left Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].rightShoulder,
+                       &oldInput->controllers[controllerNumber].rightShoulder, "Right Shoulder");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].back,
+                       &oldInput->controllers[controllerNumber].back, "Back");
+    requestButtonPress(window, controllerNumber, input, oldInput, &input->controllers[controllerNumber].start,
+                       &oldInput->controllers[controllerNumber].start, "Start");
 }
 
 
@@ -112,6 +123,84 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     window->draw(rectangleShape);
 }
 
+void loadLevel(int levelNumber, World *world) {
+    sol::state lua;
+    lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
+    std::string levelName = "level" + std::to_string(levelNumber);
+    lua.script_file("../scripts/" + levelName + ".lua");
+
+    sol::table enemies = lua["enemies"];
+    unsigned int enemyIndex = 0;
+    while (true) {
+        sol::optional<sol::table> enemyExists = enemies[enemyIndex];
+        if (enemyExists == sol::nullopt) {
+            break;
+        } else {
+            sol::table enemy = enemies[enemyIndex];
+            int entity = world->createEntity();
+
+            // Add Move Component
+            sol::optional<sol::table> moverExists = enemy["components"]["move"];
+            if (moverExists != sol::nullopt) {
+                world->addMoveComponent(entity,
+                                        static_cast<float>(enemy["components"]["move"]["xSpeed"]),
+                                        static_cast<float>(enemy["components"]["move"]["ySpeed"])
+                );
+            }
+
+            // Add Position Component
+            sol::optional<sol::table> positionExists = enemy["components"]["position"];
+            if (positionExists != sol::nullopt) {
+                world->addPositionComponent(entity,
+                                            static_cast<float>(enemy["components"]["position"]["x"]),
+                                            static_cast<float>(enemy["components"]["position"]["y"])
+                );
+            }
+
+            // Add Draw Component
+            sol::optional<sol::table> drawExists = enemy["components"]["draw"];
+            if (drawExists != sol::nullopt) {
+                std::string textureAtlasLocation = enemy["components"]["draw"]["textureAtlasLocation"];
+                world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
+            }
+
+            // Add Collider Component
+            sol::optional<sol::table> colliderExists = enemy["components"]["collider"];
+            if (colliderExists != sol::nullopt) {
+                world->addColliderComponent(entity,
+                                            static_cast<float>(enemy["components"]["collider"]["x"]),
+                                            static_cast<float>(enemy["components"]["collider"]["y"]),
+                                            static_cast<float>(enemy["components"]["collider"]["width"]),
+                                            static_cast<float>(enemy["components"]["collider"]["height"]),
+                                            static_cast<int>(enemy["components"]["collider"]["damage"])
+                );
+            }
+
+            // Add Health Component
+            sol::optional<sol::table> healthExists = enemy["components"]["health"];
+            if (healthExists != sol::nullopt) {
+                world->addHealthComponent(entity, static_cast<int>(enemy["components"]["health"]["initialHealth"]));
+            }
+
+            // Add Score Component
+            sol::optional<sol::table> scoreExists = enemy["components"]["score"];
+            if (scoreExists != sol::nullopt) {
+                world->addHealthComponent(entity, static_cast<int>(enemy["components"]["score"]["points"]));
+            }
+
+            bool canCollideWithPlayer = enemy["canCollideWithPlayer"];
+
+            if (canCollideWithPlayer) {
+                world->canCollideWithPlayer(entity);
+            }
+
+            world->addXBoundaryEnforcement(entity);
+            world->addYBoundaryEnforcement(entity);
+        }
+        enemyIndex++;
+    }
+}
+
 int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
@@ -123,7 +212,8 @@ int main() {
     window.setVerticalSyncEnabled(true);
 
     TextureAtlasLocation background = world.textureAtlasLocationMap.at("background");
-    world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y, 0.0f, 100.0f, background);
+    world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y,
+                                   0.0f, 100.0f, background);
 
     int player = world.createControllable(window.getSize().x / 2, window.getSize().y - 16, 15.0f, 15.0f);
 
@@ -136,6 +226,8 @@ int main() {
 
     world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f);
     world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
+
+    loadLevel(1, &world);
 
     world.createTestAnimation();
 
@@ -173,21 +265,33 @@ int main() {
             }
 
             // Check keys which map to game controller buttons here
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionUp, &newInput->keyboard.actionUp, sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight, sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionUp, &newInput->keyboard.actionUp,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
 
-            SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp,sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.moveDown, &newInput->keyboard.moveDown, sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.moveLeft, &newInput->keyboard.moveLeft, sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.moveRight, &newInput->keyboard.moveRight, sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveDown, &newInput->keyboard.moveDown,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveLeft, &newInput->keyboard.moveLeft,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.moveRight, &newInput->keyboard.moveRight,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
 
-            SFMLProcessGameControllerButton(&oldInput->keyboard.leftShoulder, &newInput->keyboard.leftShoulder, sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.rightShoulder, &newInput->keyboard.rightShoulder, sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.leftShoulder, &newInput->keyboard.leftShoulder,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.rightShoulder, &newInput->keyboard.rightShoulder,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::X));
 
-            SFMLProcessGameControllerButton(&oldInput->keyboard.back, &newInput->keyboard.back, sf::Keyboard::isKeyPressed(sf::Keyboard::F2));
-            SFMLProcessGameControllerButton(&oldInput->keyboard.start, &newInput->keyboard.start, sf::Keyboard::isKeyPressed(sf::Keyboard::F1));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.back, &newInput->keyboard.back,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::F2));
+            SFMLProcessGameControllerButton(&oldInput->keyboard.start, &newInput->keyboard.start,
+                                            sf::Keyboard::isKeyPressed(sf::Keyboard::F1));
 
             // Process the arrow keys as if they were a controller axis, so movement related code can treat keyboard input identically.
             // The initial value is zero. If Up or Left are pressed, the respective axis will be set to -100.0f. If Down or Right
@@ -227,9 +331,12 @@ int main() {
 */
             newInput->mouseX = sf::Mouse::getPosition(window).x;
             newInput->mouseY = sf::Mouse::getPosition(window).y;
-            SFMLProcessGameControllerButton(&oldInput->mouseButtons[0], &newInput->mouseButtons[0], sf::Mouse::isButtonPressed(sf::Mouse::Left));
-            SFMLProcessGameControllerButton(&oldInput->mouseButtons[1], &newInput->mouseButtons[1], sf::Mouse::isButtonPressed(sf::Mouse::Middle));
-            SFMLProcessGameControllerButton(&oldInput->mouseButtons[2], &newInput->mouseButtons[2], sf::Mouse::isButtonPressed(sf::Mouse::Right));
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[0], &newInput->mouseButtons[0],
+                                            sf::Mouse::isButtonPressed(sf::Mouse::Left));
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[1], &newInput->mouseButtons[1],
+                                            sf::Mouse::isButtonPressed(sf::Mouse::Middle));
+            SFMLProcessGameControllerButton(&oldInput->mouseButtons[2], &newInput->mouseButtons[2],
+                                            sf::Mouse::isButtonPressed(sf::Mouse::Right));
 
 /*
             printf("Mouse x: %d\n", newInput->mouseX);
@@ -260,24 +367,33 @@ int main() {
                     // Dpad input as button
                     SFMLProcessGameControllerButton(&oldInput->controllers[i].moveUp, &newInput->controllers[i].moveUp,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovY) < 0));
-                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveDown, &newInput->controllers[i].moveDown,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveDown,
+                                                    &newInput->controllers[i].moveDown,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovY) > 0));
-                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveLeft, &newInput->controllers[i].moveLeft,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveLeft,
+                                                    &newInput->controllers[i].moveLeft,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovX) < 0));
-                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveRight, &newInput->controllers[i].moveRight,
+                    SFMLProcessGameControllerButton(&oldInput->controllers[i].moveRight,
+                                                    &newInput->controllers[i].moveRight,
                                                     (sf::Joystick::getAxisPosition(i, sf::Joystick::PovX) > 0));
 
                     // Dpad input as POV axis
-                    newInput->controllers[i].povX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::PovX));
-                    newInput->controllers[i].povY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::PovY));
+                    newInput->controllers[i].povX = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::PovX));
+                    newInput->controllers[i].povY = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::PovY));
 
                     // Analog stick input
 
-                    newInput->controllers[i].stickAverageX = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::X));
-                    newInput->controllers[i].stickAverageY = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::Y));
+                    newInput->controllers[i].stickAverageX = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::X));
+                    newInput->controllers[i].stickAverageY = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::Y));
 
-                    newInput->controllers[i].stickAverageU = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::U));
-                    newInput->controllers[i].stickAverageV = SFMLProcessGameControllerAxis(sf::Joystick::getAxisPosition(i, sf::Joystick::V));
+                    newInput->controllers[i].stickAverageU = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::U));
+                    newInput->controllers[i].stickAverageV = SFMLProcessGameControllerAxis(
+                            sf::Joystick::getAxisPosition(i, sf::Joystick::V));
 
                     // Analog trigger input
                     newInput->controllers[i].stickAverageR = SFMLProcessGameControllerAxis(
