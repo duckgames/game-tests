@@ -123,6 +123,68 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     window->draw(rectangleShape);
 }
 
+void createEntity(World *world, sol::table entityData) {
+    int entity = world->createEntity();
+
+    // Add Move Component
+    sol::optional<sol::table> moverExists = entityData["components"]["move"];
+    if (moverExists != sol::nullopt) {
+        world->addMoveComponent(entity,
+                                static_cast<float>(entityData["components"]["move"]["xSpeed"]),
+                                static_cast<float>(entityData["components"]["move"]["ySpeed"])
+        );
+    }
+
+    // Add Position Component
+    sol::optional<sol::table> positionExists = entityData["components"]["position"];
+    if (positionExists != sol::nullopt) {
+        world->addPositionComponent(entity,
+                                    static_cast<float>(entityData["components"]["position"]["x"]),
+                                    static_cast<float>(entityData["components"]["position"]["y"])
+        );
+    }
+
+    // Add Draw Component
+    sol::optional<sol::table> drawExists = entityData["components"]["draw"];
+    if (drawExists != sol::nullopt) {
+        std::string textureAtlasLocation = entityData["components"]["draw"]["textureAtlasLocation"];
+        world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
+    }
+
+    // Add Collider Component
+    sol::optional<sol::table> colliderExists = entityData["components"]["collider"];
+    if (colliderExists != sol::nullopt) {
+        world->addColliderComponent(entity,
+                                    static_cast<float>(entityData["components"]["collider"]["x"]),
+                                    static_cast<float>(entityData["components"]["collider"]["y"]),
+                                    static_cast<float>(entityData["components"]["collider"]["width"]),
+                                    static_cast<float>(entityData["components"]["collider"]["height"]),
+                                    static_cast<int>(entityData["components"]["collider"]["damage"])
+        );
+    }
+
+    // Add Health Component
+    sol::optional<sol::table> healthExists = entityData["components"]["health"];
+    if (healthExists != sol::nullopt) {
+        world->addHealthComponent(entity, static_cast<int>(entityData["components"]["health"]["initialHealth"]));
+    }
+
+    // Add Score Component
+    sol::optional<sol::table> scoreExists = entityData["components"]["score"];
+    if (scoreExists != sol::nullopt) {
+        world->addHealthComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
+    }
+
+    bool canCollideWithPlayer = entityData["canCollideWithPlayer"];
+
+    if (canCollideWithPlayer) {
+        world->canCollideWithPlayer(entity);
+    }
+
+    world->addXBoundaryEnforcement(entity);
+    world->addYBoundaryEnforcement(entity);
+}
+
 void loadLevel(int levelNumber, World *world) {
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
@@ -137,65 +199,7 @@ void loadLevel(int levelNumber, World *world) {
             break;
         } else {
             sol::table enemy = enemies[enemyIndex];
-            int entity = world->createEntity();
-
-            // Add Move Component
-            sol::optional<sol::table> moverExists = enemy["components"]["move"];
-            if (moverExists != sol::nullopt) {
-                world->addMoveComponent(entity,
-                                        static_cast<float>(enemy["components"]["move"]["xSpeed"]),
-                                        static_cast<float>(enemy["components"]["move"]["ySpeed"])
-                );
-            }
-
-            // Add Position Component
-            sol::optional<sol::table> positionExists = enemy["components"]["position"];
-            if (positionExists != sol::nullopt) {
-                world->addPositionComponent(entity,
-                                            static_cast<float>(enemy["components"]["position"]["x"]),
-                                            static_cast<float>(enemy["components"]["position"]["y"])
-                );
-            }
-
-            // Add Draw Component
-            sol::optional<sol::table> drawExists = enemy["components"]["draw"];
-            if (drawExists != sol::nullopt) {
-                std::string textureAtlasLocation = enemy["components"]["draw"]["textureAtlasLocation"];
-                world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
-            }
-
-            // Add Collider Component
-            sol::optional<sol::table> colliderExists = enemy["components"]["collider"];
-            if (colliderExists != sol::nullopt) {
-                world->addColliderComponent(entity,
-                                            static_cast<float>(enemy["components"]["collider"]["x"]),
-                                            static_cast<float>(enemy["components"]["collider"]["y"]),
-                                            static_cast<float>(enemy["components"]["collider"]["width"]),
-                                            static_cast<float>(enemy["components"]["collider"]["height"]),
-                                            static_cast<int>(enemy["components"]["collider"]["damage"])
-                );
-            }
-
-            // Add Health Component
-            sol::optional<sol::table> healthExists = enemy["components"]["health"];
-            if (healthExists != sol::nullopt) {
-                world->addHealthComponent(entity, static_cast<int>(enemy["components"]["health"]["initialHealth"]));
-            }
-
-            // Add Score Component
-            sol::optional<sol::table> scoreExists = enemy["components"]["score"];
-            if (scoreExists != sol::nullopt) {
-                world->addHealthComponent(entity, static_cast<int>(enemy["components"]["score"]["points"]));
-            }
-
-            bool canCollideWithPlayer = enemy["canCollideWithPlayer"];
-
-            if (canCollideWithPlayer) {
-                world->canCollideWithPlayer(entity);
-            }
-
-            world->addXBoundaryEnforcement(entity);
-            world->addYBoundaryEnforcement(entity);
+            createEntity(world, enemy);
         }
         enemyIndex++;
     }
