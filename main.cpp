@@ -123,6 +123,8 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     window->draw(rectangleShape);
 }
 
+// If this is being called to create a follower entity, the owning entity should be the ID of the owner (>= 0 && < MAX_ENTITIES).
+// If it is not a follower entity, any negative value.
 int createEntity(World *world, sol::table entityData, int owningEntity) {
     int entity = world->createEntity();
 
@@ -213,6 +215,7 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
                 break;
             } else {
                 sol::table follower = followerTable[followerIndex];
+                // Recursively call createEntity function to create a follower of the current entity
                 followers.emplace_back(createEntity(world, follower, entity));
             }
             followerIndex++;
