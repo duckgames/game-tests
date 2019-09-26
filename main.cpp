@@ -222,13 +222,20 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     }
 
     bool canCollideWithPlayer = entityData["canCollideWithPlayer"];
+    bool enforceXBoundary = entityData["enforceXBoundary"];
+    bool enforceYBoundary = entityData["enforceYBoundary"];
 
     if (canCollideWithPlayer) {
         world->canCollideWithPlayer(entity);
     }
 
-    world->addXBoundaryEnforcement(entity);
-    world->addYBoundaryEnforcement(entity);
+    if (enforceXBoundary) {
+        world->addXBoundaryEnforcement(entity);
+    }
+
+    if (enforceYBoundary) {
+        world->addYBoundaryEnforcement(entity);
+    }
 
     return entity;
 }

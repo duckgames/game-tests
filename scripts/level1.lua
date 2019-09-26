@@ -1,6 +1,8 @@
 enemies = {
     [0] = {
         canCollideWithPlayer = true,
+        enforceXBoundary = false,
+        enforceYBoundary = false,
         components = {
             move = {
                 xSpeed = 50.0,
