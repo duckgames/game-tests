@@ -29,16 +29,22 @@ enemies = {
             leader = {
                 followers = {
                     [0] = {
-                        xOffset = 0.0,
-                        yOffset = 0.0,
                         components = {
+                            follower = {
+                                xOffset = 0.0,
+                                yOffset = 16.0
+                            },
+                            position = {
+                                x = 1000.0,
+                                y = 0.0
+                            },
                             draw = {
                                 textureAtlasLocation = "projectile-red"
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.1,
                                 velocity = 200.0,
-                                angle = 350.0,
+                                angle = 100.0,
                                 textureAtlasLocation = "projectile-red",
                                 forPlayer = false
                             }

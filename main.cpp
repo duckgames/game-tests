@@ -123,7 +123,7 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     window->draw(rectangleShape);
 }
 
-void createEntity(World *world, sol::table entityData) {
+int createEntity(World *world, sol::table entityData, int owningEntity) {
     int entity = world->createEntity();
 
     // Add Move Component
@@ -175,6 +175,52 @@ void createEntity(World *world, sol::table entityData) {
         world->addHealthComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
     }
 
+    // Add BulletSpawnPoint Component
+    sol::optional<sol::table> bulletSpawnPointExists = entityData["components"]["bulletSpawnPoint"];
+    if (bulletSpawnPointExists != sol::nullopt) {
+        std::string textureAtlasLocation = entityData["components"]["bulletSpawnPoint"]["textureAtlasLocation"];
+        world->addBulletSpawnPointComponent(entity,
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["rateOfFire"]),
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["velocity"]),
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["angle"]),
+                                            world->textureAtlasLocationMap.at(textureAtlasLocation),
+                                            static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"])
+        );
+    }
+
+    // Add Follower Component
+    if (owningEntity >= 0) {
+        sol::optional<sol::table> followerExists = entityData["components"]["follower"];
+        if (followerExists != sol::nullopt) {
+            world->addFollowerComponent(entity,
+                                        owningEntity,
+                                        static_cast<float>(entityData["components"]["follower"]["xOffset"]),
+                                        static_cast<float>(entityData["components"]["follower"]["yOffset"])
+            );
+        }
+    }
+
+    // Add Leader Component
+    sol::optional<sol::table> leaderExists = entityData["components"]["leader"];
+    if (leaderExists != sol::nullopt) {
+        std::vector<int> followers;
+
+        sol::table followerTable = entityData["components"]["leader"]["followers"];
+        unsigned int followerIndex = 0;
+        while (true) {
+            sol::optional<sol::table> followerExists = followerTable[followerIndex];
+            if (followerExists == sol::nullopt) {
+                break;
+            } else {
+                sol::table follower = followerTable[followerIndex];
+                followers.emplace_back(createEntity(world, follower, entity));
+            }
+            followerIndex++;
+        }
+
+        world->addLeaderComponent(entity, followers);
+    }
+
     bool canCollideWithPlayer = entityData["canCollideWithPlayer"];
 
     if (canCollideWithPlayer) {
@@ -183,9 +229,11 @@ void createEntity(World *world, sol::table entityData) {
 
     world->addXBoundaryEnforcement(entity);
     world->addYBoundaryEnforcement(entity);
+
+    return entity;
 }
 
-void loadLevel(int levelNumber, World *world) {
+int loadLevel(int levelNumber, World *world) {
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
     std::string levelName = "level" + std::to_string(levelNumber);
@@ -199,7 +247,7 @@ void loadLevel(int levelNumber, World *world) {
             break;
         } else {
             sol::table enemy = enemies[enemyIndex];
-            createEntity(world, enemy);
+            createEntity(world, enemy, -1);
         }
         enemyIndex++;
     }
