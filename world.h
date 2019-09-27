@@ -69,7 +69,7 @@ class World {
     void addHealthComponent(unsigned int entity, int initialHealth);
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
     void addScoreComponent(unsigned int entity, long score);
-    void addAnimationComponent(unsigned int entity, float frameDuration, bool loop, TextureAtlasLocation textureAtlasLocations[], int numFrames);
+    void addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations);
 
     void addXBoundaryEnforcement(unsigned int entity);
     void addYBoundaryEnforcement(unsigned int entity);
@@ -86,8 +86,6 @@ class World {
     unsigned int createPlayerBullet(int spawnPoint);
     unsigned int createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire);
-    unsigned int createLuaEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::string textureAtlasLocation, float bspXOffset, float bspYOffset, int colliderDamage, int health, int score);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
-    unsigned int createTestAnimation();
 };
 #endif //UNTITLED_WORLD_H

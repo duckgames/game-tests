@@ -128,13 +128,11 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
 int createEntity(World *world, sol::table entityData, int owningEntity) {
     int entity = world->createEntity();
 
-    // Add Move Component
-    sol::optional<sol::table> moverExists = entityData["components"]["move"];
-    if (moverExists != sol::nullopt) {
-        world->addMoveComponent(entity,
-                                static_cast<float>(entityData["components"]["move"]["xSpeed"]),
-                                static_cast<float>(entityData["components"]["move"]["ySpeed"])
-        );
+    // Add Draw Component
+    sol::optional<sol::table> drawExists = entityData["components"]["draw"];
+    if (drawExists != sol::nullopt) {
+        std::string textureAtlasLocation = entityData["components"]["draw"]["textureAtlasLocation"];
+        world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
     }
 
     // Add Position Component
@@ -146,11 +144,78 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         );
     }
 
-    // Add Draw Component
-    sol::optional<sol::table> drawExists = entityData["components"]["draw"];
-    if (drawExists != sol::nullopt) {
-        std::string textureAtlasLocation = entityData["components"]["draw"]["textureAtlasLocation"];
-        world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
+    // Add Direction Component
+    sol::optional<sol::table> directionExists = entityData["components"]["direction"];
+    if (directionExists != sol::nullopt) {
+        world->addDirectionComponent(entity,
+                                     static_cast<float>(entityData["components"]["direction"]["xMove"]),
+                                     static_cast<float>(entityData["components"]["direction"]["yMove"])
+        );
+    }
+
+    // Add Controllable Component
+    sol::optional<sol::table> controllableExists = entityData["components"]["controllable"];
+    if (controllableExists != sol::nullopt) {
+        world->addControllableComponent(entity,
+                                        static_cast<float>(entityData["components"]["controllable"]["xSpeed"]),
+                                        static_cast<float>(entityData["components"]["controllable"]["ySpeed"])
+        );
+    }
+
+    // Add Move Component
+    sol::optional<sol::table> moveExists = entityData["components"]["move"];
+    if (moveExists != sol::nullopt) {
+        world->addMoveComponent(entity,
+                                static_cast<float>(entityData["components"]["move"]["xSpeed"]),
+                                static_cast<float>(entityData["components"]["move"]["ySpeed"])
+        );
+    }
+
+    // Add Leader Component
+    sol::optional<sol::table> leaderExists = entityData["components"]["leader"];
+    if (leaderExists != sol::nullopt) {
+        std::vector<int> followers;
+
+        sol::table followerTable = entityData["components"]["leader"]["followers"];
+        unsigned int followerIndex = 0;
+        while (true) {
+            sol::optional<sol::table> followerExists = followerTable[followerIndex];
+            if (followerExists == sol::nullopt) {
+                break;
+            } else {
+                sol::table follower = followerTable[followerIndex];
+                // Recursively call createEntity function to create a follower of the current entity
+                followers.emplace_back(createEntity(world, follower, entity));
+            }
+            followerIndex++;
+        }
+
+        world->addLeaderComponent(entity, followers);
+    }
+
+    // Add Follower Component
+    if (owningEntity >= 0) {
+        sol::optional<sol::table> followerExists = entityData["components"]["follower"];
+        if (followerExists != sol::nullopt) {
+            world->addFollowerComponent(entity,
+                                        owningEntity,
+                                        static_cast<float>(entityData["components"]["follower"]["xOffset"]),
+                                        static_cast<float>(entityData["components"]["follower"]["yOffset"])
+            );
+        }
+    }
+
+    // Add BulletSpawnPoint Component
+    sol::optional<sol::table> bulletSpawnPointExists = entityData["components"]["bulletSpawnPoint"];
+    if (bulletSpawnPointExists != sol::nullopt) {
+        std::string textureAtlasLocation = entityData["components"]["bulletSpawnPoint"]["textureAtlasLocation"];
+        world->addBulletSpawnPointComponent(entity,
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["rateOfFire"]),
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["velocity"]),
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["angle"]),
+                                            world->textureAtlasLocationMap.at(textureAtlasLocation),
+                                            static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"])
+        );
     }
 
     // Add Collider Component
@@ -177,51 +242,26 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         world->addHealthComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
     }
 
-    // Add BulletSpawnPoint Component
-    sol::optional<sol::table> bulletSpawnPointExists = entityData["components"]["bulletSpawnPoint"];
-    if (bulletSpawnPointExists != sol::nullopt) {
-        std::string textureAtlasLocation = entityData["components"]["bulletSpawnPoint"]["textureAtlasLocation"];
-        world->addBulletSpawnPointComponent(entity,
-                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["rateOfFire"]),
-                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["velocity"]),
-                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["angle"]),
-                                            world->textureAtlasLocationMap.at(textureAtlasLocation),
-                                            static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"])
+    // Add Animation Component
+    sol::optional<sol::table> animationExists = entityData["components"]["animation"];
+    if (animationExists != sol::nullopt) {
+        sol::table frames = entityData["components"]["animation"]["frames"];
+        int numFrames = static_cast<int>(entityData["components"]["animation"]["numFrames"]);
+        TextureAtlasLocation textureAtlasLocations[numFrames];
+
+        for (int i = 0; i < numFrames; i++) {
+            sol::table frame = frames[i];
+            std::string textureAtlasLocation = frame["frame"];
+            textureAtlasLocations[i] = world->textureAtlasLocationMap.at(textureAtlasLocation);
+        }
+
+        world->addAnimationComponent(entity,
+                                     static_cast<int>(entityData["components"]["animation"]["numFrames"]),
+                                     static_cast<int>(entityData["components"]["animation"]["startFrame"]),
+                                     static_cast<float>(entityData["components"]["animation"]["frameDuration"]),
+                                     static_cast<bool>(entityData["components"]["animation"]["loop"]),
+                                     textureAtlasLocations
         );
-    }
-
-    // Add Follower Component
-    if (owningEntity >= 0) {
-        sol::optional<sol::table> followerExists = entityData["components"]["follower"];
-        if (followerExists != sol::nullopt) {
-            world->addFollowerComponent(entity,
-                                        owningEntity,
-                                        static_cast<float>(entityData["components"]["follower"]["xOffset"]),
-                                        static_cast<float>(entityData["components"]["follower"]["yOffset"])
-            );
-        }
-    }
-
-    // Add Leader Component
-    sol::optional<sol::table> leaderExists = entityData["components"]["leader"];
-    if (leaderExists != sol::nullopt) {
-        std::vector<int> followers;
-
-        sol::table followerTable = entityData["components"]["leader"]["followers"];
-        unsigned int followerIndex = 0;
-        while (true) {
-            sol::optional<sol::table> followerExists = followerTable[followerIndex];
-            if (followerExists == sol::nullopt) {
-                break;
-            } else {
-                sol::table follower = followerTable[followerIndex];
-                // Recursively call createEntity function to create a follower of the current entity
-                followers.emplace_back(createEntity(world, follower, entity));
-            }
-            followerIndex++;
-        }
-
-        world->addLeaderComponent(entity, followers);
     }
 
     bool canCollideWithPlayer = entityData["canCollideWithPlayer"];
@@ -290,8 +330,6 @@ int main() {
     world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
 
     loadLevel(1, &world);
-
-    world.createTestAnimation();
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;

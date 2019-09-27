@@ -36,8 +36,8 @@ typedef struct {
 } Position;
 
 typedef struct {
-    double xMove;
-    double yMove;
+    float xMove;
+    float yMove;
 } Direction;
 
 typedef struct {
@@ -82,13 +82,6 @@ typedef struct {
 } Health;
 
 typedef struct {
-    int follower;
-    float startY;
-    float xSpeed;
-    float ySpeed;
-} InfiniteBackground;
-
-typedef struct {
     long points;
 } Score;
 
@@ -101,4 +94,10 @@ typedef struct {
     std::vector<Draw> drawables;
 } Animation;
 
+typedef struct {
+    int follower;
+    float startY;
+    float xSpeed;
+    float ySpeed;
+} InfiniteBackground;
 #endif //UNTITLED_COMPONENTS_H

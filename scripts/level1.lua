@@ -55,5 +55,30 @@ enemies = {
                 }
             }
         }
+    },
+    [1] = {
+        canCollideWithPlayer = false,
+        enforceXBoundary = false,
+        enforceYBoundary = false,
+        components = {
+            position = {
+                x = 100.0,
+                y = 100.0,
+            },
+            animation = {
+                numFrames = 2,
+                frameDuration = 0.2,
+                loop = true,
+                startFrame = 0,
+                frames = {
+                    [0] = {
+                        frame = "legs_middle"
+                    },
+                    [1] = {
+                        frame = "legs_run"
+                    }
+                }
+            }
+        }
     }
 }

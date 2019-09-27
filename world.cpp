@@ -210,13 +210,13 @@ void World::addScoreComponent(unsigned int entity, long points) {
     scoresMap.insert(std::pair<int, Score>(entity, score));
 }
 
-void World::addAnimationComponent(unsigned int entity, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations, int numFrames) {
+void World::addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations) {
     Animation animation;
-    animation.currentFrame = 0;
+    animation.totalFrames = numFrames;
+    animation.currentFrame = startFrame;
     animation.frameDuration = frameDuration;
     animation.loop = loop;
     animation.timeElapsed = 0.0f;
-    animation.totalFrames = numFrames;
 
     for (int i = 0; i < numFrames; i++) {
         Draw draw;
@@ -366,24 +366,6 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     return entity;
 }
 
-unsigned int World::createLuaEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::string textureAtlasLocation, float bspXOffset, float bspYOffset, int colliderDamage, int health, int score) {
-    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, textureAtlasLocationMap.at(textureAtlasLocation));
-
-    int bulletSpawnPoint = createBulletSpawnPoint(entity, bspXOffset, bspYOffset, rateOfFire);
-    std::vector<int> followers;
-    followers.push_back(bulletSpawnPoint);
-    addLeaderComponent(entity, followers);
-
-    addColliderComponent(entity, startX, startY, drawablesMap[entity].width, drawablesMap[entity].height, colliderDamage);
-    canCollideWithPlayer(entity);
-
-    addHealthComponent(entity, health);
-    addScoreComponent(entity, score);
-
-    enemies.insert(entity);
-    return entity;
-}
-
 unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 
@@ -394,21 +376,6 @@ unsigned int World::createInfiniteBackground(float startX, float startY, float x
     int follower = createFollower(entity, 0.0f, -textureAtlasLocation.h);
     addDrawComponent(follower, textureAtlasLocation);
     infiniteBackgroundsMap[entity].follower = follower;
-
-    return entity;
-}
-
-unsigned int World::createTestAnimation() {
-    unsigned int entity = createEntity();
-
-    addPositionComponent(entity, 100, 100);
-    TextureAtlasLocation textureAtlasLocations[2] = {
-            textureAtlasLocationMap.at("legs_middle"),
-            textureAtlasLocationMap.at("legs_run")
-    };
-
-    addAnimationComponent(entity, 0.2f, true, textureAtlasLocations, 2);
-    addDrawComponent(entity, textureAtlasLocations[0]);
 
     return entity;
 }
