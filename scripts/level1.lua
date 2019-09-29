@@ -84,10 +84,10 @@ entities = {
                 textureAtlasLocation = "ship-enemy"
             },
             collider = {
-                xOffset = 16.0,
-                yOffset = 16.0,
-                width = 16.0,
-                height = 16.0,
+                xOffset = 0.0,
+                yOffset = 0.0,
+                width = 32.0,
+                height = 32.0,
                 damage = 1
             },
             health = {
@@ -125,6 +125,120 @@ entities = {
         }
     },
     [2] = {
+        isEnemy = true,
+        enforceXBoundary = false,
+        enforceYBoundary = false,
+        components = {
+            move = {
+                xSpeed = 0.0,
+                ySpeed = 75.0,
+            },
+            position = {
+                x = 250.0,
+                y = 0.0,
+            },
+            draw = {
+                textureAtlasLocation = "ship-enemy"
+            },
+            collider = {
+                xOffset = 0.0,
+                yOffset = 0.0,
+                width = 32.0,
+                height = 32.0,
+                damage = 1
+            },
+            health = {
+                initialHealth = 5
+            },
+            score = {
+                points = 5
+            },
+            leader = {
+                followers = {
+                    [0] = {
+                        components = {
+                            follower = {
+                                xOffset = 0.0,
+                                yOffset = 16.0
+                            },
+                            position = {
+                                x = 1000.0,
+                                y = 0.0
+                            },
+                            draw = {
+                                textureAtlasLocation = "projectile-red"
+                            },
+                            bulletSpawnPoint = {
+                                rateOfFire = 0.2,
+                                velocity = 200.0,
+                                angle = 100.0,
+                                textureAtlasLocation = "projectile-red",
+                                forPlayer = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    [3] = {
+        isEnemy = true,
+        enforceXBoundary = false,
+        enforceYBoundary = false,
+        components = {
+            move = {
+                xSpeed = 0.0,
+                ySpeed = 75.0,
+            },
+            position = {
+                x = 500.0,
+                y = 0.0,
+            },
+            draw = {
+                textureAtlasLocation = "ship-enemy"
+            },
+            collider = {
+                xOffset = 0.0,
+                yOffset = 0.0,
+                width = 32.0,
+                height = 32.0,
+                damage = 1
+            },
+            health = {
+                initialHealth = 5
+            },
+            score = {
+                points = 5
+            },
+            leader = {
+                followers = {
+                    [0] = {
+                        components = {
+                            follower = {
+                                xOffset = 0.0,
+                                yOffset = 16.0
+                            },
+                            position = {
+                                x = 1000.0,
+                                y = 0.0
+                            },
+                            draw = {
+                                textureAtlasLocation = "projectile-red"
+                            },
+                            bulletSpawnPoint = {
+                                rateOfFire = 0.5,
+                                velocity = 200.0,
+                                angle = 100.0,
+                                textureAtlasLocation = "projectile-red",
+                                forPlayer = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    [4] = {
         isEnemy = false,
         enforceXBoundary = false,
         enforceYBoundary = false,

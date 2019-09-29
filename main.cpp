@@ -336,9 +336,6 @@ int main() {
     world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y,
                                    0.0f, 100.0f, background);
 
-    world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f);
-    world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
-
     loadLevel(1, &world);
 
     sf::Clock tickClock;
