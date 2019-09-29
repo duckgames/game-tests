@@ -69,8 +69,8 @@ typedef struct {
 } BulletSpawnPoint;
 
 typedef struct {
-    float x;
-    float y;
+    float xOffset;
+    float yOffset;
     float width;
     float height;
     int damage;

@@ -16,8 +16,8 @@ enemies = {
                 textureAtlasLocation = "ship-enemy"
             },
             collider = {
-                x = 1000.0,
-                y = 0.0,
+                xOffset = 16.0,
+                yOffset = 16.0,
                 width = 16.0,
                 height = 16.0,
                 damage = 1
@@ -57,7 +57,7 @@ enemies = {
         }
     },
     [1] = {
-        canCollideWithPlayer = false,
+        isEnemy = false,
         enforceXBoundary = false,
         enforceYBoundary = false,
         components = {

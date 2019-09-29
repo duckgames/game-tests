@@ -91,10 +91,14 @@ void SFMLRenderDrawables(sf::RenderWindow *window, World *world) {
 
 void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity) {
     for (auto entity : world->collideWithPlayer) {
+        Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
 
+        float colliderX = position->x + collider->xOffset;
+        float colliderY = position->y + collider->yOffset;
+
         sf::RectangleShape rectangleShape;
-        rectangleShape.setPosition(collider->x, collider->y);
+        rectangleShape.setPosition(colliderX, colliderY);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
         rectangleShape.setFillColor(sf::Color::Transparent);
         rectangleShape.setOutlineColor(sf::Color::Red);
@@ -110,15 +114,25 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     rectangleShape.setOutlineThickness(2.0f);
 
     for (auto entity : world->collideWithEnemy) {
+        Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
-        rectangleShape.setPosition(collider->x, collider->y);
+
+        float colliderX = position->x + collider->xOffset;
+        float colliderY = position->y + collider->yOffset;
+
+        rectangleShape.setPosition(colliderX, colliderY);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
 
         window->draw(rectangleShape);
     }
 
     Collider *collider = &world->collidersMap[playerEntity];
-    rectangleShape.setPosition(collider->x, collider->y);
+    Position *position = &world->positionsMap[playerEntity];
+
+    float colliderX = position->x + collider->xOffset;
+    float colliderY = position->y + collider->yOffset;
+
+    rectangleShape.setPosition(colliderX, colliderY);
     rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
     window->draw(rectangleShape);
 }
@@ -222,8 +236,8 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     sol::optional<sol::table> colliderExists = entityData["components"]["collider"];
     if (colliderExists != sol::nullopt) {
         world->addColliderComponent(entity,
-                                    static_cast<float>(entityData["components"]["collider"]["x"]),
-                                    static_cast<float>(entityData["components"]["collider"]["y"]),
+                                    static_cast<float>(entityData["components"]["collider"]["xOffset"]),
+                                    static_cast<float>(entityData["components"]["collider"]["yOffset"]),
                                     static_cast<float>(entityData["components"]["collider"]["width"]),
                                     static_cast<float>(entityData["components"]["collider"]["height"]),
                                     static_cast<int>(entityData["components"]["collider"]["damage"])

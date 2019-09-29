@@ -56,11 +56,9 @@ void System::jumpers(float delta) {
 // for the keyboardInput parameter.
 void System::updateControllables(float delta, GameControllerInput *padInput, GameControllerInput *keyboardInput) {
     Position *position;
-    Collider *collider;
 
     for (auto controllable: world->controllablesMap) {
         position = &world->positionsMap[controllable.first];
-        collider = &world->collidersMap[controllable.first];
 
         if (padInput->stickAverageX != 0 || padInput->stickAverageY != 0) {
             position->x += (padInput->stickAverageX * controllable.second.xSpeed) * delta;
@@ -101,9 +99,6 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
 
             world->playerWaitingToFire.clear();
         }
-
-        collider->x = position->x;
-        collider->y = position->y;
     }
 }
 
@@ -206,20 +201,19 @@ void System::updatePlayerCollisions(int playerEntity) {
     Position *playerPosition = &world->positionsMap[playerEntity];
     Collider *playerCollider = &world->collidersMap[playerEntity];
 
-    playerCollider->x = playerPosition->x;
-    playerCollider->y = playerPosition->y;
+    float playerColliderX = playerPosition->x + playerCollider->xOffset;
+    float playerColliderY = playerPosition->y + playerCollider->yOffset;
 
     for (auto entity: world->collideWithPlayer) {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
+        float colliderX = position->x + collider->xOffset;
+        float colliderY = position->y + collider->yOffset;
 
-        collider->x = position->x;
-        collider->y = position->y;
-
-        if (playerCollider->x + playerCollider->width > collider->x &&
-            playerCollider->x < collider->x + collider->width &&
-            playerCollider->y < collider->y + collider->height &&
-            playerCollider->y + playerCollider->height > collider->y) {
+        if (playerColliderX + playerCollider->width > colliderX &&
+            playerColliderX < colliderX + collider->width &&
+            playerColliderY < colliderY + collider->height &&
+            playerColliderY + playerCollider->height > colliderY) {
             world->pendingCollisions.emplace_back(std::pair<int, int>(playerEntity, entity));
         }
     }
@@ -230,16 +224,19 @@ void System::updateEnemyCollisions() {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
 
-        collider->x = position->x;
-        collider->y = position->y;
+        float colliderX = position->x + collider->xOffset;
+        float colliderY = position->y + collider->yOffset;
 
         for (auto enemy: world->enemies) {
-            // Enemies collide with the player, so their collider position will have been updated in updatePlayerCollisions()
+            Position *enemyPosition = &world->positionsMap[enemy];
             Collider *enemyCollider = &world->collidersMap[enemy];
-            if (enemyCollider->x + enemyCollider->width > collider->x &&
-                enemyCollider->x < collider->x + collider->width &&
-                enemyCollider->y < collider->y + collider->height &&
-                enemyCollider->y + enemyCollider->height > collider->y) {
+            float enemyColliderX = enemyPosition->x + enemyCollider->xOffset;
+            float enemyColliderY = enemyPosition->y + enemyCollider->yOffset;
+
+            if (enemyColliderX + enemyCollider->width > colliderX &&
+                enemyColliderX < colliderX + collider->width &&
+                enemyColliderY < colliderY + collider->height &&
+                enemyColliderY + enemyCollider->height > colliderY) {
                 world->pendingCollisions.emplace_back(std::pair<int, int>(enemy, entity));
             }
         }

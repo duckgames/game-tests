@@ -175,10 +175,10 @@ void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, 
     }
 }
 
-void World::addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage) {
+void World::addColliderComponent(unsigned int entity, float xOffset, float yOffset, float width, float height, int damage) {
     Collider collider;
-    collider.x = x;
-    collider.y = y;
+    collider.xOffset = xOffset;
+    collider.yOffset = yOffset;
     collider.width = width;
     collider.height = height;
     collider.damage = damage;
@@ -254,7 +254,7 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     addDrawComponent(entity, textureAtlasLocation);
     addPositionComponent(entity, startX, startY);
     addControllableComponent(entity, xSpeed, ySpeed);
-    addColliderComponent(entity, startX, startY, textureAtlasLocation.w, textureAtlasLocation.h, 1);
+    addColliderComponent(entity, 0.0, 0.0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
     addHealthComponent(entity, 10);
 
     addXBoundaryEnforcement(entity);
@@ -322,7 +322,7 @@ unsigned int World::createPlayerBullet(int spawnPoint) {
                                            bulletSpawnPoint->angle,
                                            bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
+    addColliderComponent(entity, 0, 0, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
     canCollideWithEnemy(entity);
 
     addHealthComponent(entity, 1);
@@ -340,7 +340,7 @@ unsigned int World::createEnemyBullet(int spawnPoint) {
                                            bulletSpawnPoint->angle,
                                            bulletSpawnPoint->bullet);
 
-    addColliderComponent(entity, spawnPointPosition->x, spawnPointPosition->y, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
+    addColliderComponent(entity, 0.0, 0.0, bulletSpawnPoint->bullet.w, bulletSpawnPoint->bullet.h, 1);
     canCollideWithPlayer(entity);
 
     addHealthComponent(entity, 1);
@@ -356,7 +356,7 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);
 
-    addColliderComponent(entity, startX, startY, drawablesMap[entity].width, drawablesMap[entity].height, 1);
+    addColliderComponent(entity, 0.0, 0.0, drawablesMap[entity].width, drawablesMap[entity].height, 1);
     canCollideWithPlayer(entity);
 
     addHealthComponent(entity, 5);
