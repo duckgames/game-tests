@@ -304,17 +304,17 @@ int loadLevel(int levelNumber, World *world) {
     std::string levelName = "level" + std::to_string(levelNumber);
     lua.script_file("../scripts/" + levelName + ".lua");
 
-    sol::table enemies = lua["enemies"];
-    unsigned int enemyIndex = 0;
+    sol::table enemies = lua["entities"];
+    unsigned int entityIndex = 0;
     while (true) {
-        sol::optional<sol::table> enemyExists = enemies[enemyIndex];
-        if (enemyExists == sol::nullopt) {
+        sol::optional<sol::table> entityExists = enemies[entityIndex];
+        if (entityExists == sol::nullopt) {
             break;
         } else {
-            sol::table enemy = enemies[enemyIndex];
+            sol::table enemy = enemies[entityIndex];
             createEntity(world, enemy, -1);
         }
-        enemyIndex++;
+        entityIndex++;
     }
 }
 

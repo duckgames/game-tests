@@ -1,4 +1,4 @@
-enemies = {
+entities = {
     [0] = {
         isEnemy = true,
         enforceXBoundary = false,
