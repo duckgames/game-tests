@@ -1,5 +1,73 @@
 entities = {
     [0] = {
+        isEnemy = false,
+        enforceXBoundary = true,
+        enforceYBoundary = true,
+        components = {
+            position = {
+                x = SCREEN_WIDTH / 2,
+                y = SCREEN_HEIGHT - 16
+            },
+            draw = {
+                textureAtlasLocation = "ship-player"
+            },
+            controllable = {
+                xSpeed = 15.0,
+                ySpeed = 15.0
+            },
+            collider = {
+                xOffset = 0.0,
+                yOffset = 0.0,
+                width = 32,
+                height = 32,
+                damage = 1
+            },
+            health = {
+                initialHealth = 10
+            },
+            leader = {
+                followers = {
+                    [0] = {
+                        components = {
+                            follower = {
+                                xOffset = 16.0,
+                                yOffset = 0.0
+                            },
+                            draw = {
+                                textureAtlasLocation = "projectile-blue"
+                            },
+                            bulletSpawnPoint = {
+                                rateOfFire = 0.02,
+                                velocity = 100.0,
+                                angle = -500.0,
+                                textureAtlasLocation = "projectile-blue",
+                                forPlayer = true
+                            }
+                        }
+                    },
+                    [1] = {
+                        components = {
+                            follower = {
+                                xOffset = -16.0,
+                                yOffset = 0.0
+                            },
+                            draw = {
+                                textureAtlasLocation = "projectile-blue"
+                            },
+                            bulletSpawnPoint = {
+                                rateOfFire = 0.02,
+                                velocity = 100.0,
+                                angle = -500.0,
+                                textureAtlasLocation = "projectile-blue",
+                                forPlayer = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    [1] = {
         isEnemy = true,
         enforceXBoundary = false,
         enforceYBoundary = false,
@@ -56,14 +124,14 @@ entities = {
             }
         }
     },
-    [1] = {
+    [2] = {
         isEnemy = false,
         enforceXBoundary = false,
         enforceYBoundary = false,
         components = {
             position = {
-                x = 100.0,
-                y = 100.0,
+                x = SCREEN_WIDTH / 2,
+                y = SCREEN_HEIGHT / 2
             },
             animation = {
                 numFrames = 2,

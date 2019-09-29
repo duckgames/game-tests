@@ -15,6 +15,7 @@ static const int SCREEN_HEIGHT = 1080;
 
 sf::Texture textureAtlas;
 sf::Font font;
+int player;
 
 static void SFMLProcessGameControllerButton(GameButtonState *oldState, GameButtonState *newState, bool value) {
     newState->endedDown = value;
@@ -170,6 +171,7 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     // Add Controllable Component
     sol::optional<sol::table> controllableExists = entityData["components"]["controllable"];
     if (controllableExists != sol::nullopt) {
+        player = entity;
         world->addControllableComponent(entity,
                                         static_cast<float>(entityData["components"]["controllable"]["xSpeed"]),
                                         static_cast<float>(entityData["components"]["controllable"]["ySpeed"])
@@ -300,6 +302,8 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
 
 int loadLevel(int levelNumber, World *world) {
     sol::state lua;
+    lua["SCREEN_WIDTH"] = SCREEN_WIDTH;
+    lua["SCREEN_HEIGHT"] = SCREEN_HEIGHT;
     lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
     std::string levelName = "level" + std::to_string(levelNumber);
     lua.script_file("../scripts/" + levelName + ".lua");
@@ -331,15 +335,6 @@ int main() {
     TextureAtlasLocation background = world.textureAtlasLocationMap.at("background");
     world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y,
                                    0.0f, 100.0f, background);
-
-    int player = world.createControllable(window.getSize().x / 2, window.getSize().y - 16, 15.0f, 15.0f);
-
-    int follower1 = world.createPlayerBulletSpawnPoint(player, 16.0f, 0.0f, 0.02f);
-    int follower2 = world.createPlayerBulletSpawnPoint(player, -16.0f, 0.0f, 0.02f);
-    std::vector<int> playerFollowers;
-    playerFollowers.push_back(follower1);
-    playerFollowers.push_back(follower2);
-    world.addLeaderComponent(player, playerFollowers);
 
     world.createEnemy(250.0f, 0.0f, 0.0f, 75.0f, 0.2f);
     world.createEnemy(500.0f, 0.0f, 0.0f, 75.0f, 0.5f);
