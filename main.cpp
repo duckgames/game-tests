@@ -264,12 +264,13 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         );
     }
 
-    bool canCollideWithPlayer = entityData["canCollideWithPlayer"];
+    bool isEnemy = entityData["isEnemy"];
     bool enforceXBoundary = entityData["enforceXBoundary"];
     bool enforceYBoundary = entityData["enforceYBoundary"];
 
-    if (canCollideWithPlayer) {
+    if (isEnemy) {
         world->canCollideWithPlayer(entity);
+        world->enemies.insert(entity);
     }
 
     if (enforceXBoundary) {

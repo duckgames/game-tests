@@ -1,6 +1,6 @@
 enemies = {
     [0] = {
-        canCollideWithPlayer = true,
+        isEnemy = true,
         enforceXBoundary = false,
         enforceYBoundary = false,
         components = {
@@ -18,8 +18,8 @@ enemies = {
             collider = {
                 x = 1000.0,
                 y = 0.0,
-                width = 1.0,
-                height = 1.0,
+                width = 16.0,
+                height = 16.0,
                 damage = 1
             },
             health = {
