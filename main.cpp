@@ -239,7 +239,7 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     // Add Score Component
     sol::optional<sol::table> scoreExists = entityData["components"]["score"];
     if (scoreExists != sol::nullopt) {
-        world->addHealthComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
+        world->addScoreComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
     }
 
     // Add Animation Component
