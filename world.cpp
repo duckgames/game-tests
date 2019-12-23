@@ -36,6 +36,40 @@ World::World(int screenWidth, int screenHeight) {
     }
 }
 
+void World::clear() {
+    for (int i = 0; i < MAX_ENTITIES; i++) {
+        entities[i] = COMPONENT_NONE;
+    }
+
+    jumpersMap.clear();
+    drawablesMap.clear();
+    positionsMap.clear();
+    directionsMap.clear();
+    controllablesMap.clear();
+    moversMap.clear();
+    followersMap.clear();
+    leadersMap.clear();
+    bulletSpawnPointsMap.clear();
+    playerBulletSpawnPointsMap.clear();
+    collidersMap.clear();
+    healthMap.clear();
+    infiniteBackgroundsMap.clear();
+    scoresMap.clear();
+    animationsMap.clear();
+    pendingCollisions.clear();
+    enemies.clear();
+    collideWithPlayer.clear();
+    collideWithEnemy.clear();
+    waitingToFire.clear();
+    playerWaitingToFire.clear();
+    waitingForDeath.clear();
+    enforceScreenXBoundaries.clear();
+    enforceScreenYBoundaries.clear();
+    scoresToAdd.clear();
+
+    score = 0;
+}
+
 unsigned int World::createEntity() {
     unsigned int entity;
 

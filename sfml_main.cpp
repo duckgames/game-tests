@@ -13,6 +13,13 @@
 static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
 
+typedef enum GameState {
+    STATE_MENU,
+    STATE_PLAYING,
+    STATE_DEAD
+} GameState;
+
+GameState gameState = STATE_MENU;
 sf::Texture textureAtlas;
 sf::Font font;
 int player;
@@ -322,6 +329,73 @@ int loadLevel(int levelNumber, World *world) {
     }
 }
 
+void game(sf::RenderWindow *window, World *world, System *system, GameInput *newInput, float timePerFrame) {
+    window->clear();
+
+    system->clearDeadEntities();
+    system->processWaitingToFire();
+    system->updateInfiniteBackgrounds(timePerFrame);
+    system->updateMovers(timePerFrame);
+    system->updateControllables(timePerFrame, &newInput->controllers[0], &newInput->keyboard);
+    system->updateProjectiles(timePerFrame);
+    system->enforceScreenBoundaries();
+    system->updateFollowers();
+    system->updateBulletSpawnPoints(timePerFrame);
+    system->updatePlayerCollisions(player);
+    system->updateEnemyCollisions();
+    system->processPendingCollisions();
+    system->updateScore();
+    system->updateAnimations(timePerFrame);
+
+    SFMLRenderDrawables(window, world);
+    SFMLRenderHitboxes(window, world, player);
+
+    sf::Text text;
+
+    std::string scoreString = "SCORE: ";
+    scoreString.append(std::to_string(world->score));
+    text.setString(scoreString);
+    text.setFont(font);
+    text.setCharacterSize(24);
+    window->draw(text);
+
+    window->display();
+
+    if (world->entities[player] == COMPONENT_NONE) {
+        gameState = STATE_DEAD;
+    }
+}
+
+void menu(sf::RenderWindow *window, World *world, GameInput *newInput) {
+    window->clear(sf::Color::Magenta);
+    window->display();
+
+    if (newInput->keyboard.start.endedDown) {
+        world->clear();
+
+        TextureAtlasLocation background = world->textureAtlasLocationMap.at("background");
+        world->createInfiniteBackground(
+                (window->getSize().x / 2) - (background.w / 2),
+                -background.h + window->getSize().y,
+                0.0f,
+                100.0f,
+                background);
+
+        loadLevel(1, world);
+
+        gameState = STATE_PLAYING;
+    }
+}
+
+void dead(sf::RenderWindow *window, GameInput *newInput) {
+    window->clear(sf::Color::Blue);
+    window->display();
+
+    if (newInput->keyboard.start.endedDown) {
+        gameState = STATE_MENU;
+    }
+}
+
 int main() {
     World world(SCREEN_WIDTH, SCREEN_HEIGHT);
     System system(&world);
@@ -331,12 +405,6 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SFML works!");
     window.setVerticalSyncEnabled(true);
-
-    TextureAtlasLocation background = world.textureAtlasLocationMap.at("background");
-    world.createInfiniteBackground((window.getSize().x / 2) - (background.w / 2), -background.h + window.getSize().y,
-                                   0.0f, 100.0f, background);
-
-    loadLevel(1, &world);
 
     sf::Clock tickClock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -559,36 +627,15 @@ int main() {
                 }
             }
 
-            window.clear();
-
-            system.clearDeadEntities();
-            system.processWaitingToFire();
-            system.updateInfiniteBackgrounds(timePerFrame.asSeconds());
-            system.updateMovers(timePerFrame.asSeconds());
-            system.updateControllables(timePerFrame.asSeconds(), &newInput->controllers[0], &newInput->keyboard);
-            system.updateProjectiles(timePerFrame.asSeconds());
-            system.enforceScreenBoundaries();
-            system.updateFollowers();
-            system.updateBulletSpawnPoints(timePerFrame.asSeconds());
-            system.updatePlayerCollisions(player);
-            system.updateEnemyCollisions();
-            system.processPendingCollisions();
-            system.updateScore();
-            system.updateAnimations(timePerFrame.asSeconds());
-
-            SFMLRenderDrawables(&window, &world);
-            SFMLRenderHitboxes(&window, &world, player);
-
-            sf::Text text;
-
-            std::string scoreString = "SCORE: ";
-            scoreString.append(std::to_string(world.score));
-            text.setString(scoreString);
-            text.setFont(font);
-            text.setCharacterSize(24);
-            window.draw(text);
-
-            window.display();
+            if (gameState == STATE_PLAYING) {
+                game(&window, &world, &system, newInput, timePerFrame.asSeconds());
+            }
+            else if (gameState == STATE_MENU) {
+                menu(&window, &world, newInput);
+            }
+            else if (gameState == STATE_DEAD) {
+                dead(&window, newInput);
+            }
 
             GameInput *temp = newInput;
             newInput = oldInput;

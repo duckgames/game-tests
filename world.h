@@ -52,7 +52,8 @@ class World {
 
     World(int screenWidth, int ScreenHeight);
     ~World() = default;
-    
+
+    void clear();
     unsigned int createEntity();
     void destroyEntity(unsigned int entity);
     
