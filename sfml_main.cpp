@@ -578,9 +578,16 @@ void game(sf::RenderWindow *window, World *world, System *system, GameInput *new
 
 void menu(sf::RenderWindow *window, World *world, GameInput *newInput) {
     window->clear(sf::Color::Magenta);
+
+    sf::RectangleShape startButton((sf::Vector2f) { 400.0, 100.0 });
+    startButton.setPosition((int)(window->getSize().x / 2) - 200, (int)(window->getSize().y / 2) - 50);
+    startButton.setFillColor(sf::Color::Black);
+
+    window->draw(startButton);
+
     window->display();
 
-    if (newInput->keyboard.start.endedDown) {
+    if (newInput->keyboard.start.endedDown || (newInput->mouseButtons[0].endedDown && startButton.getGlobalBounds().contains(newInput->mouseX, newInput->mouseY))) {
         world->clear();
 
         TextureAtlasLocation background = world->textureAtlasLocationMap.at("background");
