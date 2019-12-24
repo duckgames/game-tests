@@ -14,3 +14,6 @@ include_directories(${LUA_INCLUDE_DIRS})
 ## Use sfml_main.cpp
 add_executable(untitled sfml_main.cpp background.h background.cpp following-background.cpp following-background.h components.h system.cpp system.h world.h world.cpp controller.h EntityPool.cpp EntityPool.h TextureAtlasLocation.h)
 target_link_libraries(untitled sfml-graphics sfml-window sfml-system jsoncpp ${LUA_LIBRARIES})
+
+target_compile_options(untitled PUBLIC -DLOG_FPS=1)
+#target_compile_options(untitled PUBLIC -DLOG_INPUT=1)

@@ -76,6 +76,92 @@ static float SFMLProcessGameControllerAxis(float value) {
     return 0.0f;
 }
 
+#if LOG_INPUT
+static void LogInput(GameInput *newInput) {
+    if (newInput->keyboard.moveUp.endedDown)
+        printf("KEYBOARD up\n");
+
+    if (newInput->keyboard.moveDown.endedDown)
+        printf("KEYBOARD down\n");
+
+    if (newInput->keyboard.moveLeft.endedDown)
+        printf("KEYBOARD left\n");
+
+    if (newInput->keyboard.moveRight.endedDown)
+        printf("KEYBOARD right\n");
+
+    printf("Mouse x: %d\n", newInput->mouseX);
+    printf("Mouse y: %d\n", newInput->mouseY);
+
+    if (newInput->mouseButtons[0].endedDown)
+        printf("Mouse 1 down\n");
+
+    if (newInput->mouseButtons[1].endedDown)
+        printf("Mouse 2 down\n");
+
+    if (newInput->mouseButtons[2].endedDown)
+        printf("Mouse 3 down\n");
+
+    for (int i = 0; i < MAX_CONTROLLERS; i++) {
+        if (sf::Joystick::isConnected(i)) {
+            GameControllerInput *newController = &newInput->controllers[i];
+            if (newController->actionUp.endedDown)
+                printf("CONTROLLER %d action up\n", i);
+
+            if (newController->actionDown.endedDown)
+                printf("CONTROLLER %d action down\n", i);
+
+            if (newController->actionLeft.endedDown)
+                printf("CONTROLLER %d action left\n", i);
+
+            if (newController->actionRight.endedDown)
+                printf("CONTROLLER %d action right\n", i);
+
+            if (newController->leftShoulder.endedDown)
+                printf("CONTROLLER %d left shoulder\n", i);
+
+            if (newController->rightShoulder.endedDown)
+                printf("CONTROLLER %d right shoulder\n", i);
+
+            if (newController->back.endedDown)
+                printf("CONTROLLER %d back\n", i);
+
+            if (newController->start.endedDown)
+                printf("CONTROLLER %d start\n", i);
+
+
+            if (newController->moveUp.endedDown)
+                printf("CONTROLLER %d up\n", i);
+
+            if (newController->moveDown.endedDown)
+                printf("CONTROLLER %d down\n", i);
+
+            if (newController->moveLeft.endedDown)
+                printf("CONTROLLER %d left\n", i);
+
+            if (newController->moveRight.endedDown)
+                printf("CONTROLLER %d right\n", i);
+
+            printf("controller %d, axis x: %f\n", i, newInput->controllers[i].stickAverageX);
+            printf("controller %d, axis y: %f\n", i, newInput->controllers[i].stickAverageY);
+
+            printf("controller %d, axis u: %f\n", i, newInput->controllers[i].stickAverageU);
+            printf("controller %d, axis v: %f\n", i, newInput->controllers[i].stickAverageV);
+
+            printf("controller %d, axis r: %f\n", i, newInput->controllers[i].stickAverageR);
+            printf("controller %d, axis z: %f\n", i, newInput->controllers[i].stickAverageZ);
+        }
+    }
+}
+#endif
+
+#if LOG_FPS
+static void LogFPS(float currentTime) {
+    float fps = 1.0f / currentTime;
+    std::cout << "FPS: " << fps << std::endl;
+}
+#endif
+
 static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *newInput, GameInput *oldInput) {
     sf::Event event;
 
@@ -140,19 +226,7 @@ static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *
 
     newInput->keyboard.stickAverageX = xAxisValue;
     newInput->keyboard.stickAverageY = yAxisValue;
-/*
-            if (newInput->keyboard.moveUp.endedDown)
-                printf("KEYBOARD up\n");
 
-            if (newInput->keyboard.moveDown.endedDown)
-                printf("KEYBOARD down\n");
-
-            if (newInput->keyboard.moveLeft.endedDown)
-                printf("KEYBOARD left\n");
-
-            if (newInput->keyboard.moveRight.endedDown)
-                printf("KEYBOARD right\n");
-*/
     newInput->mouseX = sf::Mouse::getPosition(*window).x;
     newInput->mouseY = sf::Mouse::getPosition(*window).y;
     SFMLProcessGameControllerButton(&oldInput->mouseButtons[0], &newInput->mouseButtons[0],
@@ -161,20 +235,6 @@ static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *
                                     sf::Mouse::isButtonPressed(sf::Mouse::Middle));
     SFMLProcessGameControllerButton(&oldInput->mouseButtons[2], &newInput->mouseButtons[2],
                                     sf::Mouse::isButtonPressed(sf::Mouse::Right));
-
-/*
-            printf("Mouse x: %d\n", newInput->mouseX);
-            printf("Mouse y: %d\n", newInput->mouseY);
-
-            if (newInput->mouseButtons[0].endedDown)
-                printf("Mouse 1 down\n");
-
-            if (newInput->mouseButtons[1].endedDown)
-                printf("Mouse 2 down\n");
-
-            if (newInput->mouseButtons[2].endedDown)
-                printf("Mouse 3 down\n");
-*/
 
     sf::Joystick::update();
 
@@ -224,55 +284,6 @@ static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *
                     sf::Joystick::getAxisPosition(i, sf::Joystick::R));
             newInput->controllers[i].stickAverageZ = SFMLProcessGameControllerAxis(
                     sf::Joystick::getAxisPosition(i, sf::Joystick::Z));
-
-/*
-                    GameControllerInput *newController = &newInput->controllers[i];
-                    if (newController->actionUp.endedDown)
-                        printf("CONTROLLER %d action up\n", i);
-
-                    if (newController->actionDown.endedDown)
-                        printf("CONTROLLER %d action down\n", i);
-
-                    if (newController->actionLeft.endedDown)
-                        printf("CONTROLLER %d action left\n", i);
-
-                    if (newController->actionRight.endedDown)
-                        printf("CONTROLLER %d action right\n", i);
-
-                    if (newController->leftShoulder.endedDown)
-                        printf("CONTROLLER %d left shoulder\n", i);
-
-                    if (newController->rightShoulder.endedDown)
-                        printf("CONTROLLER %d right shoulder\n", i);
-
-                    if (newController->back.endedDown)
-                        printf("CONTROLLER %d back\n", i);
-
-                    if (newController->start.endedDown)
-                        printf("CONTROLLER %d start\n", i);
-
-
-                    if (newController->moveUp.endedDown)
-                        printf("CONTROLLER %d up\n", i);
-
-                    if (newController->moveDown.endedDown)
-                        printf("CONTROLLER %d down\n", i);
-
-                    if (newController->moveLeft.endedDown)
-                        printf("CONTROLLER %d left\n", i);
-
-                    if (newController->moveRight.endedDown)
-                        printf("CONTROLLER %d right\n", i);
-
-                    printf("controller %d, axis x: %f\n", i, newInput->controllers[i].stickAverageX);
-                    printf("controller %d, axis y: %f\n", i, newInput->controllers[i].stickAverageY);
-
-                    printf("controller %d, axis u: %f\n", i, newInput->controllers[i].stickAverageU);
-                    printf("controller %d, axis v: %f\n", i, newInput->controllers[i].stickAverageV);
-
-                    printf("controller %d, axis r: %f\n", i, newInput->controllers[i].stickAverageR);
-                    printf("controller %d, axis z: %f\n", i, newInput->controllers[i].stickAverageZ);
-*/
         }
     }
 }
@@ -620,7 +631,9 @@ int main() {
         }
     }
 
+#if LOG_FPS
     sf::Clock clock;
+#endif
 
     while (window.isOpen()) {
         timeSinceLastUpdate += tickClock.restart();
@@ -643,9 +656,14 @@ int main() {
             newInput = oldInput;
             oldInput = temp;
 
+#if LOG_INPUT
+            LogInput(newInput);
+#endif
+
+#if LOG_FPS
             float currentTime = clock.restart().asSeconds();
-            float fps = 1.0f / currentTime;
-            std::cout << fps << std::endl;
+            LogFPS(currentTime);
+#endif
         }
     }
 
