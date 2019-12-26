@@ -604,11 +604,40 @@ void menu(sf::RenderWindow *window, World *world, GameInput *newInput) {
     }
 }
 
-void dead(sf::RenderWindow *window, GameInput *newInput) {
+void dead(sf::RenderWindow *window, World *world, GameInput *newInput) {
     window->clear(sf::Color::Blue);
+
+    sf::RectangleShape startButton((sf::Vector2f) { 400.0, 100.0 });
+    startButton.setPosition((int)(window->getSize().x / 2) - 200, (int)(window->getSize().y / 2) - 50);
+    startButton.setFillColor(sf::Color::Black);
+
+    sf::RectangleShape menuButton((sf::Vector2f) { 400.0, 100.0 });
+    menuButton.setPosition(startButton.getPosition().x, startButton.getPosition().y + 200);
+    menuButton.setFillColor(sf::Color::White);
+
+    window->draw(startButton);
+    window->draw(menuButton);
+
     window->display();
 
-    if (newInput->keyboard.start.endedDown) {
+    if (newInput->keyboard.start.endedDown || (newInput->mouseButtons[0].endedDown && startButton.getGlobalBounds().contains(newInput->mouseX, newInput->mouseY))) {
+        world->clear();
+
+        TextureAtlasLocation background = world->textureAtlasLocationMap.at("background");
+        world->createInfiniteBackground(
+                (window->getSize().x / 2) - (background.w / 2),
+                -background.h + window->getSize().y,
+                0.0f,
+                100.0f,
+                background);
+
+        loadLevel(1, world);
+
+        gameState = STATE_PLAYING;
+    }
+
+    if (newInput->mouseButtons[0].endedDown && menuButton.getGlobalBounds().contains(newInput->mouseX, newInput->mouseY)) {
+        world->clear();
         gameState = STATE_MENU;
     }
 }
@@ -656,7 +685,7 @@ int main() {
                 menu(&window, &world, newInput);
             }
             else if (gameState == STATE_DEAD) {
-                dead(&window, newInput);
+                dead(&window, &world, newInput);
             }
 
             GameInput *temp = newInput;
