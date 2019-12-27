@@ -63,6 +63,8 @@ typedef struct {
 typedef struct {
     float velocity;
     float angle;
+    float xOffset;
+    float yOffset;
     TextureAtlasLocation bullet;
 } BulletDefinition;
 

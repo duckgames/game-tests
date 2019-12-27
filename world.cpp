@@ -349,8 +349,8 @@ void World::createPlayerBullet(int spawnPoint) {
     BulletSpawnPoint *bulletSpawnPoint = &playerBulletSpawnPointsMap[spawnPoint];
 
     for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
-        unsigned int entity = createProjectile(spawnPointPosition->x,
-                                               spawnPointPosition->y,
+        unsigned int entity = createProjectile(spawnPointPosition->x + bullet.xOffset,
+                                               spawnPointPosition->y + bullet.yOffset,
                                                bullet.velocity,
                                                bullet.angle,
                                                bullet.bullet);
@@ -368,8 +368,8 @@ void World::createEnemyBullet(int spawnPoint) {
 
 
     for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
-        unsigned int entity = createProjectile(spawnPointPosition->x,
-                                           spawnPointPosition->y,
+        unsigned int entity = createProjectile(spawnPointPosition->x + bullet.xOffset,
+                                           spawnPointPosition->y + bullet.yOffset,
                                            bullet.velocity,
                                            bullet.angle,
                                            bullet.bullet);

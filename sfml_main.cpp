@@ -544,6 +544,8 @@ int loadLevel(int levelNumber, World *world) {
                     BulletDefinition bulletDefinition = {
                             static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["velocity"]),
                             static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["angle"]),
+                            static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["xOffset"]),
+                            static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["yOffset"]),
                             world->textureAtlasLocationMap.at(textureAtlasLocation)
                     };
                     bulletDefinitions.emplace_back(bulletDefinition);
