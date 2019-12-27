@@ -191,9 +191,10 @@ void World::addLeaderComponent(unsigned int entity, std::vector<int> followers) 
     leadersMap.insert(std::pair<int, Leader>(entity, leader));
 }
 
-void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, bool forPlayer, std::vector<BulletDefinition> bullets) {
+void World::addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float angle, bool forPlayer, std::vector<BulletDefinition> bullets) {
     BulletSpawnPoint bulletSpawnPoint;
     bulletSpawnPoint.rateOfFire = rateOfFire;
+    bulletSpawnPoint.angle = angle;
     bulletSpawnPoint.timeElapsed = 0.0f;
     bulletSpawnPoint.bullets = bullets;
 
@@ -314,22 +315,22 @@ unsigned int World::createFollower(int owningEntity, float xOffset, float yOffse
     return entity;
 }
 
-unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, std::vector<BulletDefinition> bullets) {
+unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
 
     TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-red");
     addDrawComponent(entity, textureAtlasLocation);
-    addBulletSpawnPointComponent(entity, rateOfFire, false, bullets);
+    addBulletSpawnPointComponent(entity, rateOfFire, angle, false, bullets);
 
     return entity;
 }
 
-unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, std::vector<BulletDefinition> bullets) {
+unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets) {
     unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
 
     TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-blue");
     addDrawComponent(entity, textureAtlasLocation);
-    addBulletSpawnPointComponent(entity, rateOfFire, true, bullets);
+    addBulletSpawnPointComponent(entity, rateOfFire, angle, true, bullets);
 
     return entity;
 }
@@ -352,7 +353,7 @@ void World::createPlayerBullet(int spawnPoint) {
         unsigned int entity = createProjectile(spawnPointPosition->x + bullet.xOffset,
                                                spawnPointPosition->y + bullet.yOffset,
                                                bullet.velocity,
-                                               bullet.angle,
+                                               bulletSpawnPoint->angle + bullet.angle,
                                                bullet.bullet);
 
         addColliderComponent(entity, 0, 0, bullet.bullet.w, bullet.bullet.h, 1);
@@ -384,7 +385,7 @@ void World::createEnemyBullet(int spawnPoint) {
 unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets) {
     unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, textureAtlasLocationMap.at("ship-enemy"));
 
-    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, rateOfFire, bullets);
+    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, 0.0f, rateOfFire, bullets);
     std::vector<int> followers;
     followers.push_back(bulletSpawnPoint);
     addLeaderComponent(entity, followers);

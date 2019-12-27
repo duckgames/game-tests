@@ -82,9 +82,7 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         else if (padInput->actionLeft.endedDown || keyboardInput->actionLeft.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 BulletSpawnPoint *bulletSpawnPoint = &world->playerBulletSpawnPointsMap[waiting];
-                for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
-                    bullet.angle -= 10.0f;
-                }
+                bulletSpawnPoint->angle -= 10.0f;
 
                 world->createPlayerBullet(waiting);
             }
@@ -94,9 +92,7 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         else if (padInput->actionRight.endedDown || keyboardInput->actionRight.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 BulletSpawnPoint *bulletSpawnPoint = &world->playerBulletSpawnPointsMap[waiting];
-                for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
-                    bullet.angle -= 10.0f;
-                }
+                    bulletSpawnPoint->angle += 10.0f;
 
                 world->createPlayerBullet(waiting);
             }

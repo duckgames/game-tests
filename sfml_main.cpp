@@ -445,6 +445,7 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
 
         world->addBulletSpawnPointComponent(entity,
                                             static_cast<float>(entityData["components"]["bulletSpawnPoint"]["rateOfFire"]),
+                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["angle"]),
                                             static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"]),
                                             world->bulletPatterns.at(bulletPattern)
         );

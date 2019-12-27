@@ -71,6 +71,7 @@ typedef struct {
 typedef struct {
     float rateOfFire;
     float timeElapsed;
+    float angle;
     std::vector<BulletDefinition> bullets;
 } BulletSpawnPoint;
 

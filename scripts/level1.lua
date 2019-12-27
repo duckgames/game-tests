@@ -2,14 +2,14 @@ bulletPatterns = {
     [0] = {
         [0] = {
             velocity = 100.0,
-            angle = -500.0,
+            angle = -90.0,
             xOffset = 16.0,
             yOffset = 0.0,
             textureAtlasLocation = "projectile-blue"
         },
         [1] = {
             velocity = 100.0,
-            angle = -500.0,
+            angle = -90.0,
             xOffset = -16.0,
             yOffset = 0.0,
             textureAtlasLocation = "projectile-blue"
@@ -72,6 +72,7 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.02,
+                                angle = 0.0,
                                 forPlayer = true,
                                 bulletPattern = 0
                             }
@@ -127,6 +128,7 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.1,
+                                angle = 0.0,
                                 forPlayer = false,
                                 bulletPattern = 1
                             }
@@ -182,6 +184,7 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.2,
+                                angle = 0.0,
                                 forPlayer = false,
                                 bulletPattern = 1
                             }
@@ -237,6 +240,7 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.5,
+                                angle = 0.0,
                                 forPlayer = false,
                                 bulletPattern = 1
                             }
