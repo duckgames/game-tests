@@ -61,11 +61,15 @@ typedef struct {
 } Follower;
 
 typedef struct {
-    float rateOfFire;
-    float timeElapsed;
     float velocity;
     float angle;
     TextureAtlasLocation bullet;
+} BulletDefinition;
+
+typedef struct {
+    float rateOfFire;
+    float timeElapsed;
+    std::vector<BulletDefinition> bullets;
 } BulletSpawnPoint;
 
 typedef struct {

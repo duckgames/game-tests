@@ -1,3 +1,24 @@
+bulletPatterns = {
+    [0] = {
+        [0] = {
+            velocity = 100.0,
+            angle = -500.0,
+            textureAtlasLocation = "projectile-blue"
+        }
+    },
+    [1] = {
+        [0] = {
+            velocity = 200.0,
+            angle = 100.0,
+            textureAtlasLocation = "projectile-red"
+        },
+        [1] = {
+            velocity = 200.0,
+            angle = -100.0,
+            textureAtlasLocation = "projectile-red"
+        }
+    }
+}
 entities = {
     [0] = {
         isEnemy = false,
@@ -38,10 +59,8 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.02,
-                                velocity = 100.0,
-                                angle = -500.0,
-                                textureAtlasLocation = "projectile-blue",
-                                forPlayer = true
+                                forPlayer = true,
+                                bulletPattern = 0
                             }
                         }
                     },
@@ -56,10 +75,8 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.02,
-                                velocity = 100.0,
-                                angle = -500.0,
-                                textureAtlasLocation = "projectile-blue",
-                                forPlayer = true
+                                forPlayer = true,
+                                bulletPattern = 0
                             }
                         }
                     }
@@ -113,10 +130,8 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.1,
-                                velocity = 200.0,
-                                angle = 100.0,
-                                textureAtlasLocation = "projectile-red",
-                                forPlayer = false
+                                forPlayer = false,
+                                bulletPattern = 1
                             }
                         }
                     }
@@ -170,10 +185,8 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.2,
-                                velocity = 200.0,
-                                angle = 100.0,
-                                textureAtlasLocation = "projectile-red",
-                                forPlayer = false
+                                forPlayer = false,
+                                bulletPattern = 1
                             }
                         }
                     }
@@ -227,10 +240,8 @@ entities = {
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.5,
-                                velocity = 200.0,
-                                angle = 100.0,
-                                textureAtlasLocation = "projectile-red",
-                                forPlayer = false
+                                forPlayer = false,
+                                bulletPattern = 1
                             }
                         }
                     }

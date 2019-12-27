@@ -44,6 +44,7 @@ class World {
     std::unordered_set<int> enforceScreenYBoundaries;
     std::unordered_set<int> scoresToAdd;
 
+    std::map<int, std::vector<BulletDefinition>> bulletPatterns;
     std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
 
     int screenWidth;
@@ -65,7 +66,7 @@ class World {
     void addMoveComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
     void addLeaderComponent(unsigned int entity, std::vector<int> followers);
-    void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float bulletXSpeed, float bulletYSpeed, TextureAtlasLocation bullet, bool forPlayer);
+    void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, bool forPlayer, std::vector<BulletDefinition> bullets);
     void addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage);
     void addHealthComponent(unsigned int entity, int initialHealth);
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
@@ -81,12 +82,12 @@ class World {
     unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed);
     unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
-    unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire);
-    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire);
+    unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, std::vector<BulletDefinition> bullets);
+    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, std::vector<BulletDefinition> bullets);
     unsigned int createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation);
-    unsigned int createPlayerBullet(int spawnPoint);
-    unsigned int createEnemyBullet(int spawnPoint);
-    unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire);
+    void createPlayerBullet(int spawnPoint);
+    void createEnemyBullet(int spawnPoint);
+    unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
 };
 #endif //UNTITLED_WORLD_H

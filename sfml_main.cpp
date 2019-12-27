@@ -441,13 +441,12 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     // Add BulletSpawnPoint Component
     sol::optional<sol::table> bulletSpawnPointExists = entityData["components"]["bulletSpawnPoint"];
     if (bulletSpawnPointExists != sol::nullopt) {
-        std::string textureAtlasLocation = entityData["components"]["bulletSpawnPoint"]["textureAtlasLocation"];
+        int bulletPattern = static_cast<int>(entityData["components"]["bulletSpawnPoint"]["bulletPattern"]);
+
         world->addBulletSpawnPointComponent(entity,
                                             static_cast<float>(entityData["components"]["bulletSpawnPoint"]["rateOfFire"]),
-                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["velocity"]),
-                                            static_cast<float>(entityData["components"]["bulletSpawnPoint"]["angle"]),
-                                            world->textureAtlasLocationMap.at(textureAtlasLocation),
-                                            static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"])
+                                            static_cast<bool>(entityData["components"]["bulletSpawnPoint"]["forPlayer"]),
+                                            world->bulletPatterns.at(bulletPattern)
         );
     }
 
@@ -525,14 +524,45 @@ int loadLevel(int levelNumber, World *world) {
     std::string levelName = "level" + std::to_string(levelNumber);
     lua.script_file("../scripts/" + levelName + ".lua");
 
-    sol::table enemies = lua["entities"];
+    sol::table bulletPatterns = lua["bulletPatterns"];
+    unsigned int patternIndex = 0;
+    while (true) {
+        sol::optional<sol::table> patternExists = bulletPatterns[patternIndex];
+        std::vector<BulletDefinition> bulletDefinitions;
+        if (patternExists == sol::nullopt) {
+            break;
+        } else {
+            unsigned int bulletIndex = 0;
+            while (true) {
+                sol::optional<sol::table> bulletExists = bulletPatterns[patternIndex][bulletIndex];
+                if (bulletExists == sol::nullopt) {
+                    break;
+                } else {
+                    sol::table bullet = bulletPatterns[patternIndex][bulletIndex];
+                    std::string textureAtlasLocation = bulletPatterns[patternIndex][bulletIndex]["textureAtlasLocation"];
+
+                    BulletDefinition bulletDefinition = {
+                            static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["velocity"]),
+                            static_cast<float>(bulletPatterns[patternIndex][bulletIndex]["angle"]),
+                            world->textureAtlasLocationMap.at(textureAtlasLocation)
+                    };
+                    bulletDefinitions.emplace_back(bulletDefinition);
+                }
+                bulletIndex++;
+            }
+            world->bulletPatterns.insert(std::pair<int, std::vector<BulletDefinition>>(patternIndex, bulletDefinitions));
+        }
+        patternIndex++;
+    }
+
+    sol::table entities = lua["entities"];
     unsigned int entityIndex = 0;
     while (true) {
-        sol::optional<sol::table> entityExists = enemies[entityIndex];
+        sol::optional<sol::table> entityExists = entities[entityIndex];
         if (entityExists == sol::nullopt) {
             break;
         } else {
-            sol::table enemy = enemies[entityIndex];
+            sol::table enemy = entities[entityIndex];
             createEntity(world, enemy, -1);
         }
         entityIndex++;
