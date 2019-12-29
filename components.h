@@ -93,6 +93,10 @@ typedef struct {
 } Score;
 
 typedef struct {
+    std::string itemName;
+} DropItem;
+
+typedef struct {
     int currentFrame;
     int totalFrames;
     float frameDuration;

@@ -13,6 +13,15 @@
 
 static const int MAX_ENTITIES = 1000;
 
+typedef struct {
+    int points;
+    float xSpeed;
+    float ySpeed;
+    float xPosition;
+    float yPosition;
+    std::string textureAtlasLocation;
+} Droppable;
+
 class World {
     public:
     int entities[MAX_ENTITIES];
@@ -30,6 +39,7 @@ class World {
     std::map<int, Health> healthMap;
     std::map<int, InfiniteBackground> infiniteBackgroundsMap;
     std::map<int, Score> scoresMap;
+    std::map<int, DropItem> dropItemsMap;
     std::map<int, Animation> animationsMap;
 
     std::vector<std::pair<int, int>> pendingCollisions;
@@ -45,6 +55,7 @@ class World {
     std::unordered_set<int> scoresToAdd;
 
     std::map<int, std::vector<BulletDefinition>> bulletPatterns;
+    std::map<std::string, Droppable> droppableItems;
     std::map<std::string, TextureAtlasLocation> textureAtlasLocationMap;
 
     int screenWidth;
@@ -71,6 +82,7 @@ class World {
     void addHealthComponent(unsigned int entity, int initialHealth);
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
     void addScoreComponent(unsigned int entity, long score);
+    void addDropItemComponent(unsigned int entity, std::string itemName);
     void addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations);
 
     void addXBoundaryEnforcement(unsigned int entity);
@@ -89,5 +101,6 @@ class World {
     void createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
+    void createDroppableItem(Droppable droppable);
 };
 #endif //UNTITLED_WORLD_H

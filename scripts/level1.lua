@@ -32,6 +32,14 @@ bulletPatterns = {
         }
     }
 }
+droppables = {
+    [0] = {
+        textureAtlasLocation = "specialbrew",
+        points = 5,
+        xSpeed = 10.0,
+        ySpeed = 10.0
+    }
+}
 entities = {
     [0] = {
         isEnemy = false,
@@ -111,6 +119,9 @@ entities = {
             score = {
                 points = 5
             },
+            dropItem = {
+                name = "specialbrew"
+            },
             leader = {
                 followers = {
                     [0] = {
@@ -167,6 +178,9 @@ entities = {
             score = {
                 points = 5
             },
+            dropItem = {
+                name = "specialbrew"
+            },
             leader = {
                 followers = {
                     [0] = {
@@ -222,6 +236,9 @@ entities = {
             },
             score = {
                 points = 5
+            },
+            dropItem = {
+                name = "specialbrew"
             },
             leader = {
                 followers = {

@@ -475,6 +475,13 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         world->addScoreComponent(entity, static_cast<int>(entityData["components"]["score"]["points"]));
     }
 
+    // Add DropItem Component
+    sol::optional<sol::table> dropItemExists = entityData["components"]["dropItem"];
+    if (dropItemExists != sol::nullopt) {
+        std::string textureAtlasLocation = entityData["components"]["dropItem"]["name"];
+        world->addDropItemComponent(entity, textureAtlasLocation);
+    }
+
     // Add Animation Component
     sol::optional<sol::table> animationExists = entityData["components"]["animation"];
     if (animationExists != sol::nullopt) {
@@ -556,6 +563,27 @@ int loadLevel(int levelNumber, World *world) {
             world->bulletPatterns.insert(std::pair<int, std::vector<BulletDefinition>>(patternIndex, bulletDefinitions));
         }
         patternIndex++;
+    }
+
+    sol::table droppables = lua["droppables"];
+    unsigned int droppableIndex = 0;
+    while (true) {
+        sol::optional<sol::table> droppableExists = droppables[droppableIndex];
+        if (droppableExists == sol::nullopt) {
+            break;
+        } else {
+            sol::table droppable = droppables[droppableIndex];
+            std::string textureAtlasLocation = droppable["textureAtlasLocation"];
+
+            Droppable droppableItem;
+            droppableItem.points = droppable["points"];
+            droppableItem.xSpeed = droppable["xSpeed"];
+            droppableItem.ySpeed = droppable["ySpeed"];
+            droppableItem.textureAtlasLocation = textureAtlasLocation;
+
+            world->droppableItems.insert(std::pair<std::string, Droppable>(textureAtlasLocation, droppableItem));
+        }
+        droppableIndex++;
     }
 
     sol::table entities = lua["entities"];

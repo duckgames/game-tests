@@ -55,6 +55,7 @@ void World::clear() {
     healthMap.clear();
     infiniteBackgroundsMap.clear();
     scoresMap.clear();
+    dropItemsMap.clear();
     animationsMap.clear();
     pendingCollisions.clear();
     enemies.clear();
@@ -85,6 +86,14 @@ unsigned int World::createEntity() {
 }
 
 void World::destroyEntity(unsigned int entity) {
+    auto dropItem = dropItemsMap.find(entity);
+    if (dropItem != dropItemsMap.end()) {
+        Droppable droppable = droppableItems.at(dropItem->second.itemName);
+        droppable.xPosition = positionsMap.at(entity).x;
+        droppable.yPosition = positionsMap.at(entity).y;
+        createDroppableItem(droppable);
+    }
+
     jumpersMap.erase(entity);
     drawablesMap.erase(entity);
     positionsMap.erase(entity);
@@ -96,6 +105,7 @@ void World::destroyEntity(unsigned int entity) {
     playerBulletSpawnPointsMap.erase(entity);
     collidersMap.erase(entity);
     healthMap.erase(entity);
+    dropItemsMap.erase(entity);
     enemies.erase(entity);
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
@@ -243,6 +253,13 @@ void World::addScoreComponent(unsigned int entity, long points) {
     scoresMap.insert(std::pair<int, Score>(entity, score));
 }
 
+void World::addDropItemComponent(unsigned int entity, std::string itemName) {
+    DropItem dropItem;
+    dropItem.itemName = itemName;
+
+    dropItemsMap.insert(std::pair<int, DropItem>(entity, dropItem));
+}
+
 void World::addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations) {
     Animation animation;
     animation.totalFrames = numFrames;
@@ -370,10 +387,10 @@ void World::createEnemyBullet(int spawnPoint) {
 
     for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
         unsigned int entity = createProjectile(spawnPointPosition->x + bullet.xOffset,
-                                           spawnPointPosition->y + bullet.yOffset,
-                                           bullet.velocity,
-                                           bullet.angle,
-                                           bullet.bullet);
+                                               spawnPointPosition->y + bullet.yOffset,
+                                               bullet.velocity,
+                                               bullet.angle,
+                                               bullet.bullet);
 
         addColliderComponent(entity, 0.0, 0.0, bullet.bullet.w, bullet.bullet.h, 1);
         canCollideWithPlayer(entity);
@@ -395,6 +412,7 @@ unsigned int World::createEnemy(float startX, float startY, float xSpeed, float 
 
     addHealthComponent(entity, 5);
     addScoreComponent(entity, 5);
+    addDropItemComponent(entity, "specialbrew");
 
     enemies.insert(entity);
     return entity;
@@ -412,4 +430,18 @@ unsigned int World::createInfiniteBackground(float startX, float startY, float x
     infiniteBackgroundsMap[entity].follower = follower;
 
     return entity;
+}
+
+void World::createDroppableItem(Droppable droppable) {
+    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at(droppable.textureAtlasLocation);
+
+    unsigned int entity = createMover(droppable.xPosition,
+                                      droppable.yPosition,
+                                      droppable.xSpeed,
+                                      droppable.ySpeed,
+                                      textureAtlasLocation);
+
+    addColliderComponent(entity, 0, 0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
+    canCollideWithPlayer(entity);
+    addScoreComponent(entity, droppable.points);
 }
