@@ -292,6 +292,46 @@ void System::updateScore() {
     world->scoresToAdd.clear();
 }
 
+void System::updateAttractors() {
+    Position *p1;
+    Position *p2;
+
+    for (auto attractor: world->attractorsMap) {
+        p1 = &world->positionsMap[attractor.first];
+        for (auto attractable: world->attractablesMap) {
+            p2 = &world->positionsMap[attractable.first];
+            float diffX = p1->x - p2->x;
+            float diffY = p1->y - p2->y;
+            float distance = sqrt((diffX * diffX) + (diffY * diffY));
+            if (distance < attractor.second.radius) {
+                world->beingAttracted.emplace_back(std::pair<int, int>(attractable.first, attractor.first));
+            }
+        }
+    }
+}
+
+void System::updateAttractables() {
+    Move *moveComponent;
+    Attractor *attractor;
+    Position *p1;
+    Position *p2;
+
+    for (auto pair: world->beingAttracted) {
+        moveComponent = &world->moversMap[pair.first];
+        attractor = &world->attractorsMap[pair.second];
+        p1 = &world->positionsMap[pair.first];
+        p2 = &world->positionsMap[pair.second];
+
+        float tx = p2->x - p1->x;
+        float ty = p2->y - p1->y;
+
+        moveComponent->xSpeed = tx;
+        moveComponent->ySpeed = ty;
+    }
+
+    world->beingAttracted.clear();
+}
+
 void System::updateAnimations(float delta) {
     for (auto entity: world->animationsMap) {
         Animation *animation = &world->animationsMap[entity.first];

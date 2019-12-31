@@ -27,6 +27,8 @@ public:
     void updateInfiniteBackgrounds(float delta);
     void processPendingCollisions();
     void updateScore();
+    void updateAttractors();
+    void updateAttractables();
     void updateAnimations(float delta);
 
 private:

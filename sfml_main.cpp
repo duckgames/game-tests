@@ -180,9 +180,9 @@ static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *
     SFMLProcessGameControllerButton(&oldInput->keyboard.actionDown, &newInput->keyboard.actionDown,
                                     sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
     SFMLProcessGameControllerButton(&oldInput->keyboard.actionLeft, &newInput->keyboard.actionLeft,
-                                    sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
+                                    sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
     SFMLProcessGameControllerButton(&oldInput->keyboard.actionRight, &newInput->keyboard.actionRight,
-                                    sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt));
+                                    sf::Keyboard::isKeyPressed(sf::Keyboard::X));
 
     SFMLProcessGameControllerButton(&oldInput->keyboard.moveUp, &newInput->keyboard.moveUp,
                                     sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
@@ -194,9 +194,9 @@ static void SFMLProcessInput(sf::RenderWindow *window, World *world, GameInput *
                                     sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
 
     SFMLProcessGameControllerButton(&oldInput->keyboard.leftShoulder, &newInput->keyboard.leftShoulder,
-                                    sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+                                    sf::Keyboard::isKeyPressed(sf::Keyboard::A));
     SFMLProcessGameControllerButton(&oldInput->keyboard.rightShoulder, &newInput->keyboard.rightShoulder,
-                                    sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+                                    sf::Keyboard::isKeyPressed(sf::Keyboard::S));
 
     SFMLProcessGameControllerButton(&oldInput->keyboard.back, &newInput->keyboard.back,
                                     sf::Keyboard::isKeyPressed(sf::Keyboard::F2));
@@ -325,7 +325,6 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
         window->draw(rectangleShape);
     }
 
-
     sf::RectangleShape rectangleShape;
     rectangleShape.setFillColor(sf::Color::Transparent);
     rectangleShape.setOutlineColor(sf::Color::Green);
@@ -353,6 +352,20 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     rectangleShape.setPosition(colliderX, colliderY);
     rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
     window->draw(rectangleShape);
+
+    for (auto attractor : world->attractorsMap) {
+        Position *attractorPos = &world->positionsMap[attractor.first];
+        float attractorX = attractorPos->x;
+        float attractorY = attractorPos->y;
+
+        sf::CircleShape circleShape(attractor.second.radius);
+        circleShape.setFillColor(sf::Color::Transparent);
+        circleShape.setOutlineColor(sf::Color::Magenta);
+        circleShape.setOutlineThickness(2.0f);
+        circleShape.setPosition(attractorX, attractorY);
+        circleShape.setOrigin(attractor.second.radius - 16, attractor.second.radius - 16);
+        window->draw(circleShape);
+    }
 }
 
 // If this is being called to create a follower entity, the owning entity should be the ID of the owner (>= 0 && < MAX_ENTITIES).
@@ -482,6 +495,20 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         world->addDropItemComponent(entity, textureAtlasLocation);
     }
 
+    // Add Attractor Component
+    sol::optional<sol::table> attractorExists = entityData["components"]["attractor"];
+    if (attractorExists != sol::nullopt) {
+        world->addAttractorComponent(entity,
+                                     static_cast<float>(entityData["components"]["attractor"]["radius"]),
+                                     static_cast<float>(entityData["components"]["attractor"]["speed"]));
+    }
+
+    // Add Attractable Component
+    sol::optional<sol::table> attractableExists = entityData["components"]["attractable"];
+    if (attractableExists != sol::nullopt) {
+        world->addAttractableComponent(entity);
+    }
+
     // Add Animation Component
     sol::optional<sol::table> animationExists = entityData["components"]["animation"];
     if (animationExists != sol::nullopt) {
@@ -603,9 +630,11 @@ int loadLevel(int levelNumber, World *world) {
 void game(sf::RenderWindow *window, World *world, System *system, GameInput *newInput, float timePerFrame) {
     window->clear();
 
-    system->clearDeadEntities();
     system->processWaitingToFire();
     system->updateInfiniteBackgrounds(timePerFrame);
+    system->updateAttractors();
+    system->updateAttractables();
+    system->clearDeadEntities();
     system->updateMovers(timePerFrame);
     system->updateControllables(timePerFrame, &newInput->controllers[0], &newInput->keyboard);
     system->updateProjectiles(timePerFrame);

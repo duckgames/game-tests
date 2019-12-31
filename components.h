@@ -97,6 +97,14 @@ typedef struct {
 } DropItem;
 
 typedef struct {
+    float radius;
+    float speed;
+} Attractor;
+
+typedef struct {
+} Attractable;
+
+typedef struct {
     int currentFrame;
     int totalFrames;
     float frameDuration;

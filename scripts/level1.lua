@@ -67,6 +67,10 @@ entities = {
             health = {
                 initialHealth = 10
             },
+            attractor = {
+                radius = 200.0,
+                speed = 50.0
+            },
             leader = {
                 followers = {
                     [0] = {

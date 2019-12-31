@@ -56,6 +56,8 @@ void World::clear() {
     infiniteBackgroundsMap.clear();
     scoresMap.clear();
     dropItemsMap.clear();
+    attractorsMap.clear();
+    attractablesMap.clear();
     animationsMap.clear();
     pendingCollisions.clear();
     enemies.clear();
@@ -106,6 +108,8 @@ void World::destroyEntity(unsigned int entity) {
     collidersMap.erase(entity);
     healthMap.erase(entity);
     dropItemsMap.erase(entity);
+    attractorsMap.erase(entity);
+    attractablesMap.erase(entity);
     enemies.erase(entity);
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
@@ -258,6 +262,19 @@ void World::addDropItemComponent(unsigned int entity, std::string itemName) {
     dropItem.itemName = itemName;
 
     dropItemsMap.insert(std::pair<int, DropItem>(entity, dropItem));
+}
+
+void World::addAttractorComponent(unsigned int entity, float radius, float speed) {
+    Attractor attractor;
+    attractor.radius = radius;
+    attractor.speed = speed;
+
+    attractorsMap.insert(std::pair<int, Attractor>(entity, attractor));
+}
+
+void World::addAttractableComponent(unsigned int entity) {
+    Attractable attractable;
+    attractablesMap.insert(std::pair<int, Attractable>(entity, attractable));
 }
 
 void World::addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations) {
@@ -444,4 +461,5 @@ void World::createDroppableItem(Droppable droppable) {
     addColliderComponent(entity, 0, 0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
     canCollideWithPlayer(entity);
     addScoreComponent(entity, droppable.points);
+    addAttractableComponent(entity);
 }

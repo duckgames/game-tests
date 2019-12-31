@@ -40,6 +40,8 @@ class World {
     std::map<int, InfiniteBackground> infiniteBackgroundsMap;
     std::map<int, Score> scoresMap;
     std::map<int, DropItem> dropItemsMap;
+    std::map<int, Attractor> attractorsMap;
+    std::map<int, Attractable> attractablesMap;
     std::map<int, Animation> animationsMap;
 
     std::vector<std::pair<int, int>> pendingCollisions;
@@ -53,6 +55,7 @@ class World {
     std::unordered_set<int> enforceScreenXBoundaries;
     std::unordered_set<int> enforceScreenYBoundaries;
     std::unordered_set<int> scoresToAdd;
+    std::vector<std::pair<int, int>> beingAttracted;
 
     std::map<int, std::vector<BulletDefinition>> bulletPatterns;
     std::map<std::string, Droppable> droppableItems;
@@ -83,6 +86,8 @@ class World {
     void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
     void addScoreComponent(unsigned int entity, long score);
     void addDropItemComponent(unsigned int entity, std::string itemName);
+    void addAttractorComponent(unsigned int entity, float radius, float speed);
+    void addAttractableComponent(unsigned int entity);
     void addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations);
 
     void addXBoundaryEnforcement(unsigned int entity);
