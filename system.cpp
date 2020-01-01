@@ -309,7 +309,7 @@ void System::updateAttractors() {
             attbl->normalX = diffX / distance;
             attbl->normalY = diffY / distance;
             if (distance < attractor.second.radius) {
-                world->beingAttracted.emplace_back(std::pair<int, int>(attractable.first, attractor.first));
+                world->beingAttracted.insert(attractable.first);
             }
         }
     }
@@ -320,16 +320,14 @@ void System::updateAttractables() {
     Attractable *attractable;
     Attractor *attractor;
 
-    for (auto pair: world->beingAttracted) {
-        moveComponent = &world->moversMap[pair.first];
-        attractable = &world->attractablesMap[pair.first];
-        attractor = &world->attractorsMap[pair.second];
+    for (auto attracted: world->beingAttracted) {
+        moveComponent = &world->moversMap[attracted];
+        attractable = &world->attractablesMap[attracted];
+        attractor = &world->attractorsMap[attractable->attractorEntity];
 
         moveComponent->xSpeed = attractable->normalX * attractor->speed;
         moveComponent->ySpeed = attractable->normalY * attractor->speed;
     }
-
-    world->beingAttracted.clear();
 }
 
 void System::updateAnimations(float delta) {

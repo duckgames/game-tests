@@ -506,7 +506,7 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     // Add Attractable Component
     sol::optional<sol::table> attractableExists = entityData["components"]["attractable"];
     if (attractableExists != sol::nullopt) {
-        world->addAttractableComponent(entity);
+        world->addAttractableComponent(entity, player);
     }
 
     // Add Animation Component
@@ -689,6 +689,7 @@ void menu(sf::RenderWindow *window, World *world, GameInput *newInput) {
                 background);
 
         loadLevel(1, world);
+        world->player = player;
 
         gameState = STATE_PLAYING;
     }

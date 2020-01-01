@@ -24,6 +24,7 @@ typedef struct {
 
 class World {
     public:
+    unsigned int player;
     int entities[MAX_ENTITIES];
     std::map<int, Jump> jumpersMap;
     std::map<int, Draw> drawablesMap;
@@ -55,7 +56,7 @@ class World {
     std::unordered_set<int> enforceScreenXBoundaries;
     std::unordered_set<int> enforceScreenYBoundaries;
     std::unordered_set<int> scoresToAdd;
-    std::vector<std::pair<int, int>> beingAttracted;
+    std::unordered_set<int> beingAttracted;
 
     std::map<int, std::vector<BulletDefinition>> bulletPatterns;
     std::map<std::string, Droppable> droppableItems;
@@ -87,7 +88,7 @@ class World {
     void addScoreComponent(unsigned int entity, long score);
     void addDropItemComponent(unsigned int entity, std::string itemName);
     void addAttractorComponent(unsigned int entity, float radius, float speed);
-    void addAttractableComponent(unsigned int entity);
+    void addAttractableComponent(unsigned int entity, unsigned int attractorEntity);
     void addAnimationComponent(unsigned int entity, int numFrames, int startFrame, float frameDuration, bool loop, TextureAtlasLocation *textureAtlasLocations);
 
     void addXBoundaryEnforcement(unsigned int entity);
@@ -106,6 +107,6 @@ class World {
     void createEnemyBullet(int spawnPoint);
     unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
-    void createDroppableItem(Droppable droppable);
+    void createDroppableItem(unsigned int attractorEntity, Droppable droppable);
 };
 #endif //UNTITLED_WORLD_H

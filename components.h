@@ -104,6 +104,7 @@ typedef struct {
 typedef struct {
     float normalX;
     float normalY;
+    int attractorEntity;
 } Attractable;
 
 typedef struct {

@@ -36,8 +36,8 @@ droppables = {
     [0] = {
         textureAtlasLocation = "specialbrew",
         points = 5,
-        xSpeed = 10.0,
-        ySpeed = 10.0
+        xSpeed = 20.0,
+        ySpeed = 0.0
     }
 }
 entities = {
@@ -69,7 +69,7 @@ entities = {
             },
             attractor = {
                 radius = 200.0,
-                speed = 200.0
+                speed = 500.0
             },
             leader = {
                 followers = {

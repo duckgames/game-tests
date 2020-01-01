@@ -69,6 +69,7 @@ void World::clear() {
     enforceScreenXBoundaries.clear();
     enforceScreenYBoundaries.clear();
     scoresToAdd.clear();
+    beingAttracted.clear();
 
     score = 0;
 }
@@ -93,7 +94,7 @@ void World::destroyEntity(unsigned int entity) {
         Droppable droppable = droppableItems.at(dropItem->second.itemName);
         droppable.xPosition = positionsMap.at(entity).x;
         droppable.yPosition = positionsMap.at(entity).y;
-        createDroppableItem(droppable);
+        createDroppableItem(player, droppable);
     }
 
     jumpersMap.erase(entity);
@@ -113,6 +114,7 @@ void World::destroyEntity(unsigned int entity) {
     enemies.erase(entity);
     collideWithPlayer.erase(entity);
     collideWithEnemy.erase(entity);
+    beingAttracted.erase(entity);
 
     auto iterator = scoresMap.find(entity);
     if (iterator != scoresMap.end()) {
@@ -272,8 +274,10 @@ void World::addAttractorComponent(unsigned int entity, float radius, float speed
     attractorsMap.insert(std::pair<int, Attractor>(entity, attractor));
 }
 
-void World::addAttractableComponent(unsigned int entity) {
+void World::addAttractableComponent(unsigned int entity, unsigned int attractorEntity) {
     Attractable attractable;
+    attractable.attractorEntity = attractorEntity;
+
     attractablesMap.insert(std::pair<int, Attractable>(entity, attractable));
 }
 
@@ -449,7 +453,7 @@ unsigned int World::createInfiniteBackground(float startX, float startY, float x
     return entity;
 }
 
-void World::createDroppableItem(Droppable droppable) {
+void World::createDroppableItem(unsigned int attractorEntity, Droppable droppable) {
     TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at(droppable.textureAtlasLocation);
 
     unsigned int entity = createMover(droppable.xPosition,
@@ -461,5 +465,5 @@ void World::createDroppableItem(Droppable droppable) {
     addColliderComponent(entity, 0, 0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
     canCollideWithPlayer(entity);
     addScoreComponent(entity, droppable.points);
-    addAttractableComponent(entity);
+    addAttractableComponent(entity, attractorEntity);
 }
