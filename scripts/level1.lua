@@ -69,7 +69,7 @@ entities = {
             },
             attractor = {
                 radius = 200.0,
-                speed = 50.0
+                speed = 200.0
             },
             leader = {
                 followers = {

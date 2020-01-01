@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <SFML/System.hpp>
 #include "math.h"
 #include "components.h"
 #include "system.h"
@@ -300,9 +301,13 @@ void System::updateAttractors() {
         p1 = &world->positionsMap[attractor.first];
         for (auto attractable: world->attractablesMap) {
             p2 = &world->positionsMap[attractable.first];
+            Attractable *attbl = &world->attractablesMap[attractable.first];
             float diffX = p1->x - p2->x;
             float diffY = p1->y - p2->y;
             float distance = sqrt((diffX * diffX) + (diffY * diffY));
+
+            attbl->normalX = diffX / distance;
+            attbl->normalY = diffY / distance;
             if (distance < attractor.second.radius) {
                 world->beingAttracted.emplace_back(std::pair<int, int>(attractable.first, attractor.first));
             }
@@ -312,21 +317,16 @@ void System::updateAttractors() {
 
 void System::updateAttractables() {
     Move *moveComponent;
+    Attractable *attractable;
     Attractor *attractor;
-    Position *p1;
-    Position *p2;
 
     for (auto pair: world->beingAttracted) {
         moveComponent = &world->moversMap[pair.first];
+        attractable = &world->attractablesMap[pair.first];
         attractor = &world->attractorsMap[pair.second];
-        p1 = &world->positionsMap[pair.first];
-        p2 = &world->positionsMap[pair.second];
 
-        float tx = p2->x - p1->x;
-        float ty = p2->y - p1->y;
-
-        moveComponent->xSpeed = tx;
-        moveComponent->ySpeed = ty;
+        moveComponent->xSpeed = attractable->normalX * attractor->speed;
+        moveComponent->ySpeed = attractable->normalY * attractor->speed;
     }
 
     world->beingAttracted.clear();
