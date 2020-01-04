@@ -114,7 +114,7 @@ void System::updateMovers(float delta) {
         position->x += mover.second.xSpeed * delta;
         position->y += mover.second.ySpeed * delta;
 
-        if (position->y + draw->height < 0.0f || position->y > 1080.0f) {
+        if (position->y + draw->height < 0.0f || position->y > 1080.0f || position->x + draw->width < 0.0f || position->x > 1920.0f) {
             world->waitingForDeath.insert(mover.first);
         }
     }
@@ -131,7 +131,7 @@ void System::updateProjectiles(float delta) {
         position->x += direction->xMove * delta;
         position->y += direction->yMove * delta;
 
-        if (position->y < 0.0f || position->y > 1080.0f) {
+        if (position->y < 0.0f || position->y > 1080.0f || position->x + position->x < 0.0f || position->x > 1920.0f) {
             world->waitingForDeath.insert(projectile.first);
         }
     }
