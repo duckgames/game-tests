@@ -3,8 +3,7 @@
 //
 
 #include <iostream>
-#include <SFML/System.hpp>
-#include "math.h"
+#include <cmath>
 #include "components.h"
 #include "system.h"
 #include "controller.h"
