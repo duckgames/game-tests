@@ -92,7 +92,7 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
         else if (padInput->actionRight.endedDown || keyboardInput->actionRight.endedDown) {
             for (int waiting: world->playerWaitingToFire) {
                 BulletSpawnPoint *bulletSpawnPoint = &world->playerBulletSpawnPointsMap[waiting];
-                    bulletSpawnPoint->angle += 10.0f;
+                bulletSpawnPoint->angle += 10.0f;
 
                 world->createPlayerBullet(waiting);
             }
@@ -113,7 +113,8 @@ void System::updateMovers(float delta) {
         position->x += mover.second.xSpeed * delta;
         position->y += mover.second.ySpeed * delta;
 
-        if (position->y + draw->height < 0.0f || position->y > 1080.0f || position->x + draw->width < 0.0f || position->x > 1920.0f) {
+        if (position->y + draw->height < 0.0f || position->y > world->screenHeight ||
+            position->x + draw->width < 0.0f || position->x > world->screenWidth) {
             world->waitingForDeath.insert(mover.first);
         }
     }
@@ -130,7 +131,8 @@ void System::updateProjectiles(float delta) {
         position->x += direction->xMove * delta;
         position->y += direction->yMove * delta;
 
-        if (position->y < 0.0f || position->y > 1080.0f || position->x + position->x < 0.0f || position->x > 1920.0f) {
+        if (position->y < 0.0f || position->y > world->screenHeight ||
+            position->x + position->x < 0.0f || position->x > world->screenWidth) {
             world->waitingForDeath.insert(projectile.first);
         }
     }
@@ -254,7 +256,7 @@ void System::updateInfiniteBackgrounds(float delta) {
         position->x += background->xSpeed * delta;
         position->y += background->ySpeed * delta;
 
-        if (position->y > 1080.0f) {
+        if (position->y > world->screenHeight) {
             position->y = background->startY;
         }
     }
