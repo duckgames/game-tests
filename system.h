@@ -15,7 +15,7 @@ public:
 
     void jumpers(float delta);
     void updateControllables(float delta, GameControllerInput *input, GameControllerInput *keyboardInput);
-    void updateMovers(float delta);
+    void updateAttractables();
     void updateProjectiles(float delta);
     void updateFollowers();
     void updateBulletSpawnPoints(float delta);
@@ -27,8 +27,6 @@ public:
     void updateInfiniteBackgrounds(float delta);
     void processPendingCollisions();
     void updateScore();
-    void updateAttractors();
-    void updateAttractables();
     void updateAnimations(float delta);
 
 private:

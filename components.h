@@ -36,6 +36,8 @@ typedef struct {
 } Position;
 
 typedef struct {
+    float normalX = 1.0f;
+    float normalY = 1.0f;
     float xMove;
     float yMove;
 } Direction;
@@ -44,11 +46,6 @@ typedef struct {
     float xSpeed;
     float ySpeed;
 } Controllable;
-
-typedef struct {
-    float xSpeed;
-    float ySpeed;
-} Move;
 
 typedef struct {
     std::vector<int> followers;
@@ -102,8 +99,9 @@ typedef struct {
 } Attractor;
 
 typedef struct {
-    float normalX;
-    float normalY;
+    float diffX;
+    float diffY;
+    float distanceToAttractor;
     int attractorEntity;
 } Attractable;
 

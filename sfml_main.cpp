@@ -393,8 +393,8 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     sol::optional<sol::table> directionExists = entityData["components"]["direction"];
     if (directionExists != sol::nullopt) {
         world->addDirectionComponent(entity,
-                                     static_cast<float>(entityData["components"]["direction"]["xMove"]),
-                                     static_cast<float>(entityData["components"]["direction"]["yMove"])
+                                     static_cast<float>(entityData["components"]["direction"]["velocity"]),
+                                     static_cast<float>(entityData["components"]["direction"]["angle"])
         );
     }
 
@@ -405,15 +405,6 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
         world->addControllableComponent(entity,
                                         static_cast<float>(entityData["components"]["controllable"]["xSpeed"]),
                                         static_cast<float>(entityData["components"]["controllable"]["ySpeed"])
-        );
-    }
-
-    // Add Move Component
-    sol::optional<sol::table> moveExists = entityData["components"]["move"];
-    if (moveExists != sol::nullopt) {
-        world->addMoveComponent(entity,
-                                static_cast<float>(entityData["components"]["move"]["xSpeed"]),
-                                static_cast<float>(entityData["components"]["move"]["ySpeed"])
         );
     }
 
@@ -632,10 +623,9 @@ void game(sf::RenderWindow *window, World *world, System *system, GameInput *new
 
     system->processWaitingToFire();
     system->updateInfiniteBackgrounds(timePerFrame);
-    system->updateAttractors();
     system->updateAttractables();
     system->clearDeadEntities();
-    system->updateMovers(timePerFrame);
+  //  system->updateMovers(timePerFrame);
     system->updateControllables(timePerFrame, &newInput->controllers[0], &newInput->keyboard);
     system->updateProjectiles(timePerFrame);
     system->enforceScreenBoundaries();

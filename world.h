@@ -31,7 +31,6 @@ class World {
     std::map<int, Position> positionsMap;
     std::map<int, Direction> directionsMap;
     std::map<int, Controllable> controllablesMap;
-    std::map<int, Move> moversMap;
     std::map<int, Follower> followersMap;
     std::map<int, Leader> leadersMap;
     std::map<int, BulletSpawnPoint> bulletSpawnPointsMap;
@@ -78,7 +77,6 @@ class World {
     void addPositionComponent(unsigned int entity, float x, float y);
     void addDirectionComponent(unsigned int entity, float velocity, float angle);
     void addControllableComponent(unsigned int entity, float xSpeed, float ySpeed);
-    void addMoveComponent(unsigned int entity, float xSpeed, float ySpeed);
     void addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset);
     void addLeaderComponent(unsigned int entity, std::vector<int> followers);
     void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float angle, bool forPlayer, std::vector<BulletDefinition> bullets);
@@ -98,14 +96,12 @@ class World {
     void canCollideWithEnemy(unsigned int entity);
     
     unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed);
-    unsigned int createMover(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
     unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets);
     unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets);
     unsigned int createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation);
     void createPlayerBullet(int spawnPoint);
     void createEnemyBullet(int spawnPoint);
-    unsigned int createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets);
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     void createDroppableItem(unsigned int attractorEntity, Droppable droppable);
 };

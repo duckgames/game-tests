@@ -46,7 +46,6 @@ void World::clear() {
     positionsMap.clear();
     directionsMap.clear();
     controllablesMap.clear();
-    moversMap.clear();
     followersMap.clear();
     leadersMap.clear();
     bulletSpawnPointsMap.clear();
@@ -102,7 +101,6 @@ void World::destroyEntity(unsigned int entity) {
     positionsMap.erase(entity);
     directionsMap.erase(entity);
     controllablesMap.erase(entity);
-    moversMap.erase(entity);
     followersMap.erase(entity);
     bulletSpawnPointsMap.erase(entity);
     playerBulletSpawnPointsMap.erase(entity);
@@ -129,7 +127,6 @@ void World::destroyEntity(unsigned int entity) {
             drawablesMap.erase(follower);
             positionsMap.erase(follower);
             controllablesMap.erase(follower);
-            moversMap.erase(follower);
             followersMap.erase(follower);
             bulletSpawnPointsMap.erase(follower);
             playerBulletSpawnPointsMap.erase(follower);
@@ -182,13 +179,6 @@ void World::addControllableComponent(unsigned int entity, float xSpeed, float yS
     controllable.xSpeed = xSpeed;
     controllable.ySpeed = ySpeed;
     controllablesMap.insert(std::pair<int, Controllable>(entity, controllable));
-}
-
-void World::addMoveComponent(unsigned int entity, float xSpeed, float ySpeed) {
-    Move move;
-    move.xSpeed = xSpeed;
-    move.ySpeed = ySpeed;
-    moversMap.insert(std::pair<int, Move>(entity, move));
 }
 
 void World::addFollowerComponent(unsigned int entity, unsigned int owningEntity, float xOffset, float yOffset) {
@@ -334,16 +324,6 @@ unsigned int World::createControllable(float startX, float startY, float xSpeed,
     return entity;
 }
 
-unsigned int World::createMover(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
-    unsigned int entity = createEntity();
-
-    addDrawComponent(entity, textureAtlasLocation);
-    addPositionComponent(entity, startX, startY);
-    addMoveComponent(entity, xSpeed, ySpeed);
-
-    return entity;
-}
-
 unsigned int World::createFollower(int owningEntity, float xOffset, float yOffset) {
     unsigned int entity = createEntity();
 
@@ -420,25 +400,6 @@ void World::createEnemyBullet(int spawnPoint) {
     }
 }
 
-unsigned int World::createEnemy(float startX, float startY, float xSpeed, float ySpeed, float rateOfFire, std::vector<BulletDefinition> bullets) {
-    unsigned int entity = createMover(startX, startY, xSpeed, ySpeed, textureAtlasLocationMap.at("ship-enemy"));
-
-    int bulletSpawnPoint = createBulletSpawnPoint(entity, 0.0f, 16.0f, 0.0f, rateOfFire, bullets);
-    std::vector<int> followers;
-    followers.push_back(bulletSpawnPoint);
-    addLeaderComponent(entity, followers);
-
-    addColliderComponent(entity, 0.0, 0.0, drawablesMap[entity].width, drawablesMap[entity].height, 1);
-    canCollideWithPlayer(entity);
-
-    addHealthComponent(entity, 5);
-    addScoreComponent(entity, 5);
-    addDropItemComponent(entity, "specialbrew");
-
-    enemies.insert(entity);
-    return entity;
-}
-
 unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 
@@ -456,7 +417,7 @@ unsigned int World::createInfiniteBackground(float startX, float startY, float x
 void World::createDroppableItem(unsigned int attractorEntity, Droppable droppable) {
     TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at(droppable.textureAtlasLocation);
 
-    unsigned int entity = createMover(droppable.xPosition,
+    unsigned int entity = createProjectile(droppable.xPosition,
                                       droppable.yPosition,
                                       droppable.xSpeed,
                                       droppable.ySpeed,

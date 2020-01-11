@@ -102,24 +102,6 @@ void System::updateControllables(float delta, GameControllerInput *padInput, Gam
     }
 }
 
-void System::updateMovers(float delta) {
-    Position *position;
-    Draw *draw;
-
-    for (auto mover: world->moversMap) {
-        position = &world->positionsMap[mover.first];
-        draw = &world->drawablesMap[mover.first];
-
-        position->x += mover.second.xSpeed * delta;
-        position->y += mover.second.ySpeed * delta;
-
-        if (position->y + draw->height < 0.0f || position->y > world->screenHeight ||
-            position->x + draw->width < 0.0f || position->x > world->screenWidth) {
-            world->waitingForDeath.insert(mover.first);
-        }
-    }
-}
-
 void System::updateProjectiles(float delta) {
     Position *position;
     Direction *direction;
@@ -128,8 +110,8 @@ void System::updateProjectiles(float delta) {
         position = &world->positionsMap[projectile.first];
         direction = &world->directionsMap[projectile.first];
 
-        position->x += direction->xMove * delta;
-        position->y += direction->yMove * delta;
+        position->x += direction->xMove * direction->normalX * delta;
+        position->y += direction->yMove * direction->normalY * delta;
 
         if (position->y < 0.0f || position->y > world->screenHeight ||
             position->x + position->x < 0.0f || position->x > world->screenWidth) {
@@ -294,40 +276,38 @@ void System::updateScore() {
     world->scoresToAdd.clear();
 }
 
-void System::updateAttractors() {
-    Position *p1;
-    Position *p2;
+void System::updateAttractables() {
+    Position *attractorPosition;
+    Position *attractablePosition;
+    Attractable *attractable;
 
-    for (auto attractor: world->attractorsMap) {
-        p1 = &world->positionsMap[attractor.first];
-        for (auto attractable: world->attractablesMap) {
-            p2 = &world->positionsMap[attractable.first];
-            Attractable *attbl = &world->attractablesMap[attractable.first];
-            float diffX = p1->x - p2->x;
-            float diffY = p1->y - p2->y;
-            float distance = sqrt((diffX * diffX) + (diffY * diffY));
+    for (auto attbl: world->attractablesMap) {
+        attractable = &world->attractablesMap[attbl.first];
+        attractorPosition = &world->positionsMap[attbl.second.attractorEntity];
+        attractablePosition = &world->positionsMap[attbl.first];
+        float diffX = attractorPosition->x - attractablePosition->x;
+        float diffY = attractorPosition->y - attractablePosition->y;
+        attractable->distanceToAttractor = sqrt((diffX * diffX) + (diffY * diffY));
+        attractable->diffX = diffX;
+        attractable->diffY = diffY;
 
-            attbl->normalX = diffX / distance;
-            attbl->normalY = diffY / distance;
-            if (distance < attractor.second.radius) {
-                world->beingAttracted.insert(attractable.first);
-            }
+        if (attractable->distanceToAttractor < world->attractorsMap[attbl.second.attractorEntity].radius) {
+            world->beingAttracted.insert(attbl.first);
         }
     }
-}
 
-void System::updateAttractables() {
-    Move *moveComponent;
-    Attractable *attractable;
+    Direction *direction;
     Attractor *attractor;
 
     for (auto attracted: world->beingAttracted) {
-        moveComponent = &world->moversMap[attracted];
+        direction = &world->directionsMap[attracted];
         attractable = &world->attractablesMap[attracted];
         attractor = &world->attractorsMap[attractable->attractorEntity];
 
-        moveComponent->xSpeed = attractable->normalX * attractor->speed;
-        moveComponent->ySpeed = attractable->normalY * attractor->speed;
+        direction->normalX = attractable->diffX / attractable->distanceToAttractor;
+        direction->normalY = attractable->diffY / attractable->distanceToAttractor;
+        direction->xMove = attractor->speed;
+        direction->yMove = attractor->speed;
     }
 }
 
@@ -338,6 +318,7 @@ void System::updateAnimations(float delta) {
 
         if (animation->timeElapsed >= animation->frameDuration) {
             int nextFrame = (animation->currentFrame < animation->totalFrames - 1 ? (animation->currentFrame + 1) : 0);
+            world->drawablesMap[entity.first] = animation->drawables[nextFrame];
             world->drawablesMap[entity.first] = animation->drawables[nextFrame];
             animation->currentFrame = nextFrame;
             animation->timeElapsed = 0;
