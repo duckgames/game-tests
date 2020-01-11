@@ -625,7 +625,6 @@ void game(sf::RenderWindow *window, World *world, System *system, GameInput *new
     system->updateInfiniteBackgrounds(timePerFrame);
     system->updateAttractables();
     system->clearDeadEntities();
-  //  system->updateMovers(timePerFrame);
     system->updateControllables(timePerFrame, &newInput->controllers[0], &newInput->keyboard);
     system->updateProjectiles(timePerFrame);
     system->enforceScreenBoundaries();

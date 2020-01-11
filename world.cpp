@@ -307,48 +307,18 @@ void World::canCollideWithEnemy(unsigned int entity) {
     collideWithEnemy.insert(entity);
 }
 
-unsigned int World::createControllable(float startX, float startY, float xSpeed, float ySpeed) {
+unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
-
-    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("ship-player");
 
     addDrawComponent(entity, textureAtlasLocation);
     addPositionComponent(entity, startX, startY);
-    addControllableComponent(entity, xSpeed, ySpeed);
-    addColliderComponent(entity, 0.0, 0.0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
-    addHealthComponent(entity, 10);
+    addInfiniteBackgroundComponent(entity, startY, xSpeed, ySpeed);
 
-    addXBoundaryEnforcement(entity);
-    addYBoundaryEnforcement(entity);
-
-    return entity;
-}
-
-unsigned int World::createFollower(int owningEntity, float xOffset, float yOffset) {
-    unsigned int entity = createEntity();
-
-    addPositionComponent(entity, positionsMap[owningEntity].x + xOffset, positionsMap[owningEntity].y + yOffset);
-    addFollowerComponent(entity, owningEntity, xOffset, yOffset);
-
-    return entity;
-}
-
-unsigned int World::createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets) {
-    unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
-
-    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-red");
-    addDrawComponent(entity, textureAtlasLocation);
-    addBulletSpawnPointComponent(entity, rateOfFire, angle, false, bullets);
-
-    return entity;
-}
-
-unsigned int World::createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets) {
-    unsigned int entity = createFollower(owningEntity, xOffset, yOffset);
-
-    TextureAtlasLocation textureAtlasLocation = textureAtlasLocationMap.at("projectile-blue");
-    addDrawComponent(entity, textureAtlasLocation);
-    addBulletSpawnPointComponent(entity, rateOfFire, angle, true, bullets);
+    int follower = createEntity();
+    addPositionComponent(follower, positionsMap[entity].x + 0.0f, positionsMap[entity].y + -textureAtlasLocation.h);
+    addFollowerComponent(follower, entity, 0.0f, -textureAtlasLocation.h);
+    addDrawComponent(follower, textureAtlasLocation);
+    infiniteBackgroundsMap[entity].follower = follower;
 
     return entity;
 }
@@ -398,20 +368,6 @@ void World::createEnemyBullet(int spawnPoint) {
 
         addHealthComponent(entity, 1);
     }
-}
-
-unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
-    unsigned int entity = createEntity();
-
-    addDrawComponent(entity, textureAtlasLocation);
-    addPositionComponent(entity, startX, startY);
-    addInfiniteBackgroundComponent(entity, startY, xSpeed, ySpeed);
-
-    int follower = createFollower(entity, 0.0f, -textureAtlasLocation.h);
-    addDrawComponent(follower, textureAtlasLocation);
-    infiniteBackgroundsMap[entity].follower = follower;
-
-    return entity;
 }
 
 void World::createDroppableItem(unsigned int attractorEntity, Droppable droppable) {

@@ -94,15 +94,11 @@ class World {
 
     void canCollideWithPlayer(unsigned int entity);
     void canCollideWithEnemy(unsigned int entity);
-    
-    unsigned int createControllable(float startX, float startY, float xSpeed, float ySpeed);
-    unsigned int createFollower(int owningEntity, float xOffset, float yOffset);
-    unsigned int createBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets);
-    unsigned int createPlayerBulletSpawnPoint(int owningEntity, float xOffset, float yOffset, float rateOfFire, float angle, std::vector<BulletDefinition> bullets);
+
+    unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     unsigned int createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation);
     void createPlayerBullet(int spawnPoint);
     void createEnemyBullet(int spawnPoint);
-    unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
     void createDroppableItem(unsigned int attractorEntity, Droppable droppable);
 };
 #endif //UNTITLED_WORLD_H
