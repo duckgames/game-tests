@@ -169,8 +169,8 @@ void World::addPositionComponent(unsigned int entity, float x, float y) {
 void World::addDirectionComponent(unsigned int entity, float velocity, float angle) {
     Direction direction;
     double radians = angle * M_PI / 180;
-    direction.xMove = cos(radians) * velocity;
-    direction.yMove = sin(radians) * velocity;
+    direction.xSpeed = cos(radians) * velocity;
+    direction.ySpeed = sin(radians) * velocity;
     directionsMap.insert(std::pair<int, Direction>(entity, direction));
 }
 

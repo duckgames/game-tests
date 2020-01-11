@@ -110,8 +110,8 @@ void System::updateProjectiles(float delta) {
         position = &world->positionsMap[projectile.first];
         direction = &world->directionsMap[projectile.first];
 
-        position->x += direction->xMove * direction->normalX * delta;
-        position->y += direction->yMove * direction->normalY * delta;
+        position->x += direction->xSpeed * direction->dirNormalX * delta;
+        position->y += direction->ySpeed * direction->dirNormalY * delta;
 
         if (position->y < 0.0f || position->y > world->screenHeight ||
             position->x + position->x < 0.0f || position->x > world->screenWidth) {
@@ -304,10 +304,10 @@ void System::updateAttractables() {
         attractable = &world->attractablesMap[attracted];
         attractor = &world->attractorsMap[attractable->attractorEntity];
 
-        direction->normalX = attractable->diffX / attractable->distanceToAttractor;
-        direction->normalY = attractable->diffY / attractable->distanceToAttractor;
-        direction->xMove = attractor->speed;
-        direction->yMove = attractor->speed;
+        direction->dirNormalX = attractable->diffX / attractable->distanceToAttractor;
+        direction->dirNormalY = attractable->diffY / attractable->distanceToAttractor;
+        direction->xSpeed = attractor->speed;
+        direction->ySpeed = attractor->speed;
     }
 }
 

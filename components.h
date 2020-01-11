@@ -36,10 +36,10 @@ typedef struct {
 } Position;
 
 typedef struct {
-    float normalX = 1.0f;
-    float normalY = 1.0f;
-    float xMove;
-    float yMove;
+    float dirNormalX = 1.0f;
+    float dirNormalY = 1.0f;
+    float xSpeed;
+    float ySpeed;
 } Direction;
 
 typedef struct {
