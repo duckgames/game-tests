@@ -123,20 +123,13 @@ void System::updateProjectiles(float delta) {
 void System::updateFollowers() {
     Position *position;
     Position *ownerPosition;
-    Draw *drawable;
-    Draw *ownerDrawable;
 
     for (auto follower: world->followersMap) {
         position = &world->positionsMap[follower.first];
-        drawable = &world->drawablesMap[follower.first];
         ownerPosition = &world->positionsMap[follower.second.owningEntity];
-        ownerDrawable = &world->drawablesMap[follower.second.owningEntity];
 
-        float x = ownerPosition->x + (ownerDrawable->width / 2) - (drawable->width / 2);
-        float y = ownerPosition->y + (ownerDrawable->height / 2) - (drawable->height / 2);
-
-        position->x = x + follower.second.xOffset;
-        position->y = y + follower.second.yOffset;
+        position->x = ownerPosition->x + follower.second.xOffset;
+        position->y = ownerPosition->y + follower.second.yOffset;
     }
 }
 
@@ -185,14 +178,14 @@ void System::updatePlayerCollisions(int playerEntity) {
     Position *playerPosition = &world->positionsMap[playerEntity];
     Collider *playerCollider = &world->collidersMap[playerEntity];
 
-    float playerColliderX = playerPosition->x + playerCollider->xOffset;
-    float playerColliderY = playerPosition->y + playerCollider->yOffset;
+    float playerColliderX = playerPosition->x - (playerCollider->width / 2) + playerCollider->xOffset;
+    float playerColliderY = playerPosition->y - (playerCollider->height / 2) + playerCollider->yOffset;
 
     for (auto entity: world->collideWithPlayer) {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
-        float colliderX = position->x + collider->xOffset;
-        float colliderY = position->y + collider->yOffset;
+        float colliderX = position->x - (collider->width / 2) + collider->xOffset;
+        float colliderY = position->y - (collider->height / 2) + collider->yOffset;
 
         if (playerColliderX + playerCollider->width > colliderX &&
             playerColliderX < colliderX + collider->width &&
@@ -208,14 +201,14 @@ void System::updateEnemyCollisions() {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
 
-        float colliderX = position->x + collider->xOffset;
-        float colliderY = position->y + collider->yOffset;
+        float colliderX = position->x - (collider->width / 2) + collider->xOffset;
+        float colliderY = position->y - (collider->height / 2) + collider->yOffset;
 
         for (auto enemy: world->enemies) {
             Position *enemyPosition = &world->positionsMap[enemy];
             Collider *enemyCollider = &world->collidersMap[enemy];
-            float enemyColliderX = enemyPosition->x + enemyCollider->xOffset;
-            float enemyColliderY = enemyPosition->y + enemyCollider->yOffset;
+            float enemyColliderX = enemyPosition->x - (enemyCollider->width / 2) + enemyCollider->xOffset;
+            float enemyColliderY = enemyPosition->y - (enemyCollider->width / 2) + enemyCollider->yOffset;
 
             if (enemyColliderX + enemyCollider->width > colliderX &&
                 enemyColliderX < colliderX + collider->width &&
@@ -238,7 +231,7 @@ void System::updateInfiniteBackgrounds(float delta) {
         position->x += background->xSpeed * delta;
         position->y += background->ySpeed * delta;
 
-        if (position->y > world->screenHeight) {
+        if (position->y > world->screenHeight + background->height) {
             position->y = background->startY;
         }
     }
@@ -328,32 +321,28 @@ void System::updateAnimations(float delta) {
 
 void System::enforceScreenXBoundaries() {
     for (auto entity: world->enforceScreenXBoundaries) {
-        Position *position;
-        Draw *draw;
+        Position *position = &world->positionsMap[entity];
+        Draw *draw = &world->drawablesMap[entity];
+        int halfWidth = draw->width / 2;
 
-        position = &world->positionsMap[entity];
-        draw = &world->drawablesMap[entity];
-
-        if (position->x < 0) {
-            position->x = 0;
-        } else if (position->x > world->screenWidth - draw->width) {
-            position->x = world->screenWidth - draw->width;
+        if (position->x < halfWidth) {
+            position->x = halfWidth;
+        } else if (position->x > world->screenWidth - halfWidth) {
+            position->x = world->screenWidth - halfWidth;
         }
     }
 }
 
 void System::enforceScreenYBoundaries() {
     for (auto entity: world->enforceScreenYBoundaries) {
-        Position *position;
-        Draw *draw;
+        Position *position = &world->positionsMap[entity];
+        Draw *draw = &world->drawablesMap[entity];
+        int halfHeight = draw->height / 2;
 
-        position = &world->positionsMap[entity];
-        draw = &world->drawablesMap[entity];
-
-        if (position->y < 0) {
-            position->y = 0;
-        } else if (position->y > world->screenHeight - draw->height) {
-            position->y = world->screenHeight - draw->height;
+        if (position->y < halfHeight) {
+            position->y = halfHeight;
+        } else if (position->y > world->screenHeight - halfHeight) {
+            position->y = world->screenHeight - halfHeight;
         }
     }
 }

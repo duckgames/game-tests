@@ -73,7 +73,7 @@ class World {
     void destroyEntity(unsigned int entity);
     
     void addJumpComponent(unsigned int entity, float maxHeight, float jumpSpeed, float fallSpeed);
-    void addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation);
+    void addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation, float rotation);
     void addPositionComponent(unsigned int entity, float x, float y);
     void addDirectionComponent(unsigned int entity, float velocity, float angle);
     void addControllableComponent(unsigned int entity, float xSpeed, float ySpeed);
@@ -82,7 +82,7 @@ class World {
     void addBulletSpawnPointComponent(unsigned int entity, float rateOfFire, float angle, bool forPlayer, std::vector<BulletDefinition> bullets);
     void addColliderComponent(unsigned int entity, float x, float y, float width, float height, int damage);
     void addHealthComponent(unsigned int entity, int initialHealth);
-    void addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed);
+    void addInfiniteBackgroundComponent(unsigned int entity, float height, float startY, float xSpeed, float ySpeed);
     void addScoreComponent(unsigned int entity, long score);
     void addDropItemComponent(unsigned int entity, std::string itemName);
     void addAttractorComponent(unsigned int entity, float radius, float speed);
@@ -96,7 +96,7 @@ class World {
     void canCollideWithEnemy(unsigned int entity);
 
     unsigned int createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation);
-    unsigned int createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation);
+    unsigned int createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation, float rotation);
     void createPlayerBullet(int spawnPoint);
     void createEnemyBullet(int spawnPoint);
     void createDroppableItem(unsigned int attractorEntity, Droppable droppable);

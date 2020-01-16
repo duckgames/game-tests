@@ -28,6 +28,7 @@ typedef struct {
     int y;
     int width;
     int height;
+    float rotation;
 } Draw;
 
 typedef struct {
@@ -116,6 +117,7 @@ typedef struct {
 
 typedef struct {
     int follower;
+    float height;
     float startY;
     float xSpeed;
     float ySpeed;

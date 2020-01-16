@@ -148,13 +148,14 @@ void World::addJumpComponent(unsigned int entity, float maxHeight, float jumpSpe
     jumpersMap.insert(std::pair<int, Jump>(entity, jump));
 }
 
-void World::addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation) {
+void World::addDrawComponent(unsigned int entity, TextureAtlasLocation textureAtlasLocation, float rotation) {
     Draw draw;
 
     draw.x = textureAtlasLocation.x;
     draw.y = textureAtlasLocation.y;
     draw.width = textureAtlasLocation.w;
     draw.height = textureAtlasLocation.h;
+    draw.rotation = rotation;
 
     drawablesMap.insert(std::pair<int, Draw>(entity, draw));
 }
@@ -233,8 +234,9 @@ void World::addHealthComponent(unsigned int entity, int initialHealth) {
     healthMap.insert(std::pair<int, Health>(entity, health));
 }
 
-void World::addInfiniteBackgroundComponent(unsigned int entity, float startY, float xSpeed, float ySpeed) {
+void World::addInfiniteBackgroundComponent(unsigned int entity, float height, float startY, float xSpeed, float ySpeed) {
     InfiniteBackground infiniteBackground;
+    infiniteBackground.height = height;
     infiniteBackground.startY = startY;
     infiniteBackground.xSpeed = xSpeed;
     infiniteBackground.ySpeed = ySpeed;
@@ -310,23 +312,23 @@ void World::canCollideWithEnemy(unsigned int entity) {
 unsigned int World::createInfiniteBackground(float startX, float startY, float xSpeed, float ySpeed, TextureAtlasLocation textureAtlasLocation) {
     unsigned int entity = createEntity();
 
-    addDrawComponent(entity, textureAtlasLocation);
+    addDrawComponent(entity, textureAtlasLocation, 0.0f);
     addPositionComponent(entity, startX, startY);
-    addInfiniteBackgroundComponent(entity, startY, xSpeed, ySpeed);
+    addInfiniteBackgroundComponent(entity, textureAtlasLocation.h / 2, startY, xSpeed, ySpeed);
 
     int follower = createEntity();
-    addPositionComponent(follower, positionsMap[entity].x + 0.0f, positionsMap[entity].y + -textureAtlasLocation.h);
+    addPositionComponent(follower, positionsMap[entity].x + 0.0f, positionsMap[entity].y - (textureAtlasLocation.h / 2));
     addFollowerComponent(follower, entity, 0.0f, -textureAtlasLocation.h);
-    addDrawComponent(follower, textureAtlasLocation);
+    addDrawComponent(follower, textureAtlasLocation, 0.0f);
     infiniteBackgroundsMap[entity].follower = follower;
 
     return entity;
 }
 
-unsigned int World::createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation) {
+unsigned int World::createProjectile(float x, float y, float velocity, float angle, TextureAtlasLocation textureAtlasLocation, float rotation) {
     unsigned int entity = createEntity();
 
-    addDrawComponent(entity, textureAtlasLocation);
+    addDrawComponent(entity, textureAtlasLocation, rotation);
     addPositionComponent(entity, x, y);
     addDirectionComponent(entity, velocity, angle);
 
@@ -342,7 +344,8 @@ void World::createPlayerBullet(int spawnPoint) {
                                                spawnPointPosition->y + bullet.yOffset,
                                                bullet.velocity,
                                                bulletSpawnPoint->angle + bullet.angle,
-                                               bullet.bullet);
+                                               bullet.bullet,
+                                               bulletSpawnPoint->angle);
 
         addColliderComponent(entity, 0, 0, bullet.bullet.w, bullet.bullet.h, 1);
         canCollideWithEnemy(entity);
@@ -355,13 +358,13 @@ void World::createEnemyBullet(int spawnPoint) {
     Position *spawnPointPosition = &positionsMap[spawnPoint];
     BulletSpawnPoint *bulletSpawnPoint = &bulletSpawnPointsMap[spawnPoint];
 
-
     for (BulletDefinition bullet : bulletSpawnPoint->bullets) {
         unsigned int entity = createProjectile(spawnPointPosition->x + bullet.xOffset,
                                                spawnPointPosition->y + bullet.yOffset,
                                                bullet.velocity,
-                                               bullet.angle,
-                                               bullet.bullet);
+                                               bulletSpawnPoint->angle + bullet.angle,
+                                               bullet.bullet,
+                                               bullet.angle);
 
         addColliderComponent(entity, 0.0, 0.0, bullet.bullet.w, bullet.bullet.h, 1);
         canCollideWithPlayer(entity);
@@ -377,7 +380,8 @@ void World::createDroppableItem(unsigned int attractorEntity, Droppable droppabl
                                       droppable.yPosition,
                                       droppable.xSpeed,
                                       droppable.ySpeed,
-                                      textureAtlasLocation);
+                                      textureAtlasLocation,
+                                      0.0f);
 
     addColliderComponent(entity, 0, 0, textureAtlasLocation.w, textureAtlasLocation.h, 1);
     canCollideWithPlayer(entity);

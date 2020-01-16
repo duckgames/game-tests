@@ -295,6 +295,11 @@ void SFMLRenderDrawables(sf::RenderWindow *window, World *world) {
         Position *position;
         position = &world->positionsMap[drawable.first];
 
+        sf::Vector2f centre = {drawable.second.width / 2.0f, drawable.second.height / 2.0f };
+        sf::Vector2f offset = centre - sprite.getOrigin();
+        sprite.setOrigin(centre);
+        sprite.move(offset);
+
         sprite.setTextureRect(sf::IntRect(
                 drawable.second.x,
                 drawable.second.y,
@@ -302,6 +307,7 @@ void SFMLRenderDrawables(sf::RenderWindow *window, World *world) {
                 drawable.second.height
         ));
         sprite.setPosition(position->x, position->y);
+        sprite.setRotation(drawable.second.rotation);
 
         window->draw(sprite);
     }
@@ -311,16 +317,24 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     for (auto entity : world->collideWithPlayer) {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
+        Draw *draw = &world->drawablesMap[entity];
 
         float colliderX = position->x + collider->xOffset;
         float colliderY = position->y + collider->yOffset;
 
         sf::RectangleShape rectangleShape;
+
+        sf::Vector2f centre = {collider->width / 2.0f, collider->height / 2.0f };
+        sf::Vector2f offset = centre - rectangleShape.getOrigin();
+        rectangleShape.setOrigin(centre);
+        rectangleShape.move(offset);
+
         rectangleShape.setPosition(colliderX, colliderY);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
         rectangleShape.setFillColor(sf::Color::Transparent);
         rectangleShape.setOutlineColor(sf::Color::Red);
         rectangleShape.setOutlineThickness(2.0f);
+        rectangleShape.setRotation(draw->rotation);
 
         window->draw(rectangleShape);
     }
@@ -333,24 +347,38 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
     for (auto entity : world->collideWithEnemy) {
         Position *position = &world->positionsMap[entity];
         Collider *collider = &world->collidersMap[entity];
+        Draw *draw = &world->drawablesMap[entity];
+
+        sf::Vector2f centre = {collider->width / 2.0f, collider->height / 2.0f };
+        sf::Vector2f offset = centre - rectangleShape.getOrigin();
+        rectangleShape.setOrigin(centre);
+        rectangleShape.move(offset);
 
         float colliderX = position->x + collider->xOffset;
         float colliderY = position->y + collider->yOffset;
 
         rectangleShape.setPosition(colliderX, colliderY);
         rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+        rectangleShape.setRotation(draw->rotation);
 
         window->draw(rectangleShape);
     }
 
     Collider *collider = &world->collidersMap[playerEntity];
     Position *position = &world->positionsMap[playerEntity];
+    Draw *draw = &world->drawablesMap[playerEntity];
+
+    sf::Vector2f centre = {collider->width / 2.0f, collider->height / 2.0f };
+    sf::Vector2f offset = centre - rectangleShape.getOrigin();
+    rectangleShape.setOrigin(centre);
+    rectangleShape.move(offset);
 
     float colliderX = position->x + collider->xOffset;
     float colliderY = position->y + collider->yOffset;
 
     rectangleShape.setPosition(colliderX, colliderY);
     rectangleShape.setSize(sf::Vector2f(collider->width, collider->height));
+    rectangleShape.setRotation(draw->rotation);
     window->draw(rectangleShape);
 
     for (auto attractor : world->attractorsMap) {
@@ -363,7 +391,7 @@ void SFMLRenderHitboxes(sf::RenderWindow *window, World *world, int playerEntity
         circleShape.setOutlineColor(sf::Color::Magenta);
         circleShape.setOutlineThickness(2.0f);
         circleShape.setPosition(attractorX, attractorY);
-        circleShape.setOrigin(attractor.second.radius - 16, attractor.second.radius - 16);
+        circleShape.setOrigin(attractor.second.radius, attractor.second.radius);
         window->draw(circleShape);
     }
 }
@@ -377,7 +405,9 @@ int createEntity(World *world, sol::table entityData, int owningEntity) {
     sol::optional<sol::table> drawExists = entityData["components"]["draw"];
     if (drawExists != sol::nullopt) {
         std::string textureAtlasLocation = entityData["components"]["draw"]["textureAtlasLocation"];
-        world->addDrawComponent(entity, world->textureAtlasLocationMap.at(textureAtlasLocation));
+        world->addDrawComponent(entity,
+                                world->textureAtlasLocationMap.at(textureAtlasLocation),
+                                static_cast<float>(entityData["components"]["draw"]["rotation"]));
     }
 
     // Add Position Component
@@ -671,10 +701,10 @@ void menu(sf::RenderWindow *window, World *world, GameInput *newInput) {
 
         TextureAtlasLocation background = world->textureAtlasLocationMap.at("background");
         world->createInfiniteBackground(
-                (window->getSize().x / 2) - (background.w / 2),
-                -background.h + window->getSize().y,
+                window->getSize().x / 2,
+                window->getSize().y - (background.h / 2),
                 0.0f,
-                100.0f,
+                300.0f,
                 background);
 
         loadLevel(1, world);
@@ -705,10 +735,10 @@ void dead(sf::RenderWindow *window, World *world, GameInput *newInput) {
 
         TextureAtlasLocation background = world->textureAtlasLocationMap.at("background");
         world->createInfiniteBackground(
-                (window->getSize().x / 2) - (background.w / 2),
-                -background.h + window->getSize().y,
+                window->getSize().x / 2,
+                window->getSize().y - (background.h / 2),
                 0.0f,
-                100.0f,
+                300.0f,
                 background);
 
         loadLevel(1, world);

@@ -51,7 +51,8 @@ entities = {
                 y = SCREEN_HEIGHT - 16
             },
             draw = {
-                textureAtlasLocation = "ship-player"
+                textureAtlasLocation = "ship-player",
+                rotation = 0.0
             },
             controllable = {
                 xSpeed = 15.0,
@@ -60,8 +61,8 @@ entities = {
             collider = {
                 xOffset = 0.0,
                 yOffset = 0.0,
-                width = 32,
-                height = 32,
+                width = 32.0,
+                height = 32.0,
                 damage = 1
             },
             health = {
@@ -80,7 +81,8 @@ entities = {
                                 yOffset = 0.0
                             },
                             draw = {
-                                textureAtlasLocation = "projectile-blue"
+                                textureAtlasLocation = "projectile-blue",
+                                rotation = 0.0
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.02,
@@ -108,7 +110,8 @@ entities = {
                 y = 0.0,
             },
             draw = {
-                textureAtlasLocation = "ship-enemy"
+                textureAtlasLocation = "ship-enemy",
+                rotation = 0.0
             },
             collider = {
                 xOffset = 0.0,
@@ -139,7 +142,8 @@ entities = {
                                 y = 0.0
                             },
                             draw = {
-                                textureAtlasLocation = "projectile-red"
+                                textureAtlasLocation = "projectile-red",
+                                rotation = 0.0
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.1,
@@ -167,7 +171,8 @@ entities = {
                 y = 0.0,
             },
             draw = {
-                textureAtlasLocation = "ship-enemy"
+                textureAtlasLocation = "ship-enemy",
+                rotation = 0.0
             },
             collider = {
                 xOffset = 0.0,
@@ -198,7 +203,8 @@ entities = {
                                 y = 0.0
                             },
                             draw = {
-                                textureAtlasLocation = "projectile-red"
+                                textureAtlasLocation = "projectile-red",
+                                rotation = 0.0
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.2,
@@ -226,7 +232,8 @@ entities = {
                 y = 0.0,
             },
             draw = {
-                textureAtlasLocation = "ship-enemy"
+                textureAtlasLocation = "ship-enemy",
+                rotation = 0.0
             },
             collider = {
                 xOffset = 0.0,
@@ -257,7 +264,8 @@ entities = {
                                 y = 0.0
                             },
                             draw = {
-                                textureAtlasLocation = "projectile-red"
+                                textureAtlasLocation = "projectile-red",
+                                rotation = 0.0
                             },
                             bulletSpawnPoint = {
                                 rateOfFire = 0.5,
